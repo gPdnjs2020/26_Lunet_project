@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'setting.dart';
 
 class LumiereHomePage extends StatelessWidget {
   const LumiereHomePage({super.key});
@@ -56,7 +57,15 @@ class LumiereHomePage extends StatelessWidget {
                       ],
                     ),
 
-                    IconButton(onPressed: () {}, icon: const Icon(Icons.menu)),
+                    IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const SettingPage()),
+                        );
+                      },
+                      icon: const Icon(Icons.menu),
+                    ),
                   ],
                 ),
 
@@ -168,7 +177,7 @@ class LumiereHomePage extends StatelessWidget {
                             color: Colors.white,
                           ),
                         ),
-                        SizedBox(width: 10),
+                                         SizedBox(width: 10),
                         Icon(Icons.arrow_forward, color: Colors.white),
                       ],
                     ),
