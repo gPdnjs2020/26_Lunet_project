@@ -46,7 +46,7 @@ class LumiereHomePage extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                         const Text(
-                          'Lumiere',
+                          'Lunet',
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -73,9 +73,9 @@ class LumiereHomePage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(24),
                     ),
                     child: const Text(
-                      '안녕! 나는 루미에르야.\n함께 최고의 선택을 찾아볼까? ✨',
+                      '안녕! 나는 루나야.\n함께 최고의 선택을 찾아볼까? ✨',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 14,
                         color: Colors.black54,
                         height: 1.5,
                       ),
@@ -103,7 +103,7 @@ class LumiereHomePage extends StatelessWidget {
                   child: Center(
                     child: Image.asset(
                       'assets/images/character.png',
-                      width: 120,
+                      width: 170,
                     ),
                   ),
                 ),
@@ -112,10 +112,10 @@ class LumiereHomePage extends StatelessWidget {
 
                 /// 메인 텍스트
                 const Text(
-                  '지금 고민하고 있는 선택,\n같이 생각해볼까?',
+                  '지금 고민하고 있는 선택,\n내가 도와줄게!',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 34,
+                    fontSize: 28,
                     fontWeight: FontWeight.bold,
                     height: 1.3,
                     color: Color(0xFF2B2B2B),
@@ -125,7 +125,7 @@ class LumiereHomePage extends StatelessWidget {
                 const SizedBox(height: 20),
 
                 const Text(
-                  '루미에르는 당신의 마음과 상황을 깊이 이해하고,\n가장 행복한 결정을 내릴 수 있도록 돕는 친구예요.',
+                  '루나는 당신의 마음과 상황을 깊이 이해하고,\n가장 행복한 결정을 내릴 수 있도록 돕는 친구예요.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 15,
