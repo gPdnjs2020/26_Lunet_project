@@ -45,6 +45,8 @@ class _SettingPageState extends State<SettingPage> {
               _buildMenuTile(Icons.person_outline, '개인 프로필'),
               const SizedBox(height: 10),
               _buildMenuTile(Icons.lock_outline, '보안 및 개인정보'),
+              const SizedBox(height: 10),
+              _buildMenuTile(Icons.logout_outlined, '로그아웃'),
 
               const SizedBox(height: 36),
 

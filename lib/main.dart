@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'home.dart';
 import 'login.dart';
 import 'signup.dart';
+import 'profile.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,8 +20,9 @@ class MyApp extends StatelessWidget {
 
       routes: {
         '/': (context) => const LoginPage(),
-        '/home': (context) => const LumiereHomePage(),
+        '/home': (context) => LumiereHomePage(),
         '/signup': (context) => const SignupPage(),
+        '/profile': (context) => const ProfilePage(),
       },
     );
   }
