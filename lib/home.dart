@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'setting.dart';
-import 'profile.dart'; // ✨ 프로필 화면을 불러오기 위해 추가!
+import 'profile.dart'; 
+import 'selection.dart';
 
 class LumiereHomePage extends StatefulWidget {
   const LumiereHomePage({super.key});
@@ -36,10 +37,10 @@ class _LumiereHomePageState extends State<LumiereHomePage> {
 
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xFFF7F5F2),
-        selectedItemColor: const Color(0xFF4A6480), // 선택된 탭 색상 (앱 포인트 색상)
-        unselectedItemColor: Colors.grey,           // 선택 안 된 탭 색상
-        currentIndex: _selectedIndex,               // ✨ 네비게이션 바에 현재 선택된 탭 번호 알려주기
-        onTap: _onItemTapped,                       // ✨ 탭을 누르면 화면 교체 함수 실행!
+        selectedItemColor: const Color(0xFF4A6480), 
+        unselectedItemColor: Colors.grey,           
+        currentIndex: _selectedIndex,          
+        onTap: _onItemTapped,                  
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.auto_awesome),
@@ -59,10 +60,6 @@ class _LumiereHomePageState extends State<LumiereHomePage> {
   }
 }
 
-// ---------------------------------------------------------------------- //
-// 기존 홈 화면(Predict)에 길게 있던 UI 코드들을 보기 좋게 하나의 위젯으로 묶어 분리했습니다.
-// 디자인은 기존에 짜두신 것과 100% 동일합니다.
-// ---------------------------------------------------------------------- //
 class _HomeContent extends StatelessWidget {
   const _HomeContent();
 
@@ -200,7 +197,14 @@ class _HomeContent extends StatelessWidget {
                     backgroundColor: Colors.transparent,
                     shadowColor: Colors.transparent,
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const SelectionPage(),
+                        ),
+                      );
+                    },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
