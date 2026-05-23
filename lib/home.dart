@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'setting.dart';
 import 'profile.dart';
 import 'selection.dart';
+import 'history.dart';
 
 class LumiereHomePage extends StatefulWidget {
   const LumiereHomePage({super.key});
@@ -11,19 +12,17 @@ class LumiereHomePage extends StatefulWidget {
 }
 
 class _LumiereHomePageState extends State<LumiereHomePage> {
-  int _selectedIndex = 0; // ✨ 현재 선택된 탭 인덱스 (기본값 0: Predict)
+  int _selectedIndex = 0; // ✨ 현재 선택된 탭 인덱스 (기본값 0: PPPredict)
 
-  // ✨ 하단 바의 각 탭에 해당하는 화면들을 리스트로 모아둡니다.
   final List<Widget> _pages = [
-    const _HomeContent(), // 0번 탭: 원래 있던 메인 홈 화면
-    const Center(child: Text('History 화면 (준비중)')), // 1번 탭: 히스토리 화면 (임시)
-    const ProfilePage(), // 2번 탭: 프로필 화면
+    const _HomeContent(),
+    const HistoryPage(),
+    const ProfilePage(),
   ];
 
-  // ✨ 바텀 네비게이션 바 탭을 누를 때마다 실행되는 함수
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index; // 누른 버튼의 번호로 상태 업데이트
+      _selectedIndex = index;
     });
   }
 

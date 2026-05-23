@@ -11,6 +11,28 @@ class ResultPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF7F5F2),
 
+      /// 하단 네비게이션
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color(0xFFF7F5F2),
+        selectedItemColor: const Color(0xFF4A6480),
+        unselectedItemColor: Colors.grey,
+        currentIndex: 0,
+
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.auto_awesome),
+            label: 'Predict',
+          ),
+
+          BottomNavigationBarItem(icon: Icon(Icons.history), label: 'History'),
+
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            label: 'Profile',
+          ),
+        ],
+      ),
+
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -42,50 +64,8 @@ class ResultPage extends StatelessWidget {
                     const Spacer(),
 
                     IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
+                      onPressed: () {},
                       icon: const Icon(Icons.share_outlined),
-                    ),
-                    const SizedBox(height: 18),
-
-                    Container(
-                      width: double.infinity,
-                      height: 65,
-
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(40),
-
-                        border: Border.all(
-                          color: const Color(0xFF4A6480),
-                          width: 2,
-                        ),
-                      ),
-
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          shadowColor: Colors.transparent,
-                        ),
-
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const StrategyPage(),
-                            ),
-                          );
-                        },
-
-                        child: const Text(
-                          '수정 전략 알아보기',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF4A6480),
-                          ),
-                        ),
-                      ),
                     ),
                   ],
                 ),
@@ -328,9 +308,49 @@ class ResultPage extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 35),
+                const SizedBox(height: 28),
 
-                /// 버튼
+                /// 수정 전략 버튼
+                Container(
+                  width: double.infinity,
+                  height: 65,
+
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(40),
+
+                    border: Border.all(
+                      color: const Color(0xFF4A6480),
+                      width: 2,
+                    ),
+                  ),
+
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                    ),
+
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const StrategyPage()),
+                      );
+                    },
+
+                    child: const Text(
+                      '수정 전략 알아보기',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF4A6480),
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 18),
+
+                /// 다시 분석 버튼
                 Container(
                   width: double.infinity,
                   height: 65,
