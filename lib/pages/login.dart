@@ -18,7 +18,6 @@ class LoginPage extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 20),
 
                 /// [ 1. 앱 로고 및 서비스명 영역 ]
                 const CircleAvatar(

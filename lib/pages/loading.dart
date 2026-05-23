@@ -18,7 +18,7 @@ class _LoadingPageState extends State<LoadingPage>
     '비슷한 상황들을 찾고 있어요...',
     '감정 패턴을 분석하는 중...',
     '최적의 선택지를 계산하고 있어요...',
-    '루넷이 당신을 위해 고민 중이에요...',
+    '루나가 당신을 위해 고민 중이에요...',
   ];
 
   int currentText = 0;
@@ -142,7 +142,7 @@ class _LoadingPageState extends State<LoadingPage>
 
               /// 메인 텍스트
               const Text(
-                '루넷이\n당신의 고민을 분석 중이에요',
+                '루나가\n당신의 고민을 분석 중이에요',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 34,
@@ -152,7 +152,6 @@ class _LoadingPageState extends State<LoadingPage>
                 ),
               ),
 
-              const SizedBox(height: 22),
 
               /// 서브 텍스트
               AnimatedSwitcher(
