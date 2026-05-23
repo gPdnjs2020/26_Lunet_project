@@ -35,7 +35,9 @@ class ProfilePage extends StatelessWidget {
                   children: [
                     CircleAvatar(
                       radius: 65,
-                      backgroundImage: AssetImage('assets/images/user_avatar_placeholder.png'),
+                      backgroundImage: AssetImage(
+                        'assets/images/user_avatar_placeholder.png',
+                      ),
                       backgroundColor: Colors.white,
                     ),
                     Positioned(
@@ -67,10 +69,12 @@ class ProfilePage extends StatelessWidget {
                 height: 40, // 동일한 높이
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(30), // 동일한 라운딩
-                  gradient: const LinearGradient( // 동일한 그라디언트
+                  gradient: const LinearGradient(
+                    // 동일한 그라디언트
                     colors: [Color(0xFF486A8A), Color(0xFFA9C7F2)],
                   ),
-                  boxShadow: [ // 동일한 그림자
+                  boxShadow: [
+                    // 동일한 그림자
                     BoxShadow(
                       color: const Color(0xFF486A8A).withOpacity(0.3),
                       blurRadius: 10,
@@ -127,7 +131,11 @@ class ProfilePage extends StatelessWidget {
                   children: [
                     _buildDetailItem('Username', value: 'John Doe'),
                     _buildDetailItem('Email', value: 'john.doe@email.com'),
-                    _buildDetailItem('Password', value: '••••••••••••', hasMoreArrow: true),
+                    _buildDetailItem(
+                      'Password',
+                      value: '••••••••••••',
+                      hasMoreArrow: true,
+                    ),
                   ],
                 ),
               ),
@@ -156,9 +164,27 @@ class ProfilePage extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    _buildDetailItem('Notifications', trailing: Switch(value: true, onChanged: (val) {}, activeColor: const Color(0xFF4A6480))),
-                    _buildDetailItem('Dark Mode', trailing: Switch(value: false, onChanged: (val) {}, activeColor: const Color(0xFF4A6480))),
-                    _buildDetailItem('Language', value: 'English', hasMoreArrow: true),
+                    _buildDetailItem(
+                      'Notifications',
+                      trailing: Switch(
+                        value: true,
+                        onChanged: (val) {},
+                        activeColor: const Color(0xFF4A6480),
+                      ),
+                    ),
+                    _buildDetailItem(
+                      'Dark Mode',
+                      trailing: Switch(
+                        value: false,
+                        onChanged: (val) {},
+                        activeColor: const Color(0xFF4A6480),
+                      ),
+                    ),
+                    _buildDetailItem(
+                      'Language',
+                      value: 'English',
+                      hasMoreArrow: true,
+                    ),
                   ],
                 ),
               ),
@@ -228,14 +254,22 @@ class ProfilePage extends StatelessWidget {
 
   /// [ 기능 1: 프로필 상세 정보 항목 공통 함수 ]
   /// 로그인 화면의 텍스트 필드 디자인 아이덴티티(간격, 코너 반경, 폰트 스타일)를 따르는 항목을 그립니다.
-  Widget _buildDetailItem(String title, {String? value, bool hasMoreArrow = false, Widget? trailing, VoidCallback? onTap}) {
+  Widget _buildDetailItem(
+    String title, {
+    String? value,
+    bool hasMoreArrow = false,
+    Widget? trailing,
+    VoidCallback? onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
         decoration: const BoxDecoration(
           // 항목 간 구분선은 Container 자체 테두리로 구현
-          border: Border(bottom: BorderSide(color: Color(0xFFE0E0E0), width: 0.5)),
+          border: Border(
+            bottom: BorderSide(color: Color(0xFFE0E0E0), width: 0.5),
+          ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween, // 양끝 정렬
@@ -258,7 +292,8 @@ class ProfilePage extends StatelessWidget {
                     value,
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.grey.shade600, // 정보 값 텍스트 색상 (로그인 힌트 텍스트와 유사)
+                      color:
+                          Colors.grey.shade600, // 정보 값 텍스트 색상 (로그인 힌트 텍스트와 유사)
                     ),
                   ),
                   const SizedBox(width: 8),

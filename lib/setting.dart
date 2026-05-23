@@ -17,12 +17,13 @@ class _SettingPageState extends State<SettingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF7F5F2), // 앱 공통 기본 배경색
-
       // 앱 상단 바
       appBar: AppBar(
         backgroundColor: Colors.transparent, // 배경 투명하게
         elevation: 0, // 그림자 없애기
-        iconTheme: const IconThemeData(color: Color(0xFF4A6480)), // 뒤로 가기 화살표 색상
+        iconTheme: const IconThemeData(
+          color: Color(0xFF4A6480),
+        ), // 뒤로 가기 화살표 색상
         title: const Text(
           '설정',
           style: TextStyle(
@@ -57,14 +58,21 @@ class _SettingPageState extends State<SettingPage> {
                   _buildSectionTitle('AI 성격 설정'),
                   // PREMIUM 라벨
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFFFDF0F2),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: const Text(
                       'PREMIUM',
-                      style: TextStyle(fontSize: 10, color: Color(0xFFE08E9B), fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Color(0xFFE08E9B),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
@@ -83,7 +91,11 @@ class _SettingPageState extends State<SettingPage> {
                   children: [
                     const Text(
                       '공감형',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF4A6480)),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF4A6480),
+                      ),
                     ),
                     const SizedBox(height: 8),
                     const Text(
@@ -93,7 +105,11 @@ class _SettingPageState extends State<SettingPage> {
                     const SizedBox(height: 12),
                     const Text(
                       '사용 중 ✨',
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black54),
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black54,
+                      ),
                     ),
                   ],
                 ),
@@ -102,9 +118,13 @@ class _SettingPageState extends State<SettingPage> {
               // 다른 성격 카드들
               Row(
                 children: [
-                  Expanded(child: _buildPersonalityCard('철학형', '생각할 거리를 던져주는 깊은 대화.')),
+                  Expanded(
+                    child: _buildPersonalityCard('철학형', '생각할 거리를 던져주는 깊은 대화.'),
+                  ),
                   const SizedBox(width: 12),
-                  Expanded(child: _buildPersonalityCard('활기찬형', '동기부여를 해주는 맑은 에너지.')),
+                  Expanded(
+                    child: _buildPersonalityCard('활기찬형', '동기부여를 해주는 맑은 에너지.'),
+                  ),
                 ],
               ),
 
@@ -113,11 +133,18 @@ class _SettingPageState extends State<SettingPage> {
               /// [ 3. 알림 설정 영역 ]
               _buildSectionTitle('알림 설정'),
               const SizedBox(height: 12),
-              _buildSwitchTile('마음챙김 알림', '매일의 목표를 위한 부드러운 알림.', _mindfulnessAlarm, (value) {
-                setState(() => _mindfulnessAlarm = value);
-              }),
+              _buildSwitchTile(
+                '마음챙김 알림',
+                '매일의 목표를 위한 부드러운 알림.',
+                _mindfulnessAlarm,
+                (value) {
+                  setState(() => _mindfulnessAlarm = value);
+                },
+              ),
               const SizedBox(height: 10),
-              _buildSwitchTile('주간 인사이트', '성장 여정을 요약해 드립니다.', _weeklyInsight, (value) {
+              _buildSwitchTile('주간 인사이트', '성장 여정을 요약해 드립니다.', _weeklyInsight, (
+                value,
+              ) {
                 setState(() => _weeklyInsight = value);
               }),
 
@@ -126,7 +153,16 @@ class _SettingPageState extends State<SettingPage> {
               /// [ 4. 고객 지원 영역 ]
               _buildSectionTitle('고객 지원'),
               const SizedBox(height: 12),
-              _buildMenuTile(Icons.help_outline, '고객센터', hasArrow: false, trailing: const Icon(Icons.open_in_new, size: 18, color: Colors.grey)),
+              _buildMenuTile(
+                Icons.help_outline,
+                '고객센터',
+                hasArrow: false,
+                trailing: const Icon(
+                  Icons.open_in_new,
+                  size: 18,
+                  color: Colors.grey,
+                ),
+              ),
               const SizedBox(height: 10),
               _buildMenuTile(Icons.forum_outlined, '상담원 연결'),
 
@@ -151,7 +187,12 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   /// [ 메뉴 타일 공통 함수 ]
-  Widget _buildMenuTile(IconData icon, String title, {bool hasArrow = true, Widget? trailing}) {
+  Widget _buildMenuTile(
+    IconData icon,
+    String title, {
+    bool hasArrow = true,
+    Widget? trailing,
+  }) {
     return Container(
       width: double.infinity,
       height: 60,
@@ -182,7 +223,8 @@ class _SettingPageState extends State<SettingPage> {
                   style: const TextStyle(fontSize: 16, color: Colors.black87),
                 ),
                 const Spacer(),
-                if (hasArrow) const Icon(Icons.chevron_right, size: 20, color: Colors.grey),
+                if (hasArrow)
+                  const Icon(Icons.chevron_right, size: 20, color: Colors.grey),
                 if (trailing != null) trailing,
               ],
             ),
@@ -212,7 +254,11 @@ class _SettingPageState extends State<SettingPage> {
         children: [
           Text(
             title,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF4A6480)),
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF4A6480),
+            ),
           ),
           const SizedBox(height: 6),
           Text(
@@ -225,7 +271,12 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   /// [ 스위치 타일 공통 함수 ]
-  Widget _buildSwitchTile(String title, String description, bool value, ValueChanged<bool> onChanged) {
+  Widget _buildSwitchTile(
+    String title,
+    String description,
+    bool value,
+    ValueChanged<bool> onChanged,
+  ) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),

@@ -8,12 +8,13 @@ class SignupPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF7F5F2), // Lunet 기본 배경색
-
       // 앱 상단 바 (뒤로 가기 버튼을 위해 추가)
       appBar: AppBar(
         backgroundColor: Colors.transparent, // 배경 투명하게
         elevation: 0, // 그림자 없애기
-        iconTheme: const IconThemeData(color: Color(0xFF4A6480)), // 뒤로 가기 화살표 색상
+        iconTheme: const IconThemeData(
+          color: Color(0xFF4A6480),
+        ), // 뒤로 가기 화살표 색상
       ),
 
       body: SafeArea(
@@ -46,7 +47,11 @@ class SignupPage extends StatelessWidget {
                 const SizedBox(height: 16),
                 _buildTextField('비밀번호', Icons.lock_outline, isPassword: true),
                 const SizedBox(height: 16),
-                _buildTextField('비밀번호 확인', Icons.lock_outline, isPassword: true),
+                _buildTextField(
+                  '비밀번호 확인',
+                  Icons.lock_outline,
+                  isPassword: true,
+                ),
 
                 const SizedBox(height: 40),
 
@@ -100,7 +105,11 @@ class SignupPage extends StatelessWidget {
   }
 
   /// [ 입력창 디자인 공통 함수 ] (login.dart와 동일한 디자인 유지)
-  Widget _buildTextField(String hintText, IconData icon, {bool isPassword = false}) {
+  Widget _buildTextField(
+    String hintText,
+    IconData icon, {
+    bool isPassword = false,
+  }) {
     return TextField(
       obscureText: isPassword,
       decoration: InputDecoration(

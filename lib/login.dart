@@ -43,7 +43,6 @@ class LoginPage extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 20), // 여백 조정 (60 -> 50)
-
                 /// [ 2. 소셜 로그인 영역 ] - ★이 부분이 수정되었습니다!★
                 /// 이제 거대한 원형 버튼이 아니라, 표준 알약 모양 버튼으로 그립니다.
                 _buildGoogleLoginButton(context),
@@ -53,12 +52,19 @@ class LoginPage extends StatelessWidget {
                 /// [ 3. 화면 구분선 영역 ]
                 Row(
                   children: [
-                    Expanded(child: Divider(color: Colors.grey.shade400, thickness: 1)),
+                    Expanded(
+                      child: Divider(color: Colors.grey.shade400, thickness: 1),
+                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text('또는', style: TextStyle(color: Colors.grey.shade600)),
+                      child: Text(
+                        '또는',
+                        style: TextStyle(color: Colors.grey.shade600),
+                      ),
                     ),
-                    Expanded(child: Divider(color: Colors.grey.shade400, thickness: 1)),
+                    Expanded(
+                      child: Divider(color: Colors.grey.shade400, thickness: 1),
+                    ),
                   ],
                 ),
 
@@ -116,7 +122,10 @@ class LoginPage extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('아직 Lunet의 회원이 아니신가요?', style: TextStyle(color: Colors.black54)),
+                    const Text(
+                      '아직 Lunet의 회원이 아니신가요?',
+                      style: TextStyle(color: Colors.black54),
+                    ),
                     TextButton(
                       onPressed: () {
                         Navigator.pushNamed(context, '/signup');
@@ -146,7 +155,11 @@ class LoginPage extends StatelessWidget {
   // ---------------------------------------------------------------------- //
 
   /// [ 기능 1: 텍스트 입력창 공통 함수 ]
-  Widget _buildTextField(String hintText, IconData icon, {bool isPassword = false}) {
+  Widget _buildTextField(
+    String hintText,
+    IconData icon, {
+    bool isPassword = false,
+  }) {
     return TextField(
       obscureText: isPassword,
       decoration: InputDecoration(
@@ -177,7 +190,7 @@ class LoginPage extends StatelessWidget {
   Widget _buildGoogleLoginButton(BuildContext context) {
     return Container(
       width: 280, // 버튼 전체 가로 크기를 적절하게 제한 (원형이 되지 않게 함)
-      height: 55,  // 버튼 높이 설정
+      height: 55, // 버튼 높이 설정
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(27.5), // 완벽한 알약 모양을 위한 라운딩
@@ -193,7 +206,8 @@ class LoginPage extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(27.5),
-          onTap: () {  // ✨ onPressed를 onTap으로 변경해 주세요!
+          onTap: () {
+            // ✨ onPressed를 onTap으로 변경해 주세요!
             // TODO: 나중에 구글 연동 로직
             Navigator.pushReplacementNamed(context, '/home');
           },
@@ -208,7 +222,6 @@ class LoginPage extends StatelessWidget {
                   height: 28,
                 ),
                 const SizedBox(width: 8), // 로고와 텍스트 사이 간격
-
                 // 2. 로그인 안내 텍스트
                 const Text(
                   '로 계속하기',

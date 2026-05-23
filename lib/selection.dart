@@ -16,20 +16,17 @@ class SelectionPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 const SizedBox(height: 10),
 
                 /// 상단 헤더
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-
                     Row(
                       children: [
                         const CircleAvatar(
                           radius: 18,
-                          backgroundImage:
-                          AssetImage('assets/images/logo.png'),
+                          backgroundImage: AssetImage('assets/images/logo.png'),
                         ),
 
                         const SizedBox(width: 8),
@@ -59,10 +56,7 @@ class SelectionPage extends StatelessWidget {
                 /// 캐릭터
                 Align(
                   alignment: Alignment.centerRight,
-                  child: Image.asset(
-                    'assets/images/character.png',
-                    width: 90,
-                  ),
+                  child: Image.asset('assets/images/character.png', width: 90),
                 ),
 
                 const SizedBox(height: 10),
@@ -124,7 +118,6 @@ class SelectionPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-
                       TextField(
                         maxLines: 6,
                         decoration: InputDecoration(
@@ -141,7 +134,6 @@ class SelectionPage extends StatelessWidget {
 
                       Row(
                         children: [
-
                           Icon(
                             Icons.auto_awesome,
                             size: 16,
@@ -169,10 +161,7 @@ class SelectionPage extends StatelessWidget {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(40),
                           gradient: const LinearGradient(
-                            colors: [
-                              Color(0xFF486A8A),
-                              Color(0xFFA9C7F2),
-                            ],
+                            colors: [Color(0xFF486A8A), Color(0xFFA9C7F2)],
                           ),
                         ),
 
@@ -223,8 +212,7 @@ class SelectionPage extends StatelessWidget {
                   icon: Icons.favorite_border,
                   iconColor: Color(0xFFE6A5AE),
                   title: '고백하기',
-                  description:
-                  '그 사람도 나를 좋아할까?\n타이밍을 물어보세요.',
+                  description: '그 사람도 나를 좋아할까?\n타이밍을 물어보세요.',
                 ),
 
                 const SizedBox(height: 18),
@@ -233,8 +221,7 @@ class SelectionPage extends StatelessWidget {
                   icon: Icons.work_outline,
                   iconColor: Color(0xFFB8A8E6),
                   title: '이직하기',
-                  description:
-                  '지금 옮기는 게 맞을까?\n커리어 성장을 분석해요.',
+                  description: '지금 옮기는 게 맞을까?\n커리어 성장을 분석해요.',
                 ),
 
                 const SizedBox(height: 18),
@@ -243,8 +230,7 @@ class SelectionPage extends StatelessWidget {
                   icon: Icons.school_outlined,
                   iconColor: Color(0xFFA9C7F2),
                   title: '공부 vs 놀기',
-                  description:
-                  '당장 필요한 선택은 무엇인지\n가이드를 드려요.',
+                  description: '당장 필요한 선택은 무엇인지\n가이드를 드려요.',
                 ),
 
                 const SizedBox(height: 40),
@@ -272,7 +258,6 @@ class SelectionPage extends StatelessWidget {
 
       child: Row(
         children: [
-
           Container(
             width: 52,
             height: 52,
@@ -280,10 +265,7 @@ class SelectionPage extends StatelessWidget {
               color: iconColor.withOpacity(0.15),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              icon,
-              color: iconColor,
-            ),
+            child: Icon(icon, color: iconColor),
           ),
 
           const SizedBox(width: 18),
@@ -292,7 +274,6 @@ class SelectionPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 Text(
                   title,
                   style: const TextStyle(

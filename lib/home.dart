@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'setting.dart';
-import 'profile.dart'; 
+import 'profile.dart';
 import 'selection.dart';
 
 class LumiereHomePage extends StatefulWidget {
@@ -15,9 +15,9 @@ class _LumiereHomePageState extends State<LumiereHomePage> {
 
   // ✨ 하단 바의 각 탭에 해당하는 화면들을 리스트로 모아둡니다.
   final List<Widget> _pages = [
-    const _HomeContent(),                           // 0번 탭: 원래 있던 메인 홈 화면
+    const _HomeContent(), // 0번 탭: 원래 있던 메인 홈 화면
     const Center(child: Text('History 화면 (준비중)')), // 1번 탭: 히스토리 화면 (임시)
-    const ProfilePage(),                            // 2번 탭: 프로필 화면
+    const ProfilePage(), // 2번 탭: 프로필 화면
   ];
 
   // ✨ 바텀 네비게이션 바 탭을 누를 때마다 실행되는 함수
@@ -37,19 +37,16 @@ class _LumiereHomePageState extends State<LumiereHomePage> {
 
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xFFF7F5F2),
-        selectedItemColor: const Color(0xFF4A6480), 
-        unselectedItemColor: Colors.grey,           
-        currentIndex: _selectedIndex,          
-        onTap: _onItemTapped,                  
+        selectedItemColor: const Color(0xFF4A6480),
+        unselectedItemColor: Colors.grey,
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.auto_awesome),
             label: 'Predict',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.history),
-            label: 'History',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.history), label: 'History'),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
             label: 'Profile',
@@ -98,7 +95,9 @@ class _HomeContent extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const SettingPage()),
+                        MaterialPageRoute(
+                          builder: (context) => const SettingPage(),
+                        ),
                       );
                     },
                     icon: const Icon(Icons.menu),
@@ -147,10 +146,7 @@ class _HomeContent extends StatelessWidget {
                   ],
                 ),
                 child: Center(
-                  child: Image.asset(
-                    'assets/images/character.png',
-                    width: 170,
-                  ),
+                  child: Image.asset('assets/images/character.png', width: 170),
                 ),
               ),
 
@@ -200,11 +196,9 @@ class _HomeContent extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (_) => const SelectionPage(),
-                        ),
-                      );
-                    },
+                      MaterialPageRoute(builder: (_) => const SelectionPage()),
+                    );
+                  },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

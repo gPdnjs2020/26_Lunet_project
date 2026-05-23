@@ -9,7 +9,6 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
-
   int selectedRelation = 0;
   int selectedTiming = 0;
   double readiness = 0.5;
@@ -23,18 +22,9 @@ class _DetailPageState extends State<DetailPage> {
   ];
 
   final List<Map<String, String>> timings = [
-    {
-      'title': '지금 바로',
-      'desc': '더 이상 지체할 수 없어요.',
-    },
-    {
-      'title': '이번 주 내로',
-      'desc': '충분히 고민해보고 결정할게요.',
-    },
-    {
-      'title': '나중에 천천히',
-      'desc': '아직은 서두르고 싶지 않아요.',
-    },
+    {'title': '지금 바로', 'desc': '더 이상 지체할 수 없어요.'},
+    {'title': '이번 주 내로', 'desc': '충분히 고민해보고 결정할게요.'},
+    {'title': '나중에 천천히', 'desc': '아직은 서두르고 싶지 않아요.'},
   ];
 
   @override
@@ -49,20 +39,17 @@ class _DetailPageState extends State<DetailPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 const SizedBox(height: 10),
 
                 /// 상단 헤더
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-
                     Row(
                       children: [
                         const CircleAvatar(
                           radius: 18,
-                          backgroundImage:
-                          AssetImage('assets/images/logo.png'),
+                          backgroundImage: AssetImage('assets/images/logo.png'),
                         ),
 
                         const SizedBox(width: 8),
@@ -93,11 +80,7 @@ class _DetailPageState extends State<DetailPage> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
-                    Image.asset(
-                      'assets/images/character.png',
-                      width: 55,
-                    ),
+                    Image.asset('assets/images/character.png', width: 55),
 
                     const SizedBox(width: 10),
 
@@ -140,7 +123,7 @@ class _DetailPageState extends State<DetailPage> {
                   runSpacing: 12,
                   children: List.generate(
                     relations.length,
-                        (index) => _relationChip(
+                    (index) => _relationChip(
                       text: relations[index],
                       isSelected: selectedRelation == index,
                       onTap: () {
@@ -166,7 +149,6 @@ class _DetailPageState extends State<DetailPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-
                       const Text(
                         '얼마나 준비됐다고 생각해?',
                         style: TextStyle(
@@ -180,10 +162,7 @@ class _DetailPageState extends State<DetailPage> {
 
                       const Text(
                         '마음의 준비 정도를 알려주세요.',
-                        style: TextStyle(
-                          color: Colors.black54,
-                          fontSize: 15,
-                        ),
+                        style: TextStyle(color: Colors.black54, fontSize: 15),
                       ),
 
                       const SizedBox(height: 30),
@@ -193,8 +172,9 @@ class _DetailPageState extends State<DetailPage> {
                           activeTrackColor: const Color(0xFF4A6480),
                           inactiveTrackColor: Colors.blueGrey.shade100,
                           thumbColor: const Color(0xFF4A6480),
-                          overlayColor:
-                          const Color(0xFF4A6480).withOpacity(0.2),
+                          overlayColor: const Color(
+                            0xFF4A6480,
+                          ).withOpacity(0.2),
                           trackHeight: 6,
                         ),
                         child: Slider(
@@ -208,16 +188,11 @@ class _DetailPageState extends State<DetailPage> {
                       ),
 
                       Row(
-                        mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: const [
-
                           Column(
                             children: [
-                              Icon(
-                                Icons.lightbulb_outline,
-                                color: Colors.grey,
-                              ),
+                              Icon(Icons.lightbulb_outline, color: Colors.grey),
                               SizedBox(height: 5),
                               Text(
                                 '초기 구상',
@@ -268,7 +243,7 @@ class _DetailPageState extends State<DetailPage> {
                 Column(
                   children: List.generate(
                     timings.length,
-                        (index) => Padding(
+                    (index) => Padding(
                       padding: const EdgeInsets.only(bottom: 16),
                       child: _timingCard(
                         title: timings[index]['title']!,
@@ -293,10 +268,7 @@ class _DetailPageState extends State<DetailPage> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(40),
                     gradient: const LinearGradient(
-                      colors: [
-                        Color(0xFF486A8A),
-                        Color(0xFFA9C7F2),
-                      ],
+                      colors: [Color(0xFF486A8A), Color(0xFFA9C7F2)],
                     ),
                   ),
 
@@ -309,9 +281,7 @@ class _DetailPageState extends State<DetailPage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (_) => const LoadingPage(),
-                        ),
+                        MaterialPageRoute(builder: (_) => const LoadingPage()),
                       );
                     },
 
@@ -331,10 +301,7 @@ class _DetailPageState extends State<DetailPage> {
                 const Center(
                   child: Text(
                     '"당신의 최선의 결정을 루미에르가 함께 응원할게요." 💞',
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontSize: 13,
-                    ),
+                    style: TextStyle(color: Colors.black54, fontSize: 13),
                   ),
                 ),
 
@@ -356,19 +323,12 @@ class _DetailPageState extends State<DetailPage> {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(
-          horizontal: 22,
-          vertical: 16,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 16),
         decoration: BoxDecoration(
-          color: isSelected
-              ? const Color(0xFFEAF2FF)
-              : Colors.white,
+          color: isSelected ? const Color(0xFFEAF2FF) : Colors.white,
           borderRadius: BorderRadius.circular(30),
           border: Border.all(
-            color: isSelected
-                ? const Color(0xFF8EB5E8)
-                : Colors.transparent,
+            color: isSelected ? const Color(0xFF8EB5E8) : Colors.transparent,
             width: 2,
           ),
         ),
@@ -376,8 +336,7 @@ class _DetailPageState extends State<DetailPage> {
           text,
           style: TextStyle(
             fontSize: 16,
-            fontWeight:
-            isSelected ? FontWeight.bold : FontWeight.normal,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             color: const Color(0xFF4A6480),
           ),
         ),
@@ -405,16 +364,13 @@ class _DetailPageState extends State<DetailPage> {
           borderRadius: BorderRadius.circular(28),
 
           border: Border.all(
-            color: selected
-                ? const Color(0xFF8EB5E8)
-                : Colors.transparent,
+            color: selected ? const Color(0xFF8EB5E8) : Colors.transparent,
             width: 2,
           ),
         ),
 
         child: Row(
           children: [
-
             Container(
               width: 54,
               height: 54,
@@ -426,9 +382,7 @@ class _DetailPageState extends State<DetailPage> {
               ),
 
               child: Icon(
-                selected
-                    ? Icons.check
-                    : Icons.schedule,
+                selected ? Icons.check : Icons.schedule,
                 color: const Color(0xFF4A6480),
               ),
             ),
@@ -437,10 +391,8 @@ class _DetailPageState extends State<DetailPage> {
 
             Expanded(
               child: Column(
-                crossAxisAlignment:
-                CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
                   Text(
                     title,
                     style: const TextStyle(
@@ -453,19 +405,13 @@ class _DetailPageState extends State<DetailPage> {
 
                   Text(
                     desc,
-                    style: const TextStyle(
-                      color: Colors.black54,
-                      height: 1.4,
-                    ),
+                    style: const TextStyle(color: Colors.black54, height: 1.4),
                   ),
                 ],
               ),
             ),
 
-            const Icon(
-              Icons.chevron_right,
-              color: Colors.grey,
-            ),
+            const Icon(Icons.chevron_right, color: Colors.grey),
           ],
         ),
       ),

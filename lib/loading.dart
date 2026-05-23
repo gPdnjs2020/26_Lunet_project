@@ -11,7 +11,6 @@ class LoadingPage extends StatefulWidget {
 
 class _LoadingPageState extends State<LoadingPage>
     with SingleTickerProviderStateMixin {
-
   late AnimationController _controller;
   late Animation<double> _floatingAnimation;
 
@@ -37,42 +36,26 @@ class _LoadingPageState extends State<LoadingPage>
     _floatingAnimation = Tween<double>(
       begin: -8,
       end: 8,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeInOut,
-      ),
-    );
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
     /// 로딩 문구 변경
-    Timer.periodic(
-      const Duration(seconds: 1),
-          (timer) {
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) return;
 
-        if (!mounted) return;
-
-        setState(() {
-          currentText =
-              (currentText + 1) % loadingTexts.length;
-        });
-      },
-    );
+      setState(() {
+        currentText = (currentText + 1) % loadingTexts.length;
+      });
+    });
 
     /// 결과 페이지 이동
-    Timer(
-      const Duration(seconds: 5),
-          () {
+    Timer(const Duration(seconds: 5), () {
+      if (!mounted) return;
 
-        if (!mounted) return;
-
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const ResultPage(),
-          ),
-        );
-      },
-    );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const ResultPage()),
+      );
+    });
   }
 
   @override
@@ -83,7 +66,6 @@ class _LoadingPageState extends State<LoadingPage>
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: const Color(0xFFF7F5F2),
 
@@ -93,17 +75,14 @@ class _LoadingPageState extends State<LoadingPage>
 
           child: Column(
             children: [
-
               const SizedBox(height: 20),
 
               /// 상단 로고
               Row(
                 children: [
-
                   const CircleAvatar(
                     radius: 18,
-                    backgroundImage:
-                    AssetImage('assets/images/logo.png'),
+                    backgroundImage: AssetImage('assets/images/logo.png'),
                   ),
 
                   const SizedBox(width: 8),
@@ -126,12 +105,8 @@ class _LoadingPageState extends State<LoadingPage>
                 animation: _floatingAnimation,
 
                 builder: (context, child) {
-
                   return Transform.translate(
-                    offset: Offset(
-                      0,
-                      _floatingAnimation.value,
-                    ),
+                    offset: Offset(0, _floatingAnimation.value),
 
                     child: child,
                   );
@@ -147,9 +122,7 @@ class _LoadingPageState extends State<LoadingPage>
 
                     boxShadow: [
                       BoxShadow(
-                        color:
-                        const Color(0xFF4A6480)
-                            .withOpacity(0.08),
+                        color: const Color(0xFF4A6480).withOpacity(0.08),
                         blurRadius: 40,
                         spreadRadius: 5,
                       ),
@@ -204,15 +177,13 @@ class _LoadingPageState extends State<LoadingPage>
               /// 프로그레스
               Column(
                 children: [
-
                   ClipRRect(
                     borderRadius: BorderRadius.circular(20),
 
                     child: LinearProgressIndicator(
                       minHeight: 10,
                       backgroundColor: Colors.white,
-                      valueColor:
-                      const AlwaysStoppedAnimation(
+                      valueColor: const AlwaysStoppedAnimation(
                         Color(0xFF4A6480),
                       ),
                     ),
@@ -244,11 +215,7 @@ class _LoadingPageState extends State<LoadingPage>
 
                 child: const Column(
                   children: [
-
-                    Icon(
-                      Icons.auto_awesome,
-                      color: Color(0xFF4A6480),
-                    ),
+                    Icon(Icons.auto_awesome, color: Color(0xFF4A6480)),
 
                     SizedBox(height: 12),
 
