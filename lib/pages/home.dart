@@ -100,10 +100,7 @@ class _HomeContent extends StatelessWidget {
             ),
 
             child: Center(
-              child: Image.asset(
-                'assets/images/character.png',
-                width: 165,
-              ),
+              child: Image.asset('assets/images/character.png', width: 165),
             ),
           ),
 
@@ -128,11 +125,7 @@ class _HomeContent extends StatelessWidget {
             '루나는 당신의 마음과 상황을 깊이 이해하고,\n가장 행복한 결정을 내릴 수 있도록 돕는 친구예요.',
             textAlign: TextAlign.center,
 
-            style: TextStyle(
-              fontSize: 15,
-              color: Colors.black54,
-              height: 1.7,
-            ),
+            style: TextStyle(fontSize: 15, color: Colors.black54, height: 1.7),
           ),
 
           const SizedBox(height: 50),
@@ -161,10 +154,7 @@ class _HomeContent extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Icon(
-                      Icons.auto_awesome,
-                      color: Color(0xFF4A6480),
-                    ),
+                    Icon(Icons.auto_awesome, color: Color(0xFF4A6480)),
 
                     SizedBox(width: 10),
 
@@ -207,10 +197,7 @@ class _HomeContent extends StatelessWidget {
               borderRadius: BorderRadius.circular(40),
 
               gradient: const LinearGradient(
-                colors: [
-                  Color(0xFF486A8A),
-                  Color(0xFFA9C7F2),
-                ],
+                colors: [Color(0xFF486A8A), Color(0xFFA9C7F2)],
               ),
             ),
 
@@ -223,9 +210,7 @@ class _HomeContent extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => const SelectionPage(),
-                  ),
+                  MaterialPageRoute(builder: (_) => const SelectionPage()),
                 );
               },
 
@@ -244,10 +229,7 @@ class _HomeContent extends StatelessWidget {
 
                   SizedBox(width: 10),
 
-                  Icon(
-                    Icons.arrow_forward,
-                    color: Colors.white,
-                  ),
+                  Icon(Icons.arrow_forward, color: Colors.white),
                 ],
               ),
             ),
@@ -257,10 +239,7 @@ class _HomeContent extends StatelessWidget {
 
           const Text(
             '루나는 언제나 당신의 선택을 응원해요 🌙',
-            style: TextStyle(
-              color: Colors.black45,
-              fontSize: 13,
-            ),
+            style: TextStyle(color: Colors.black45, fontSize: 13),
           ),
 
           const SizedBox(height: 40),

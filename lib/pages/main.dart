@@ -3,6 +3,8 @@ import 'home.dart';
 import 'login.dart';
 import 'signup.dart';
 import 'profile.dart';
+import 'history.dart';
+import 'setting.dart';
 
 void main() {
   runApp(const MyApp());
@@ -23,6 +25,8 @@ class MyApp extends StatelessWidget {
         '/home': (context) => LumiereHomePage(),
         '/signup': (context) => const SignupPage(),
         '/profile': (context) => const ProfilePage(),
+        '/history': (context) => const HistoryPage(),
+        '/setting': (context) => const SettingPage(),
       },
     );
   }

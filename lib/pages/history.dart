@@ -8,7 +8,6 @@ class HistoryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24),
-
       child: Column(
         children: [
           /// 캐릭터
@@ -30,10 +29,7 @@ class HistoryPage extends StatelessWidget {
             ),
 
             child: Center(
-              child: Image.asset(
-                'assets/images/character.png',
-                width: 140,
-              ),
+              child: Image.asset('assets/images/character.png', width: 140),
             ),
           ),
 
@@ -54,11 +50,7 @@ class HistoryPage extends StatelessWidget {
           const Text(
             '우리가 함께 고민했던 소중한 순간들이에요 ✨',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 15,
-              color: Colors.black54,
-              height: 1.5,
-            ),
+            style: TextStyle(fontSize: 15, color: Colors.black54, height: 1.5),
           ),
 
           const SizedBox(height: 35),
@@ -113,9 +105,7 @@ class HistoryPage extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (_) => const HistoryDetailPage(),
-          ),
+          MaterialPageRoute(builder: (_) => const HistoryDetailPage()),
         );
       },
 
@@ -150,10 +140,7 @@ class HistoryPage extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
 
-              child: Icon(
-                icon,
-                color: color,
-              ),
+              child: Icon(icon, color: color),
             ),
 
             const SizedBox(height: 22),
@@ -209,10 +196,7 @@ class HistoryPage extends StatelessWidget {
 
             /// 하단 버튼 느낌
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 14,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
 
               decoration: BoxDecoration(
                 color: const Color(0xFFF7F5F2),

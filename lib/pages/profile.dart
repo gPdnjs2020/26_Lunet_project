@@ -88,10 +88,7 @@ class ProfilePage extends StatelessWidget {
 
                 const Text(
                   '루나가 분석한 당신의 결정 스타일',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.black45,
-                  ),
+                  style: TextStyle(fontSize: 13, color: Colors.black45),
                 ),
 
                 const SizedBox(height: 20),
@@ -186,10 +183,7 @@ class ProfilePage extends StatelessWidget {
           /// 최근 기록
           const Text(
             '최근의 발자취',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
 
           const SizedBox(height: 14),
@@ -243,11 +237,7 @@ class ProfilePage extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(
-                icon,
-                size: 16,
-                color: const Color(0xFF4A6480),
-              ),
+              Icon(icon, size: 16, color: const Color(0xFF4A6480)),
 
               const SizedBox(width: 4),
 
@@ -283,10 +273,7 @@ class ProfilePage extends StatelessWidget {
     required String subtitle,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 14,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
 
       decoration: BoxDecoration(
         color: const Color(0xFFF5F3F0),
@@ -306,10 +293,7 @@ class ProfilePage extends StatelessWidget {
 
             alignment: Alignment.center,
 
-            child: Text(
-              emoji,
-              style: const TextStyle(fontSize: 20),
-            ),
+            child: Text(emoji, style: const TextStyle(fontSize: 20)),
           ),
 
           const SizedBox(width: 16),
@@ -331,20 +315,13 @@ class ProfilePage extends StatelessWidget {
 
                 Text(
                   subtitle,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.black38,
-                  ),
+                  style: const TextStyle(fontSize: 12, color: Colors.black38),
                 ),
               ],
             ),
           ),
 
-          const Icon(
-            Icons.arrow_forward_ios,
-            size: 14,
-            color: Colors.black26,
-          ),
+          const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.black26),
         ],
       ),
     );

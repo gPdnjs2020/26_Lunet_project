@@ -18,19 +18,20 @@ class MainLayout extends StatelessWidget {
       backgroundColor: const Color(0xFFF7F5F2),
 
       /// 공통 헤더
+      /// 공통 헤더
       appBar: AppBar(
         backgroundColor: const Color(0xFFF7F5F2),
         elevation: 0,
         centerTitle: false,
         toolbarHeight: 75,
 
+        automaticallyImplyLeading: false,
+
         title: Row(
           children: [
             const CircleAvatar(
               radius: 18,
-              backgroundImage: AssetImage(
-                'assets/images/logo.png',
-              ),
+              backgroundImage: AssetImage('assets/images/logo.png'),
             ),
 
             const SizedBox(width: 10),
@@ -45,6 +46,16 @@ class MainLayout extends StatelessWidget {
             ),
           ],
         ),
+
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings, color: Color(0xFF4A6480)),
+
+            onPressed: () {
+              Navigator.pushNamed(context, '/setting');
+            },
+          ),
+        ],
       ),
 
       /// 공통 body
@@ -61,16 +72,17 @@ class MainLayout extends StatelessWidget {
           color: Color(0xFFF7F5F2),
 
           boxShadow: [
-            BoxShadow(
-              color: Color.fromARGB(15, 0, 0, 0),
-              blurRadius: 10,
-            ),
+            BoxShadow(color: Color.fromARGB(15, 0, 0, 0), blurRadius: 10),
           ],
         ),
 
         child: BottomNavigationBar(
           currentIndex: currentIndex,
-          onTap: onTap,
+          onTap: (index) {
+            if (onTap != null) {
+              onTap!(index);
+            }
+          },
 
           backgroundColor: const Color(0xFFF7F5F2),
           elevation: 0,
@@ -80,9 +92,7 @@ class MainLayout extends StatelessWidget {
 
           type: BottomNavigationBarType.fixed,
 
-          selectedLabelStyle: const TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
+          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
 
           items: const [
             BottomNavigationBarItem(

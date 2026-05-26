@@ -152,7 +152,6 @@ class _LoadingPageState extends State<LoadingPage>
                 ),
               ),
 
-
               /// 서브 텍스트
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 500),
