@@ -27,34 +27,22 @@ class SecurityPage extends StatelessWidget {
 
         child: Column(
           children: [
-            _card(
-              icon: Icons.lock_outline,
-              title: '비밀번호 변경',
-            ),
+            _card(icon: Icons.lock_outline, title: '비밀번호 변경'),
 
             const SizedBox(height: 16),
 
-            _card(
-              icon: Icons.visibility_off_outlined,
-              title: '개인정보 관리',
-            ),
+            _card(icon: Icons.visibility_off_outlined, title: '개인정보 관리'),
 
             const SizedBox(height: 16),
 
-            _card(
-              icon: Icons.delete_outline,
-              title: '계정 삭제',
-            ),
+            _card(icon: Icons.delete_outline, title: '계정 삭제'),
           ],
         ),
       ),
     );
   }
 
-  Widget _card({
-    required IconData icon,
-    required String title,
-  }) {
+  Widget _card({required IconData icon, required String title}) {
     return Container(
       padding: const EdgeInsets.all(20),
 
@@ -72,10 +60,7 @@ class SecurityPage extends StatelessWidget {
           Expanded(
             child: Text(
               title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),
 
