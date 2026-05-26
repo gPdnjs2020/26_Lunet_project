@@ -5,6 +5,7 @@ import 'signup.dart';
 import 'profile.dart';
 import 'history.dart';
 import 'setting.dart';
+import 'security.dart';
 
 void main() {
   runApp(const MyApp());
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
         '/profile': (context) => const ProfilePage(),
         '/history': (context) => const HistoryPage(),
         '/setting': (context) => const SettingPage(),
+        '/security': (context) => const SecurityPage(),
       },
     );
   }
