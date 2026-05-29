@@ -2,15 +2,24 @@ import 'package:flutter/material.dart';
 import 'loading.dart';
 
 class DetailPage extends StatefulWidget {
-  const DetailPage({super.key});
+
+  /// selection 페이지에서 전달받은 고민 내용
+  final String situation;
+
+  const DetailPage({
+    super.key,
+    required this.situation,
+  });
 
   @override
   State<DetailPage> createState() => _DetailPageState();
 }
 
 class _DetailPageState extends State<DetailPage> {
+
   int selectedRelation = 0;
   int selectedTiming = 0;
+
   double readiness = 0.5;
 
   final List<String> relations = [
@@ -22,25 +31,40 @@ class _DetailPageState extends State<DetailPage> {
   ];
 
   final List<Map<String, String>> timings = [
-    {'title': '지금 바로', 'desc': '더 이상 지체할 수 없어요.'},
+    {
+      'title': '지금 바로',
+      'desc': '더 이상 지체할 수 없어요.',
+    },
 
-    {'title': '이번 주 내로', 'desc': '충분히 고민해보고 결정할게요.'},
+    {
+      'title': '이번 주 내로',
+      'desc': '충분히 고민해보고 결정할게요.',
+    },
 
-    {'title': '나중에 천천히', 'desc': '아직은 서두르고 싶지 않아요.'},
+    {
+      'title': '나중에 천천히',
+      'desc': '아직은 서두르고 싶지 않아요.',
+    },
   ];
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: const Color(0xFFF7F5F2),
 
-      /// appbar
+      /// ----------------------------------------------------------
+      /// AppBar
+      /// ----------------------------------------------------------
       appBar: AppBar(
         backgroundColor: const Color(0xFFF7F5F2),
         elevation: 0,
 
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black87),
+          icon: const Icon(
+            Icons.arrow_back_ios,
+            color: Colors.black87,
+          ),
 
           onPressed: () {
             Navigator.pop(context);
@@ -48,7 +72,7 @@ class _DetailPageState extends State<DetailPage> {
         ),
 
         title: const Text(
-          'detail',
+          'Detail',
           style: TextStyle(
             color: Color(0xFF4A6480),
             fontWeight: FontWeight.bold,
@@ -56,20 +80,30 @@ class _DetailPageState extends State<DetailPage> {
         ),
       ),
 
-      /// body
+      /// ----------------------------------------------------------
+      /// Body
+      /// ----------------------------------------------------------
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
 
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+
             children: [
+
+              /// ----------------------------------------------------------
               /// 말풍선
+              /// ----------------------------------------------------------
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
 
                 children: [
-                  Image.asset('assets/images/character.png', width: 55),
+
+                  Image.asset(
+                    'assets/images/character.png',
+                    width: 55,
+                  ),
 
                   const SizedBox(width: 10),
 
@@ -84,6 +118,7 @@ class _DetailPageState extends State<DetailPage> {
 
                       child: const Text(
                         '거의 다 왔어요!\n당신의 상황에 대해 조금 더 자세히 알려주시겠어요? ✨',
+
                         style: TextStyle(
                           fontSize: 16,
                           color: Colors.black54,
@@ -95,9 +130,55 @@ class _DetailPageState extends State<DetailPage> {
                 ],
               ),
 
-              const SizedBox(height: 32),
+              const SizedBox(height: 28),
 
+              /// ----------------------------------------------------------
+              /// 사용자가 입력한 고민
+              /// ----------------------------------------------------------
+              const Text(
+                '당신의 고민',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF4A6480),
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(22),
+
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(28),
+
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.03),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+
+                child: Text(
+                  widget.situation,
+
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.black87,
+                    height: 1.6,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 36),
+
+              /// ----------------------------------------------------------
               /// 누구와 관련?
+              /// ----------------------------------------------------------
               const Text(
                 '누구와 관련된 선택인가요?',
                 style: TextStyle(
@@ -115,6 +196,7 @@ class _DetailPageState extends State<DetailPage> {
 
                 children: List.generate(
                   relations.length,
+
                   (index) => _relationChip(
                     text: relations[index],
                     isSelected: selectedRelation == index,
@@ -130,7 +212,9 @@ class _DetailPageState extends State<DetailPage> {
 
               const SizedBox(height: 32),
 
+              /// ----------------------------------------------------------
               /// 준비 정도 카드
+              /// ----------------------------------------------------------
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(24),
@@ -144,6 +228,7 @@ class _DetailPageState extends State<DetailPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
 
                   children: [
+
                     const Text(
                       '얼마나 준비됐다고 생각해?',
                       style: TextStyle(
@@ -157,17 +242,29 @@ class _DetailPageState extends State<DetailPage> {
 
                     const Text(
                       '마음의 준비 정도를 알려주세요.',
-                      style: TextStyle(color: Colors.black54, fontSize: 15),
+                      style: TextStyle(
+                        color: Colors.black54,
+                        fontSize: 15,
+                      ),
                     ),
 
                     const SizedBox(height: 24),
 
                     SliderTheme(
                       data: SliderTheme.of(context).copyWith(
-                        activeTrackColor: const Color(0xFF4A6480),
-                        inactiveTrackColor: Colors.blueGrey.shade100,
-                        thumbColor: const Color(0xFF4A6480),
-                        overlayColor: const Color(0xFF4A6480).withOpacity(0.2),
+                        activeTrackColor:
+                            const Color(0xFF4A6480),
+
+                        inactiveTrackColor:
+                            Colors.blueGrey.shade100,
+
+                        thumbColor:
+                            const Color(0xFF4A6480),
+
+                        overlayColor:
+                            const Color(0xFF4A6480)
+                                .withOpacity(0.2),
+
                         trackHeight: 6,
                       ),
 
@@ -183,12 +280,17 @@ class _DetailPageState extends State<DetailPage> {
                     ),
 
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment:
+                          MainAxisAlignment.spaceBetween,
 
                       children: const [
+
                         Column(
                           children: [
-                            Icon(Icons.lightbulb_outline, color: Colors.grey),
+                            Icon(
+                              Icons.lightbulb_outline,
+                              color: Colors.grey,
+                            ),
 
                             SizedBox(height: 4),
 
@@ -204,7 +306,10 @@ class _DetailPageState extends State<DetailPage> {
 
                         Column(
                           children: [
-                            Icon(Icons.rocket_launch, color: Color(0xFF4A6480)),
+                            Icon(
+                              Icons.rocket_launch,
+                              color: Color(0xFF4A6480),
+                            ),
 
                             SizedBox(height: 4),
 
@@ -225,7 +330,9 @@ class _DetailPageState extends State<DetailPage> {
 
               const SizedBox(height: 32),
 
+              /// ----------------------------------------------------------
               /// 언제 실행?
+              /// ----------------------------------------------------------
               const Text(
                 '언제 실행하실 건가요?',
                 style: TextStyle(
@@ -240,13 +347,15 @@ class _DetailPageState extends State<DetailPage> {
               Column(
                 children: List.generate(
                   timings.length,
+
                   (index) => Padding(
                     padding: const EdgeInsets.only(bottom: 16),
 
                     child: _timingCard(
                       title: timings[index]['title']!,
                       desc: timings[index]['desc']!,
-                      selected: selectedTiming == index,
+                      selected:
+                          selectedTiming == index,
 
                       onTap: () {
                         setState(() {
@@ -260,7 +369,9 @@ class _DetailPageState extends State<DetailPage> {
 
               const SizedBox(height: 32),
 
+              /// ----------------------------------------------------------
               /// 분석 버튼
+              /// ----------------------------------------------------------
               Container(
                 width: double.infinity,
                 height: 65,
@@ -269,7 +380,10 @@ class _DetailPageState extends State<DetailPage> {
                   borderRadius: BorderRadius.circular(40),
 
                   gradient: const LinearGradient(
-                    colors: [Color(0xFF486A8A), Color(0xFFA9C7F2)],
+                    colors: [
+                      Color(0xFF486A8A),
+                      Color(0xFFA9C7F2),
+                    ],
                   ),
                 ),
 
@@ -280,9 +394,20 @@ class _DetailPageState extends State<DetailPage> {
                   ),
 
                   onPressed: () {
+
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const LoadingPage()),
+
+                      MaterialPageRoute(
+                        builder: (_) => LoadingPage(
+                          situation: widget.situation,
+                          relation:
+                              relations[selectedRelation],
+                          readiness: readiness,
+                          timing: timings[selectedTiming]
+                              ['title']!,
+                        ),
+                      ),
                     );
                   },
 
@@ -301,8 +426,12 @@ class _DetailPageState extends State<DetailPage> {
 
               const Center(
                 child: Text(
-                  '"당신의 최선의 결정을 루미에르가 함께 응원할게요." 💞',
-                  style: TextStyle(color: Colors.black54, fontSize: 13),
+                  '"당신의 최선의 결정을 루나가 함께 응원할게요." 💞',
+
+                  style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 13,
+                  ),
                 ),
               ),
 
@@ -314,35 +443,51 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
+  /// ----------------------------------------------------------
+  /// 관계 선택 칩
+  /// ----------------------------------------------------------
   Widget _relationChip({
     required String text,
     required bool isSelected,
     required VoidCallback onTap,
   }) {
+
     return GestureDetector(
       onTap: onTap,
 
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
 
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 18,
+          vertical: 14,
+        ),
 
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFEAF2FF) : Colors.white,
+          color: isSelected
+              ? const Color(0xFFEAF2FF)
+              : Colors.white,
 
           borderRadius: BorderRadius.circular(30),
 
           border: Border.all(
-            color: isSelected ? const Color(0xFF8EB5E8) : Colors.transparent,
+            color: isSelected
+                ? const Color(0xFF8EB5E8)
+                : Colors.transparent,
+
             width: 2,
           ),
         ),
 
         child: Text(
           text,
+
           style: TextStyle(
             fontSize: 16,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            fontWeight: isSelected
+                ? FontWeight.bold
+                : FontWeight.normal,
+
             color: const Color(0xFF4A6480),
           ),
         ),
@@ -350,12 +495,16 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
+  /// ----------------------------------------------------------
+  /// 타이밍 카드
+  /// ----------------------------------------------------------
   Widget _timingCard({
     required String title,
     required String desc,
     required bool selected,
     required VoidCallback onTap,
   }) {
+
     return GestureDetector(
       onTap: onTap,
 
@@ -370,13 +519,17 @@ class _DetailPageState extends State<DetailPage> {
           borderRadius: BorderRadius.circular(28),
 
           border: Border.all(
-            color: selected ? const Color(0xFF8EB5E8) : Colors.transparent,
+            color: selected
+                ? const Color(0xFF8EB5E8)
+                : Colors.transparent,
+
             width: 2,
           ),
         ),
 
         child: Row(
           children: [
+
             Container(
               width: 54,
               height: 54,
@@ -390,7 +543,9 @@ class _DetailPageState extends State<DetailPage> {
               ),
 
               child: Icon(
-                selected ? Icons.check : Icons.schedule,
+                selected
+                    ? Icons.check
+                    : Icons.schedule,
 
                 color: const Color(0xFF4A6480),
               ),
@@ -400,11 +555,14 @@ class _DetailPageState extends State<DetailPage> {
 
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
 
                 children: [
+
                   Text(
                     title,
+
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -415,13 +573,20 @@ class _DetailPageState extends State<DetailPage> {
 
                   Text(
                     desc,
-                    style: const TextStyle(color: Colors.black54, height: 1.4),
+
+                    style: const TextStyle(
+                      color: Colors.black54,
+                      height: 1.4,
+                    ),
                   ),
                 ],
               ),
             ),
 
-            const Icon(Icons.chevron_right, color: Colors.grey),
+            const Icon(
+              Icons.chevron_right,
+              color: Colors.grey,
+            ),
           ],
         ),
       ),

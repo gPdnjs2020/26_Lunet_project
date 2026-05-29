@@ -1,15 +1,37 @@
 import 'package:flutter/material.dart';
 import 'detail.dart';
 
-class SelectionPage extends StatelessWidget {
+class SelectionPage extends StatefulWidget {
   const SelectionPage({super.key});
+
+  @override
+  State<SelectionPage> createState() => _SelectionPageState();
+}
+
+class _SelectionPageState extends State<SelectionPage> {
+
+  /// ----------------------------------------------------------
+  /// 고민 입력 컨트롤러
+  /// ----------------------------------------------------------
+  final TextEditingController situationController =
+      TextEditingController();
+
+  /// ----------------------------------------------------------
+  /// 예시 고민 자동 입력 함수
+  /// ----------------------------------------------------------
+  void fillExample(String text) {
+    situationController.text = text;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF7F5F2),
 
-      appBar: AppBar(backgroundColor: const Color(0xFFF7F5F2), elevation: 0),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFF7F5F2),
+        elevation: 0,
+      ),
 
       body: SafeArea(
         child: SingleChildScrollView(
@@ -19,7 +41,10 @@ class SelectionPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
 
             children: [
+
+              /// ----------------------------------------------------------
               /// 캐릭터
+              /// ----------------------------------------------------------
               Align(
                 alignment: Alignment.centerRight,
 
@@ -33,7 +58,10 @@ class SelectionPage extends StatelessWidget {
 
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF4A6480).withOpacity(0.08),
+                        color: const Color(
+                          0xFF4A6480,
+                        ).withOpacity(0.08),
+
                         blurRadius: 20,
                         spreadRadius: 2,
                       ),
@@ -51,7 +79,9 @@ class SelectionPage extends StatelessWidget {
 
               const SizedBox(height: 16),
 
+              /// ----------------------------------------------------------
               /// 말풍선
+              /// ----------------------------------------------------------
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20,
@@ -75,7 +105,9 @@ class SelectionPage extends StatelessWidget {
 
               const SizedBox(height: 20),
 
-              /// 메인텍스트
+              /// ----------------------------------------------------------
+              /// 메인 텍스트
+              /// ----------------------------------------------------------
               const Center(
                 child: Text(
                   '너의 고민을\n털어놔봐',
@@ -92,7 +124,9 @@ class SelectionPage extends StatelessWidget {
 
               const SizedBox(height: 24),
 
+              /// ----------------------------------------------------------
               /// 입력 카드
+              /// ----------------------------------------------------------
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(24),
@@ -114,11 +148,15 @@ class SelectionPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
 
                   children: [
+
+                    /// 고민 입력
                     TextField(
+                      controller: situationController,
                       maxLines: 6,
 
                       decoration: InputDecoration(
-                        hintText: '예: 지금 고백해도 될까?',
+                        hintText:
+                            '예: 지금 고백해도 될까?\n소개팅 이후 연락이 애매해...',
                         hintStyle: TextStyle(
                           color: Colors.grey.shade400,
                           fontSize: 16,
@@ -129,6 +167,7 @@ class SelectionPage extends StatelessWidget {
 
                     const SizedBox(height: 24),
 
+                    /// AI 안내
                     Row(
                       children: [
                         Icon(
@@ -140,7 +179,7 @@ class SelectionPage extends StatelessWidget {
                         const SizedBox(width: 6),
 
                         Text(
-                          'AI가 당신의 상황을 분석합니다',
+                          'AI 루나가 당신의 상황을 분석합니다',
                           style: TextStyle(
                             color: Colors.blueGrey.shade300,
                             fontSize: 13,
@@ -151,7 +190,9 @@ class SelectionPage extends StatelessWidget {
 
                     const SizedBox(height: 20),
 
-                    /// 버튼
+                    /// ----------------------------------------------------------
+                    /// 분석 시작 버튼
+                    /// ----------------------------------------------------------
                     Container(
                       width: double.infinity,
                       height: 60,
@@ -160,7 +201,10 @@ class SelectionPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(40),
 
                         gradient: const LinearGradient(
-                          colors: [Color(0xFF486A8A), Color(0xFFA9C7F2)],
+                          colors: [
+                            Color(0xFF486A8A),
+                            Color(0xFFA9C7F2),
+                          ],
                         ),
                       ),
 
@@ -171,10 +215,30 @@ class SelectionPage extends StatelessWidget {
                         ),
 
                         onPressed: () {
+
+                          /// 입력값 없을 때
+                          if (situationController.text.trim().isEmpty) {
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  '고민을 입력해주세요 🌙',
+                                ),
+                              ),
+                            );
+
+                            return;
+                          }
+
+                          /// detail 페이지 이동
                           Navigator.push(
                             context,
+
                             MaterialPageRoute(
-                              builder: (_) => const DetailPage(),
+                              builder: (_) => DetailPage(
+                                situation:
+                                    situationController.text.trim(),
+                              ),
                             ),
                           );
                         },
@@ -195,7 +259,9 @@ class SelectionPage extends StatelessWidget {
 
               const SizedBox(height: 28),
 
+              /// ----------------------------------------------------------
               /// 추천 고민
+              /// ----------------------------------------------------------
               const Text(
                 '이런 고민은 어때요? ✨',
                 style: TextStyle(
@@ -207,29 +273,59 @@ class SelectionPage extends StatelessWidget {
 
               const SizedBox(height: 16),
 
-              _exampleCard(
-                icon: Icons.favorite_border,
-                iconColor: const Color(0xFFE6A5AE),
-                title: '고백하기',
-                description: '그 사람도 나를 좋아할까?\n타이밍을 물어보세요.',
+              /// 고백하기
+              GestureDetector(
+                onTap: () {
+                  fillExample(
+                    '지금 고백해도 괜찮을까?\n상대방도 나를 좋아하는 것 같긴 한데 확신이 없어.',
+                  );
+                },
+
+                child: _exampleCard(
+                  icon: Icons.favorite_border,
+                  iconColor: const Color(0xFFE6A5AE),
+                  title: '고백하기',
+                  description:
+                      '그 사람도 나를 좋아할까?\n타이밍을 물어보세요.',
+                ),
               ),
 
               const SizedBox(height: 16),
 
-              _exampleCard(
-                icon: Icons.work_outline,
-                iconColor: const Color(0xFFB8A8E6),
-                title: '이직하기',
-                description: '지금 옮기는 게 맞을까?\n커리어 성장을 분석해요.',
+              /// 이직하기
+              GestureDetector(
+                onTap: () {
+                  fillExample(
+                    '지금 회사에서 계속 버티는 게 맞을까?\n새로운 회사 제안이 왔는데 고민돼.',
+                  );
+                },
+
+                child: _exampleCard(
+                  icon: Icons.work_outline,
+                  iconColor: const Color(0xFFB8A8E6),
+                  title: '이직하기',
+                  description:
+                      '지금 옮기는 게 맞을까?\n커리어 성장을 분석해요.',
+                ),
               ),
 
               const SizedBox(height: 16),
 
-              _exampleCard(
-                icon: Icons.school_outlined,
-                iconColor: const Color(0xFFA9C7F2),
-                title: '공부 vs 놀기',
-                description: '당장 필요한 선택은 무엇인지\n가이드를 드려요.',
+              /// 공부 vs 놀기
+              GestureDetector(
+                onTap: () {
+                  fillExample(
+                    '시험이 얼마 안 남았는데 너무 쉬고 싶어.\n지금 놀아도 괜찮을까?',
+                  );
+                },
+
+                child: _exampleCard(
+                  icon: Icons.school_outlined,
+                  iconColor: const Color(0xFFA9C7F2),
+                  title: '공부 vs 놀기',
+                  description:
+                      '당장 필요한 선택은 무엇인지\n가이드를 드려요.',
+                ),
               ),
 
               const SizedBox(height: 30),
@@ -240,12 +336,16 @@ class SelectionPage extends StatelessWidget {
     );
   }
 
+  /// ----------------------------------------------------------
+  /// 예시 카드 위젯
+  /// ----------------------------------------------------------
   Widget _exampleCard({
     required IconData icon,
     required Color iconColor,
     required String title,
     required String description,
   }) {
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(22),
@@ -265,6 +365,8 @@ class SelectionPage extends StatelessWidget {
 
       child: Row(
         children: [
+
+          /// 아이콘
           Container(
             width: 52,
             height: 52,
@@ -274,18 +376,24 @@ class SelectionPage extends StatelessWidget {
               shape: BoxShape.circle,
             ),
 
-            child: Icon(icon, color: iconColor),
+            child: Icon(
+              icon,
+              color: iconColor,
+            ),
           ),
 
           const SizedBox(width: 18),
 
+          /// 텍스트
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
 
               children: [
+
                 Text(
                   title,
+
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -296,6 +404,7 @@ class SelectionPage extends StatelessWidget {
 
                 Text(
                   description,
+
                   style: const TextStyle(
                     fontSize: 15,
                     color: Colors.black54,

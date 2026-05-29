@@ -3,7 +3,18 @@ import 'package:flutter/material.dart';
 import 'result.dart';
 
 class LoadingPage extends StatefulWidget {
-  const LoadingPage({super.key});
+  final String situation;
+  final String relation;
+  final double readiness;
+  final String timing;
+
+  const LoadingPage({
+    super.key,
+    required this.situation,
+    required this.relation,
+    required this.readiness,
+    required this.timing,
+  });
 
   @override
   State<LoadingPage> createState() => _LoadingPageState();
@@ -23,11 +34,13 @@ class _LoadingPageState extends State<LoadingPage>
 
   int currentText = 0;
 
+  Timer? textTimer;
+
   @override
   void initState() {
     super.initState();
 
-    /// 둥둥 애니메이션
+    /// 캐릭터 둥둥 애니메이션
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
@@ -36,30 +49,47 @@ class _LoadingPageState extends State<LoadingPage>
     _floatingAnimation = Tween<double>(
       begin: -8,
       end: 8,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOut,
+      ),
+    );
 
-    /// 로딩 문구 변경
-    Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (!mounted) return;
+    /// 로딩 텍스트 변경
+    textTimer = Timer.periodic(
+      const Duration(seconds: 1),
+      (timer) {
+        if (!mounted) return;
 
-      setState(() {
-        currentText = (currentText + 1) % loadingTexts.length;
-      });
-    });
+        setState(() {
+          currentText =
+              (currentText + 1) % loadingTexts.length;
+        });
+      },
+    );
 
     /// 결과 페이지 이동
-    Timer(const Duration(seconds: 5), () {
+    Future.delayed(const Duration(seconds: 5), () {
       if (!mounted) return;
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const ResultPage()),
+        MaterialPageRoute(
+          builder: (_) => ResultPage(
+            situation: widget.situation,
+            relation: widget.relation,
+            readiness: widget.readiness,
+            timing: widget.timing,
+          ),
+        ),
       );
     });
   }
 
   @override
   void dispose() {
+    textTimer?.cancel();
     _controller.dispose();
     super.dispose();
   }
@@ -82,7 +112,9 @@ class _LoadingPageState extends State<LoadingPage>
                 children: [
                   const CircleAvatar(
                     radius: 18,
-                    backgroundImage: AssetImage('assets/images/logo.png'),
+                    backgroundImage: AssetImage(
+                      'assets/images/logo.png',
+                    ),
                   ),
 
                   const SizedBox(width: 8),
@@ -100,14 +132,15 @@ class _LoadingPageState extends State<LoadingPage>
 
               const Spacer(),
 
-              /// 캐릭터 애니메이션
+              /// 캐릭터 둥둥 애니메이션
               AnimatedBuilder(
                 animation: _floatingAnimation,
-
                 builder: (context, child) {
                   return Transform.translate(
-                    offset: Offset(0, _floatingAnimation.value),
-
+                    offset: Offset(
+                      0,
+                      _floatingAnimation.value,
+                    ),
                     child: child,
                   );
                 },
@@ -122,7 +155,8 @@ class _LoadingPageState extends State<LoadingPage>
 
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF4A6480).withOpacity(0.08),
+                        color: const Color(0xFF4A6480)
+                            .withOpacity(0.08),
                         blurRadius: 40,
                         spreadRadius: 5,
                       ),
@@ -152,7 +186,9 @@ class _LoadingPageState extends State<LoadingPage>
                 ),
               ),
 
-              /// 서브 텍스트
+              const SizedBox(height: 18),
+
+              /// 변경되는 로딩 텍스트
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 500),
 
@@ -172,16 +208,17 @@ class _LoadingPageState extends State<LoadingPage>
 
               const SizedBox(height: 40),
 
-              /// 프로그레스
+              /// 프로그레스 바
               Column(
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(20),
 
-                    child: LinearProgressIndicator(
+                    child: const LinearProgressIndicator(
                       minHeight: 10,
                       backgroundColor: Colors.white,
-                      valueColor: const AlwaysStoppedAnimation(
+                      valueColor:
+                          AlwaysStoppedAnimation(
                         Color(0xFF4A6480),
                       ),
                     ),
@@ -201,7 +238,7 @@ class _LoadingPageState extends State<LoadingPage>
 
               const Spacer(),
 
-              /// 하단 카드
+              /// 하단 정보 카드
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(22),
@@ -209,21 +246,94 @@ class _LoadingPageState extends State<LoadingPage>
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(30),
+
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.03),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
 
-                child: const Column(
+                child: Column(
                   children: [
-                    Icon(Icons.auto_awesome, color: Color(0xFF4A6480)),
+                    const Icon(
+                      Icons.auto_awesome,
+                      color: Color(0xFF4A6480),
+                    ),
 
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
 
-                    Text(
+                    const Text(
                       '당신의 감정, 상황, 타이밍을\n종합적으로 분석하고 있어요 ✨',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 15,
                         color: Colors.black54,
                         height: 1.6,
+                      ),
+                    ),
+
+                    const SizedBox(height: 18),
+
+                    /// 사용자가 입력한 정보 미리보기
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF7F5F2),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+
+                      child: Column(
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+
+                        children: [
+                          Text(
+                            '고민 내용',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey.shade600,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+
+                          const SizedBox(height: 6),
+
+                          Text(
+                            widget.situation,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              color: Colors.black87,
+                              height: 1.4,
+                            ),
+                          ),
+
+                          const SizedBox(height: 14),
+
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _miniInfoCard(
+                                  '관계',
+                                  widget.relation,
+                                ),
+                              ),
+
+                              const SizedBox(width: 10),
+
+                              Expanded(
+                                child: _miniInfoCard(
+                                  '타이밍',
+                                  widget.timing,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -234,6 +344,47 @@ class _LoadingPageState extends State<LoadingPage>
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _miniInfoCard(
+    String title,
+    String value,
+  ) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        vertical: 12,
+        horizontal: 12,
+      ),
+
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+
+      child: Column(
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey.shade500,
+            ),
+          ),
+
+          const SizedBox(height: 6),
+
+          Text(
+            value,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF4A6480),
+            ),
+          ),
+        ],
       ),
     );
   }
