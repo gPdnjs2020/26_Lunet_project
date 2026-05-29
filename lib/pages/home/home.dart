@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'profile.dart';
+import '../profile/profile.dart';
 import 'selection.dart';
-import 'history.dart';
+import '../history/history.dart';
 
-import '../widgets/main_layout.dart';
+import '../../widgets/main_layout.dart';
 
 class LumiereHomePage extends StatefulWidget {
   const LumiereHomePage({super.key});

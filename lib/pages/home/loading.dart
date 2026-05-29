@@ -100,248 +100,265 @@ class _LoadingPageState extends State<LoadingPage>
       backgroundColor: const Color(0xFFF7F5F2),
 
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
 
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight:
+                  MediaQuery.of(context).size.height - 40,
+            ),
 
-              /// 상단 로고
-              Row(
+            child: IntrinsicHeight(
+              child: Column(
                 children: [
-                  const CircleAvatar(
-                    radius: 18,
-                    backgroundImage: AssetImage(
-                      'assets/images/logo.png',
-                    ),
-                  ),
+                  const SizedBox(height: 20),
 
-                  const SizedBox(width: 8),
+                  /// 상단 로고
+                  Row(
+                    children: [
+                      const CircleAvatar(
+                        radius: 18,
+                        backgroundImage: AssetImage(
+                          'assets/images/logo.png',
+                        ),
+                      ),
 
-                  const Text(
-                    'Lunet',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF4A6480),
-                    ),
-                  ),
-                ],
-              ),
+                      const SizedBox(width: 8),
 
-              const Spacer(),
-
-              /// 캐릭터 둥둥 애니메이션
-              AnimatedBuilder(
-                animation: _floatingAnimation,
-                builder: (context, child) {
-                  return Transform.translate(
-                    offset: Offset(
-                      0,
-                      _floatingAnimation.value,
-                    ),
-                    child: child,
-                  );
-                },
-
-                child: Container(
-                  width: 220,
-                  height: 220,
-
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(0.7),
-
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF4A6480)
-                            .withOpacity(0.08),
-                        blurRadius: 40,
-                        spreadRadius: 5,
+                      const Text(
+                        'Lunet',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF4A6480),
+                        ),
                       ),
                     ],
                   ),
 
-                  child: Center(
-                    child: Image.asset(
-                      'assets/images/character.png',
-                      width: 180,
-                    ),
-                  ),
-                ),
-              ),
+                  const SizedBox(height: 30),
 
-              const SizedBox(height: 45),
+                  /// 캐릭터 둥둥 애니메이션
+                  AnimatedBuilder(
+                    animation: _floatingAnimation,
+                    builder: (context, child) {
+                      return Transform.translate(
+                        offset: Offset(
+                          0,
+                          _floatingAnimation.value,
+                        ),
+                        child: child,
+                      );
+                    },
 
-              /// 메인 텍스트
-              const Text(
-                '루나가\n당신의 고민을 분석 중이에요',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 34,
-                  fontWeight: FontWeight.bold,
-                  height: 1.3,
-                  color: Color(0xFF2B2B2B),
-                ),
-              ),
-
-              const SizedBox(height: 18),
-
-              /// 변경되는 로딩 텍스트
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 500),
-
-                child: Text(
-                  loadingTexts[currentText],
-                  key: ValueKey(currentText),
-
-                  textAlign: TextAlign.center,
-
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.black54,
-                    height: 1.5,
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 40),
-
-              /// 프로그레스 바
-              Column(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-
-                    child: const LinearProgressIndicator(
-                      minHeight: 10,
-                      backgroundColor: Colors.white,
-                      valueColor:
-                          AlwaysStoppedAnimation(
-                        Color(0xFF4A6480),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  Text(
-                    '잠시만 기다려주세요...',
-                    style: TextStyle(
-                      color: Colors.blueGrey.shade300,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-
-              const Spacer(),
-
-              /// 하단 정보 카드
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(22),
-
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(30),
-
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.03),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-
-                child: Column(
-                  children: [
-                    const Icon(
-                      Icons.auto_awesome,
-                      color: Color(0xFF4A6480),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    const Text(
-                      '당신의 감정, 상황, 타이밍을\n종합적으로 분석하고 있어요 ✨',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: Colors.black54,
-                        height: 1.6,
-                      ),
-                    ),
-
-                    const SizedBox(height: 18),
-
-                    /// 사용자가 입력한 정보 미리보기
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
+                    child: Container(
+                      width: 220,
+                      height: 220,
 
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF7F5F2),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
+                        shape: BoxShape.circle,
+                        color: Colors.white.withOpacity(0.7),
 
-                      child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
-
-                        children: [
-                          Text(
-                            '고민 내용',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.grey.shade600,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-
-                          const SizedBox(height: 6),
-
-                          Text(
-                            widget.situation,
-                            style: const TextStyle(
-                              fontSize: 15,
-                              color: Colors.black87,
-                              height: 1.4,
-                            ),
-                          ),
-
-                          const SizedBox(height: 14),
-
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _miniInfoCard(
-                                  '관계',
-                                  widget.relation,
-                                ),
-                              ),
-
-                              const SizedBox(width: 10),
-
-                              Expanded(
-                                child: _miniInfoCard(
-                                  '타이밍',
-                                  widget.timing,
-                                ),
-                              ),
-                            ],
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF4A6480)
+                                .withOpacity(0.08),
+                            blurRadius: 40,
+                            spreadRadius: 5,
                           ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
-              ),
 
-              const SizedBox(height: 40),
-            ],
+                      child: Center(
+                        child: Image.asset(
+                          'assets/images/character.png',
+                          width: 180,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 45),
+
+                  /// 메인 텍스트
+                  const Text(
+                    '루나가\n당신의 고민을 분석 중이에요',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 34,
+                      fontWeight: FontWeight.bold,
+                      height: 1.3,
+                      color: Color(0xFF2B2B2B),
+                    ),
+                  ),
+
+                  const SizedBox(height: 18),
+
+                  /// 변경되는 로딩 텍스트
+                  AnimatedSwitcher(
+                    duration:
+                        const Duration(milliseconds: 500),
+
+                    child: Text(
+                      loadingTexts[currentText],
+                      key: ValueKey(currentText),
+
+                      textAlign: TextAlign.center,
+
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.black54,
+                        height: 1.5,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 40),
+
+                  /// 프로그레스 바
+                  Column(
+                    children: [
+                      ClipRRect(
+                        borderRadius:
+                            BorderRadius.circular(20),
+
+                        child: const LinearProgressIndicator(
+                          minHeight: 10,
+                          backgroundColor: Colors.white,
+                          valueColor:
+                              AlwaysStoppedAnimation(
+                            Color(0xFF4A6480),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      Text(
+                        '잠시만 기다려주세요...',
+                        style: TextStyle(
+                          color: Colors.blueGrey.shade300,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 40),
+
+                  /// 하단 정보 카드
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(22),
+
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius:
+                          BorderRadius.circular(30),
+
+                      boxShadow: [
+                        BoxShadow(
+                          color:
+                              Colors.black.withOpacity(0.03),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+
+                    child: Column(
+                      children: [
+                        const Icon(
+                          Icons.auto_awesome,
+                          color: Color(0xFF4A6480),
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        const Text(
+                          '당신의 감정, 상황, 타이밍을\n종합적으로 분석하고 있어요 ✨',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.black54,
+                            height: 1.6,
+                          ),
+                        ),
+
+                        const SizedBox(height: 18),
+
+                        /// 사용자가 입력한 정보 미리보기
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(16),
+
+                          decoration: BoxDecoration(
+                            color:
+                                const Color(0xFFF7F5F2),
+                            borderRadius:
+                                BorderRadius.circular(20),
+                          ),
+
+                          child: Column(
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
+
+                            children: [
+                              Text(
+                                '고민 내용',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color:
+                                      Colors.grey.shade600,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
+                              ),
+
+                              const SizedBox(height: 6),
+
+                              Text(
+                                widget.situation,
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.black87,
+                                  height: 1.4,
+                                ),
+                              ),
+
+                              const SizedBox(height: 14),
+
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: _miniInfoCard(
+                                      '관계',
+                                      widget.relation,
+                                    ),
+                                  ),
+
+                                  const SizedBox(width: 10),
+
+                                  Expanded(
+                                    child: _miniInfoCard(
+                                      '타이밍',
+                                      widget.timing,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 40),
+                ],
+              ),
+            ),
           ),
         ),
       ),
@@ -378,6 +395,7 @@ class _LoadingPageState extends State<LoadingPage>
           Text(
             value,
             textAlign: TextAlign.center,
+            overflow: TextOverflow.visible,
             style: const TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.bold,

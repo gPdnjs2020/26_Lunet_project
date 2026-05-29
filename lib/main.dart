@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'pages/home.dart';
-import 'pages/login.dart';
-import 'pages/signup.dart';
-import 'pages/profile.dart';
-import 'pages/history.dart';
-import 'pages/setting.dart';
-import 'pages/security.dart';
+import 'pages/home/home.dart';
+import 'pages/auth/login.dart';
+import 'pages/auth/signup.dart';
+import 'pages/profile/profile.dart';
+import 'pages/history/history.dart';
+import 'pages/profile/setting.dart';
+import 'pages/profile/security.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
