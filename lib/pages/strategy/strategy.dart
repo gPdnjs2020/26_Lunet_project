@@ -10,13 +10,26 @@ class StrategyPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List strategies = aiResult['strategies'] ?? [];
 
+    /// AI 전략 리스트
+    final List strategies =
+        aiResult['strategies'] ?? [];
+
+    /// 현재 성공률
     final int currentRate =
-        (aiResult['successRate'] ?? 40);
+        aiResult['success_rate'] ?? 50;
 
+    /// boost 총합 계산
+    int totalBoost = 0;
+
+    for (var strategy in strategies) {
+      totalBoost +=
+          (strategy['boost'] ?? 0) as int;
+    }
+
+    /// 최대 99 제한
     final int improvedRate =
-        (aiResult['improvedRate'] ?? 65);
+        (currentRate + totalBoost).clamp(0, 99);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF7F5F2),
@@ -24,10 +37,10 @@ class StrategyPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme:
-            const IconThemeData(
-              color: Color(0xFF4A6480),
-            ),
+
+        iconTheme: const IconThemeData(
+          color: Color(0xFF4A6480),
+        ),
 
         title: const Text(
           '수정 전략',
@@ -47,6 +60,7 @@ class StrategyPage extends StatelessWidget {
                 CrossAxisAlignment.start,
 
             children: [
+
               /// 상단 카드
               Container(
                 width: double.infinity,
@@ -60,6 +74,7 @@ class StrategyPage extends StatelessWidget {
 
                 child: Row(
                   children: [
+
                     Image.asset(
                       'assets/images/character.png',
                       width: 80,
@@ -69,7 +84,8 @@ class StrategyPage extends StatelessWidget {
 
                     const Expanded(
                       child: Text(
-                        '성공 확률을 높이기 위한\n루나의 전략을 알려줄게요 ✨',
+                        '루나가 성공 가능성을 높이기 위한\n맞춤 전략을 분석했어요 ✨',
+
                         style: TextStyle(
                           fontSize: 18,
                           height: 1.5,
@@ -81,16 +97,20 @@ class StrategyPage extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 32),
 
               /// 전략 리스트
-              if (strategies.isNotEmpty)
-                ...strategies.map(
-                  (strategy) => Padding(
+              ...strategies.map(
+                (strategy) {
+
+                  final int boost =
+                      strategy['boost'] ?? 0;
+
+                  return Padding(
                     padding:
                         const EdgeInsets.only(
-                          bottom: 18,
-                        ),
+                      bottom: 18,
+                    ),
 
                     child: _strategyCard(
                       icon: _getIcon(
@@ -102,70 +122,33 @@ class StrategyPage extends StatelessWidget {
                       ),
 
                       title:
-                          strategy['title'] ??
-                          '전략',
+                          strategy['title'] ?? '',
 
                       desc:
-                          strategy['description'] ??
-                          '',
+                          strategy['description'] ?? '',
+
+                      boost: boost,
                     ),
-                  ),
-                ),
+                  );
+                },
+              ),
 
-              /// 전략 없을 경우
-              if (strategies.isEmpty)
-                Column(
-                  children: [
-                    _strategyCard(
-                      icon: Icons.favorite,
-                      color:
-                          const Color(0xFFE9A5AF),
-                      title: '감정 표현 더하기',
-                      desc:
-                          '상대방에게 조금 더 솔직하게 감정을 표현해보세요.',
-                    ),
+              const SizedBox(height: 20),
 
-                    const SizedBox(height: 18),
-
-                    _strategyCard(
-                      icon: Icons.schedule,
-                      color:
-                          const Color(0xFFA9C7F2),
-                      title: '타이밍 조절하기',
-                      desc:
-                          '상대가 여유로운 순간을 기다리는 것이 좋아요.',
-                    ),
-
-                    const SizedBox(height: 18),
-
-                    _strategyCard(
-                      icon:
-                          Icons.chat_bubble_outline,
-                      color:
-                          const Color(0xFFB8A8E6),
-                      title: '대화 빈도 늘리기',
-                      desc:
-                          '조금 더 자연스럽게 대화를 이어가보세요.',
-                    ),
-                  ],
-                ),
-
-              const SizedBox(height: 40),
-
-              /// 성공률 상승 카드
+              /// 상승률 카드
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(28),
 
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius:
-                      BorderRadius.circular(30),
+                      BorderRadius.circular(32),
 
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black
-                          .withOpacity(0.03),
+                      color:
+                          Colors.black.withOpacity(0.03),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -174,25 +157,56 @@ class StrategyPage extends StatelessWidget {
 
                 child: Column(
                   children: [
+
                     const Icon(
                       Icons.auto_awesome,
+                      size: 34,
                       color: Color(0xFF4A6480),
-                      size: 32,
                     ),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 18),
 
                     Text(
-                      '현재 전략을 잘 반영하면\n성공 가능성이 '
-                      '$currentRate% → $improvedRate%까지 상승할 수 있어요 🌙',
+                      '현재는 약 $currentRate%의 가능성이 있지만\n'
+                      '전략들을 잘 실천하면\n'
+                      '$improvedRate%까지 성공 가능성을 높일 수 있어요 🌙',
 
                       textAlign: TextAlign.center,
 
                       style: const TextStyle(
-                        fontSize: 18,
+                        fontSize: 19,
                         height: 1.7,
                         color: Colors.black54,
                       ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.center,
+
+                      children: [
+
+                        _rateBox(
+                          title: '현재',
+                          value: '$currentRate%',
+                        ),
+
+                        const SizedBox(width: 16),
+
+                        const Icon(
+                          Icons.arrow_forward,
+                          color: Color(0xFF4A6480),
+                        ),
+
+                        const SizedBox(width: 16),
+
+                        _rateBox(
+                          title: '예상',
+                          value: '$improvedRate%',
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -212,18 +226,22 @@ class StrategyPage extends StatelessWidget {
     required Color color,
     required String title,
     required String desc,
+    required int boost,
   }) {
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(22),
 
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(28),
+        borderRadius:
+            BorderRadius.circular(28),
 
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color:
+                Colors.black.withOpacity(0.03),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -235,6 +253,7 @@ class StrategyPage extends StatelessWidget {
             CrossAxisAlignment.start,
 
         children: [
+
           Container(
             width: 55,
             height: 55,
@@ -258,18 +277,54 @@ class StrategyPage extends StatelessWidget {
                   CrossAxisAlignment.start,
 
               children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+
+                Row(
+                  children: [
+
+                    Expanded(
+                      child: Text(
+                        title,
+
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight:
+                              FontWeight.bold,
+                        ),
+                      ),
+                    ),
+
+                    Container(
+                      padding:
+                          const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+
+                      decoration: BoxDecoration(
+                        color:
+                            const Color(0xFFE8F3FF),
+                        borderRadius:
+                            BorderRadius.circular(20),
+                      ),
+
+                      child: Text(
+                        '+$boost%',
+
+                        style: const TextStyle(
+                          color: Color(0xFF4A6480),
+                          fontWeight:
+                              FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
 
                 const SizedBox(height: 10),
 
                 Text(
                   desc,
+
                   style: const TextStyle(
                     fontSize: 14,
                     color: Colors.black54,
@@ -284,8 +339,54 @@ class StrategyPage extends StatelessWidget {
     );
   }
 
-  /// 전략별 아이콘
+  /// 퍼센트 박스
+  Widget _rateBox({
+    required String title,
+    required String value,
+  }) {
+
+    return Container(
+      width: 110,
+      padding: const EdgeInsets.symmetric(
+        vertical: 18,
+      ),
+
+      decoration: BoxDecoration(
+        color: const Color(0xFFF7F5F2),
+        borderRadius:
+            BorderRadius.circular(24),
+      ),
+
+      child: Column(
+        children: [
+
+          Text(
+            title,
+
+            style: TextStyle(
+              color: Colors.grey.shade600,
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          Text(
+            value,
+
+            style: const TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF4A6480),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 아이콘
   IconData _getIcon(String title) {
+
     if (title.contains('감정')) {
       return Icons.favorite;
     }
@@ -305,8 +406,9 @@ class StrategyPage extends StatelessWidget {
     return Icons.auto_awesome;
   }
 
-  /// 전략별 색상
+  /// 색상
   Color _getColor(String title) {
+
     if (title.contains('감정')) {
       return const Color(0xFFE9A5AF);
     }

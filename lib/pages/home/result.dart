@@ -7,22 +7,41 @@ class ResultPage extends StatelessWidget {
   final double readiness;
   final String timing;
 
+  /// AI 결과
+  final Map<String, dynamic> aiResult;
+
   const ResultPage({
     super.key,
     required this.situation,
     required this.relation,
     required this.readiness,
     required this.timing,
+    required this.aiResult,
   });
 
   @override
   Widget build(BuildContext context) {
-    /// 임시 성공률 계산
     final int successPercent =
-        ((readiness * 50) + 35).toInt();
+        aiResult['success_rate'] ?? 50;
 
     final double successRate =
         successPercent / 100;
+
+    final String advice =
+        aiResult['advice'] ??
+            '조금 더 자신감을 가져보세요.';
+
+    final String positive =
+        aiResult['positive'] ??
+            '긍정적인 분위기가 형성되고 있어요.';
+
+    final String warning =
+        aiResult['warning'] ??
+            '조금 더 타이밍을 지켜보는 것도 좋아요.';
+
+    final String lunaMessage =
+        aiResult['luna_message'] ??
+            '당신은 이미 충분히 멋진 사람이에요 💜';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF7F5F2),
@@ -49,9 +68,8 @@ class ResultPage extends StatelessWidget {
 
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 22,
-          ),
+          padding:
+              const EdgeInsets.symmetric(horizontal: 22),
 
           child: Column(
             children: [
@@ -111,18 +129,20 @@ class ResultPage extends StatelessWidget {
 
               const SizedBox(height: 24),
 
-              /// 사용자 고민 카드
+              /// 고민 카드
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(24),
 
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius:
+                      BorderRadius.circular(30),
 
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.03),
+                      color:
+                          Colors.black.withOpacity(0.03),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -147,7 +167,8 @@ class ResultPage extends StatelessWidget {
                           '당신의 고민',
                           style: TextStyle(
                             fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                            fontWeight:
+                                FontWeight.bold,
                             color: Color(0xFF4A6480),
                           ),
                         ),
@@ -199,11 +220,13 @@ class ResultPage extends StatelessWidget {
 
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(35),
+                  borderRadius:
+                      BorderRadius.circular(35),
 
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.03),
+                      color:
+                          Colors.black.withOpacity(0.03),
                       blurRadius: 15,
                       offset: const Offset(0, 5),
                     ),
@@ -218,7 +241,8 @@ class ResultPage extends StatelessWidget {
                         letterSpacing: 2,
                         fontSize: 13,
                         color: Colors.black45,
-                        fontWeight: FontWeight.w600,
+                        fontWeight:
+                            FontWeight.w600,
                       ),
                     ),
 
@@ -232,11 +256,13 @@ class ResultPage extends StatelessWidget {
                           width: 170,
                           height: 170,
 
-                          child: CircularProgressIndicator(
+                          child:
+                              CircularProgressIndicator(
                             value: successRate,
                             strokeWidth: 13,
                             backgroundColor:
-                                Colors.blueGrey.shade50,
+                                Colors.blueGrey
+                                    .shade50,
 
                             valueColor:
                                 const AlwaysStoppedAnimation(
@@ -249,12 +275,13 @@ class ResultPage extends StatelessWidget {
                           children: [
                             Text(
                               '$successPercent%',
-                              style: const TextStyle(
+                              style:
+                                  const TextStyle(
                                 fontSize: 48,
                                 fontWeight:
                                     FontWeight.bold,
-                                color:
-                                    Color(0xFF4A6480),
+                                color: Color(
+                                    0xFF4A6480),
                               ),
                             ),
 
@@ -263,7 +290,8 @@ class ResultPage extends StatelessWidget {
                             const Text(
                               '가능성',
                               style: TextStyle(
-                                color: Colors.black54,
+                                color:
+                                    Colors.black54,
                                 fontSize: 15,
                               ),
                             ),
@@ -282,26 +310,31 @@ class ResultPage extends StatelessWidget {
                       ),
 
                       decoration: BoxDecoration(
-                        color: const Color(0xFFE8F3FF),
+                        color:
+                            const Color(0xFFE8F3FF),
                         borderRadius:
-                            BorderRadius.circular(20),
+                            BorderRadius.circular(
+                                20),
                       ),
 
-                      child: const Row(
+                      child: Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.auto_awesome,
-                            color: Color(0xFF4A6480),
+                            color:
+                                Color(0xFF4A6480),
                           ),
 
-                          SizedBox(width: 10),
+                          const SizedBox(width: 10),
 
                           Expanded(
                             child: Text(
-                              '조금 더 확신을 가지고 접근하면 성공 가능성이 높아질 수 있어요 ✨',
-                              style: TextStyle(
+                              advice,
+                              style:
+                                  const TextStyle(
                                 fontSize: 14,
-                                color: Colors.black54,
+                                color:
+                                    Colors.black54,
                                 height: 1.5,
                               ),
                             ),
@@ -324,8 +357,7 @@ class ResultPage extends StatelessWidget {
                       icon: Icons.favorite,
                       color:
                           const Color(0xFFE9A5AF),
-                      content:
-                          '상대방과의 분위기가 나쁘지 않은 편이에요.',
+                      content: positive,
                     ),
                   ),
 
@@ -337,8 +369,7 @@ class ResultPage extends StatelessWidget {
                       icon: Icons.lightbulb,
                       color:
                           const Color(0xFFA9C7F2),
-                      content:
-                          '조금 더 타이밍을 보는 것도 좋아요.',
+                      content: warning,
                     ),
                   ),
                 ],
@@ -357,16 +388,17 @@ class ResultPage extends StatelessWidget {
                       BorderRadius.circular(35),
                 ),
 
-                child: const Column(
+                child: Column(
                   crossAxisAlignment:
                       CrossAxisAlignment.start,
 
                   children: [
-                    Row(
+                    const Row(
                       children: [
                         Icon(
                           Icons.psychology_alt,
-                          color: Color(0xFF7E57C2),
+                          color:
+                              Color(0xFF7E57C2),
                         ),
 
                         SizedBox(width: 10),
@@ -377,17 +409,18 @@ class ResultPage extends StatelessWidget {
                             fontSize: 22,
                             fontWeight:
                                 FontWeight.bold,
-                            color: Color(0xFF7E57C2),
+                            color:
+                                Color(0xFF7E57C2),
                           ),
                         ),
                       ],
                     ),
 
-                    SizedBox(height: 18),
+                    const SizedBox(height: 18),
 
                     Text(
-                      '당신은 이미 충분히 용기 있는 사람이에요.\n결과보다 중요한 건 스스로의 마음을 솔직하게 전하는 거예요 💜',
-                      style: TextStyle(
+                      lunaMessage,
+                      style: const TextStyle(
                         fontSize: 16,
                         color: Colors.black54,
                         height: 1.8,
@@ -412,9 +445,11 @@ class ResultPage extends StatelessWidget {
                       width: 2,
                     ),
 
-                    shape: RoundedRectangleBorder(
+                    shape:
+                        RoundedRectangleBorder(
                       borderRadius:
-                          BorderRadius.circular(40),
+                          BorderRadius.circular(
+                              40),
                     ),
                   ),
 
@@ -423,7 +458,9 @@ class ResultPage extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (_) =>
-                            const StrategyPage(),
+                            StrategyPage(
+                          aiResult: aiResult,
+                        ),
                       ),
                     );
                   },
@@ -442,7 +479,7 @@ class ResultPage extends StatelessWidget {
 
               const SizedBox(height: 16),
 
-              /// 다시 분석하기
+              /// 다시 분석 버튼
               Container(
                 width: double.infinity,
                 height: 65,
@@ -506,7 +543,6 @@ class ResultPage extends StatelessWidget {
     );
   }
 
-  /// 분석 카드
   Widget _analysisCard({
     required String title,
     required IconData icon,
@@ -523,7 +559,8 @@ class ResultPage extends StatelessWidget {
 
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color:
+                Colors.black.withOpacity(0.03),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -572,7 +609,6 @@ class ResultPage extends StatelessWidget {
     );
   }
 
-  /// 하단 미니 정보 카드
   Widget _miniInfoCard(
     String title,
     String value,

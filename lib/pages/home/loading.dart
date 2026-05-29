@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+
+import '../../services/ai_service.dart';
 import 'result.dart';
 
 class LoadingPage extends StatefulWidget {
@@ -40,7 +42,7 @@ class _LoadingPageState extends State<LoadingPage>
   void initState() {
     super.initState();
 
-    /// 캐릭터 둥둥 애니메이션
+    /// 캐릭터 애니메이션
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
@@ -64,13 +66,26 @@ class _LoadingPageState extends State<LoadingPage>
 
         setState(() {
           currentText =
-              (currentText + 1) % loadingTexts.length;
+              (currentText + 1) %
+                  loadingTexts.length;
         });
       },
     );
 
-    /// 결과 페이지 이동
-    Future.delayed(const Duration(seconds: 5), () {
+    /// AI 분석 시작
+    _analyzeWithAI();
+  }
+
+  Future<void> _analyzeWithAI() async {
+    try {
+      final aiResult =
+          await AiService.analyzeDecision(
+        target: widget.relation,
+        readiness: widget.readiness * 100,
+        timing: widget.timing,
+        situation: widget.situation,
+      );
+
       if (!mounted) return;
 
       Navigator.pushReplacement(
@@ -81,10 +96,23 @@ class _LoadingPageState extends State<LoadingPage>
             relation: widget.relation,
             readiness: widget.readiness,
             timing: widget.timing,
+            aiResult: aiResult,
           ),
         ),
       );
-    });
+    } catch (e) {
+      debugPrint('AI 오류: $e');
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'AI 분석 중 오류가 발생했어요 😢',
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -97,16 +125,24 @@ class _LoadingPageState extends State<LoadingPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F5F2),
+      backgroundColor: const Color(
+        0xFFF7F5F2,
+      ),
 
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding:
+              const EdgeInsets.symmetric(
+            horizontal: 24,
+          ),
 
           child: ConstrainedBox(
             constraints: BoxConstraints(
               minHeight:
-                  MediaQuery.of(context).size.height - 40,
+                  MediaQuery.of(context)
+                          .size
+                          .height -
+                      40,
             ),
 
             child: IntrinsicHeight(
@@ -119,7 +155,8 @@ class _LoadingPageState extends State<LoadingPage>
                     children: [
                       const CircleAvatar(
                         radius: 18,
-                        backgroundImage: AssetImage(
+                        backgroundImage:
+                            AssetImage(
                           'assets/images/logo.png',
                         ),
                       ),
@@ -130,8 +167,10 @@ class _LoadingPageState extends State<LoadingPage>
                         'Lunet',
                         style: TextStyle(
                           fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF4A6480),
+                          fontWeight:
+                              FontWeight.bold,
+                          color:
+                              Color(0xFF4A6480),
                         ),
                       ),
                     ],
@@ -139,14 +178,18 @@ class _LoadingPageState extends State<LoadingPage>
 
                   const SizedBox(height: 30),
 
-                  /// 캐릭터 둥둥 애니메이션
+                  /// 캐릭터 애니메이션
                   AnimatedBuilder(
-                    animation: _floatingAnimation,
-                    builder: (context, child) {
+                    animation:
+                        _floatingAnimation,
+
+                    builder:
+                        (context, child) {
                       return Transform.translate(
                         offset: Offset(
                           0,
-                          _floatingAnimation.value,
+                          _floatingAnimation
+                              .value,
                         ),
                         child: child,
                       );
@@ -156,14 +199,22 @@ class _LoadingPageState extends State<LoadingPage>
                       width: 220,
                       height: 220,
 
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.7),
+                      decoration:
+                          BoxDecoration(
+                        shape:
+                            BoxShape.circle,
+                        color: Colors.white
+                            .withOpacity(
+                                0.7),
 
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF4A6480)
-                                .withOpacity(0.08),
+                            color:
+                                const Color(
+                                  0xFF4A6480,
+                                ).withOpacity(
+                                  0.08,
+                                ),
                             blurRadius: 40,
                             spreadRadius: 5,
                           ),
@@ -184,12 +235,15 @@ class _LoadingPageState extends State<LoadingPage>
                   /// 메인 텍스트
                   const Text(
                     '루나가\n당신의 고민을 분석 중이에요',
-                    textAlign: TextAlign.center,
+                    textAlign:
+                        TextAlign.center,
                     style: TextStyle(
                       fontSize: 34,
-                      fontWeight: FontWeight.bold,
+                      fontWeight:
+                          FontWeight.bold,
                       height: 1.3,
-                      color: Color(0xFF2B2B2B),
+                      color:
+                          Color(0xFF2B2B2B),
                     ),
                   ),
 
@@ -198,17 +252,25 @@ class _LoadingPageState extends State<LoadingPage>
                   /// 변경되는 로딩 텍스트
                   AnimatedSwitcher(
                     duration:
-                        const Duration(milliseconds: 500),
+                        const Duration(
+                      milliseconds: 500,
+                    ),
 
                     child: Text(
-                      loadingTexts[currentText],
-                      key: ValueKey(currentText),
+                      loadingTexts[
+                          currentText],
+                      key: ValueKey(
+                        currentText,
+                      ),
 
-                      textAlign: TextAlign.center,
+                      textAlign:
+                          TextAlign.center,
 
-                      style: const TextStyle(
+                      style:
+                          const TextStyle(
                         fontSize: 16,
-                        color: Colors.black54,
+                        color:
+                            Colors.black54,
                         height: 1.5,
                       ),
                     ),
@@ -221,24 +283,33 @@ class _LoadingPageState extends State<LoadingPage>
                     children: [
                       ClipRRect(
                         borderRadius:
-                            BorderRadius.circular(20),
+                            BorderRadius.circular(
+                          20,
+                        ),
 
-                        child: const LinearProgressIndicator(
+                        child:
+                            const LinearProgressIndicator(
                           minHeight: 10,
-                          backgroundColor: Colors.white,
+                          backgroundColor:
+                              Colors.white,
                           valueColor:
                               AlwaysStoppedAnimation(
-                            Color(0xFF4A6480),
+                            Color(
+                              0xFF4A6480,
+                            ),
                           ),
                         ),
                       ),
 
-                      const SizedBox(height: 16),
+                      const SizedBox(
+                          height: 16),
 
                       Text(
                         '잠시만 기다려주세요...',
                         style: TextStyle(
-                          color: Colors.blueGrey.shade300,
+                          color:
+                              Colors.blueGrey
+                                  .shade300,
                           fontSize: 14,
                         ),
                       ),
@@ -250,19 +321,31 @@ class _LoadingPageState extends State<LoadingPage>
                   /// 하단 정보 카드
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(22),
+                    padding:
+                        const EdgeInsets.all(
+                      22,
+                    ),
 
-                    decoration: BoxDecoration(
+                    decoration:
+                        BoxDecoration(
                       color: Colors.white,
                       borderRadius:
-                          BorderRadius.circular(30),
+                          BorderRadius.circular(
+                        30,
+                      ),
 
                       boxShadow: [
                         BoxShadow(
-                          color:
-                              Colors.black.withOpacity(0.03),
+                          color: Colors.black
+                              .withOpacity(
+                            0.03,
+                          ),
                           blurRadius: 10,
-                          offset: const Offset(0, 4),
+                          offset:
+                              const Offset(
+                            0,
+                            4,
+                          ),
                         ),
                       ],
                     ),
@@ -271,79 +354,109 @@ class _LoadingPageState extends State<LoadingPage>
                       children: [
                         const Icon(
                           Icons.auto_awesome,
-                          color: Color(0xFF4A6480),
+                          color: Color(
+                            0xFF4A6480,
+                          ),
                         ),
 
-                        const SizedBox(height: 12),
+                        const SizedBox(
+                            height: 12),
 
                         const Text(
                           '당신의 감정, 상황, 타이밍을\n종합적으로 분석하고 있어요 ✨',
-                          textAlign: TextAlign.center,
+                          textAlign:
+                              TextAlign.center,
                           style: TextStyle(
                             fontSize: 15,
-                            color: Colors.black54,
+                            color:
+                                Colors.black54,
                             height: 1.6,
                           ),
                         ),
 
-                        const SizedBox(height: 18),
+                        const SizedBox(
+                            height: 18),
 
-                        /// 사용자가 입력한 정보 미리보기
+                        /// 사용자 입력 정보
                         Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(16),
+                          width:
+                              double.infinity,
+                          padding:
+                              const EdgeInsets.all(
+                            16,
+                          ),
 
-                          decoration: BoxDecoration(
+                          decoration:
+                              BoxDecoration(
                             color:
-                                const Color(0xFFF7F5F2),
+                                const Color(
+                              0xFFF7F5F2,
+                            ),
                             borderRadius:
-                                BorderRadius.circular(20),
+                                BorderRadius.circular(
+                              20,
+                            ),
                           ),
 
                           child: Column(
                             crossAxisAlignment:
-                                CrossAxisAlignment.start,
+                                CrossAxisAlignment
+                                    .start,
 
                             children: [
                               Text(
                                 '고민 내용',
-                                style: TextStyle(
+                                style:
+                                    TextStyle(
                                   fontSize: 13,
-                                  color:
-                                      Colors.grey.shade600,
+                                  color: Colors
+                                      .grey
+                                      .shade600,
                                   fontWeight:
-                                      FontWeight.bold,
+                                      FontWeight
+                                          .bold,
                                 ),
                               ),
 
-                              const SizedBox(height: 6),
+                              const SizedBox(
+                                  height: 6),
 
                               Text(
-                                widget.situation,
-                                style: const TextStyle(
+                                widget
+                                    .situation,
+                                style:
+                                    const TextStyle(
                                   fontSize: 15,
-                                  color: Colors.black87,
-                                  height: 1.4,
+                                  color: Colors
+                                      .black87,
+                                  height: 1.5,
                                 ),
                               ),
 
-                              const SizedBox(height: 14),
+                              const SizedBox(
+                                  height: 16),
 
                               Row(
                                 children: [
                                   Expanded(
-                                    child: _miniInfoCard(
+                                    child:
+                                        _miniInfoCard(
                                       '관계',
-                                      widget.relation,
+                                      widget
+                                          .relation,
                                     ),
                                   ),
 
-                                  const SizedBox(width: 10),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
 
                                   Expanded(
-                                    child: _miniInfoCard(
+                                    child:
+                                        _miniInfoCard(
                                       '타이밍',
-                                      widget.timing,
+                                      widget
+                                          .timing,
                                     ),
                                   ),
                                 ],
@@ -370,14 +483,16 @@ class _LoadingPageState extends State<LoadingPage>
     String value,
   ) {
     return Container(
-      padding: const EdgeInsets.symmetric(
+      padding:
+          const EdgeInsets.symmetric(
         vertical: 12,
         horizontal: 12,
       ),
 
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius:
+            BorderRadius.circular(16),
       ),
 
       child: Column(
@@ -395,7 +510,9 @@ class _LoadingPageState extends State<LoadingPage>
           Text(
             value,
             textAlign: TextAlign.center,
+            softWrap: true,
             overflow: TextOverflow.visible,
+
             style: const TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.bold,
