@@ -64,6 +64,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '997913142383',
     projectId: 'lunet-project',
     storageBucket: 'lunet-project.firebasestorage.app',
+    iosClientId: '997913142383-2aemt8sg2cgvkclrt2i06afjqklbt0ej.apps.googleusercontent.com',
     iosBundleId: 'com.example.lunetProject',
   );
 
@@ -73,6 +74,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '997913142383',
     projectId: 'lunet-project',
     storageBucket: 'lunet-project.firebasestorage.app',
+    iosClientId: '997913142383-2aemt8sg2cgvkclrt2i06afjqklbt0ej.apps.googleusercontent.com',
     iosBundleId: 'com.example.lunetProject',
   );
 
@@ -85,4 +87,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'lunet-project.firebasestorage.app',
     measurementId: 'G-ZTP09FD468',
   );
+
 }
