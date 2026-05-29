@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "997913142383",
+    "project_id": "lunet-project",
+    "storage_bucket": "lunet-project.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:997913142383:android:cee9180c6384ad0045999a",
+        "android_client_info": {
+          "package_name": "com.example.lunet_project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "997913142383-a6lo1nm3rjgh498ib6fdcbc1t0f95j1t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7WebAlDRU0PufBpC-pXy4sfbooh7D7kE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "997913142383-a6lo1nm3rjgh498ib6fdcbc1t0f95j1t.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "997913142383-2aemt8sg2cgvkclrt2i06afjqklbt0ej.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.lunetProject"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
