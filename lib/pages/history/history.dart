@@ -6,106 +6,188 @@ class HistoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        children: [
-          /// 캐릭터
-          Container(
-            width: 170,
-            height: 170,
 
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white.withOpacity(0.7),
+    /// 임시 최근 기록 데이터
+    final List<Map<String, dynamic>> historyList = [
 
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF4A6480).withOpacity(0.08),
-                  blurRadius: 30,
-                  spreadRadius: 5,
+      {
+        "title": "회사 퇴사하기",
+        "percent": 74,
+        "date": "JUNE 02, 2026",
+        "icon": Icons.work_outline,
+        "color": const Color(0xFF7EA7FF),
+        "category": "커리어",
+      },
+
+      {
+        "title": "고백해도 괜찮을까",
+        "percent": 61,
+        "date": "MAY 28, 2026",
+        "icon": Icons.favorite_outline,
+        "color": const Color(0xFFFF8FB1),
+        "category": "연애",
+      },
+
+      {
+        "title": "혼자 여행 떠나기",
+        "percent": 89,
+        "date": "MAY 18, 2026",
+        "icon": Icons.flight_takeoff_rounded,
+        "color": const Color(0xFF9B8CFF),
+        "category": "여행",
+      },
+
+      {
+        "title": "대학원 진학 고민",
+        "percent": 67,
+        "date": "APRIL 11, 2026",
+        "icon": Icons.school_outlined,
+        "color": const Color(0xFF64C7B2),
+        "category": "학업",
+      },
+
+      {
+        "title": "새로운 도전 시작",
+        "percent": 82,
+        "date": "MARCH 25, 2026",
+        "icon": Icons.auto_awesome,
+        "color": const Color(0xFFFFC857),
+        "category": "기타",
+      },
+    ];
+
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding:
+            const EdgeInsets.symmetric(
+          horizontal: 24,
+        ),
+
+        child: Column(
+          children: [
+
+            const SizedBox(height: 10),
+
+            /// 캐릭터
+            Container(
+              width: 170,
+              height: 170,
+
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color:
+                    Colors.white.withOpacity(0.7),
+
+                boxShadow: [
+                  BoxShadow(
+                    color:
+                        const Color(0xFF4A6480)
+                            .withOpacity(0.08),
+
+                    blurRadius: 30,
+                    spreadRadius: 5,
+                  ),
+                ],
+              ),
+
+              child: Center(
+                child: Image.asset(
+                  'assets/images/character.png',
+                  width: 140,
                 ),
-              ],
+              ),
             ),
 
-            child: Center(
-              child: Image.asset('assets/images/character.png', width: 140),
+            const SizedBox(height: 25),
+
+            /// 제목
+            const Text(
+              '그날의 선택',
+
+              style: TextStyle(
+                fontSize: 34,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF4A6480),
+              ),
             ),
-          ),
 
-          const SizedBox(height: 25),
+            const SizedBox(height: 10),
 
-          /// 제목
-          const Text(
-            '그날의 선택',
-            style: TextStyle(
-              fontSize: 34,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF4A6480),
+            const Text(
+              '루넷이 함께 고민했던\n소중한 순간들이에요 ✨',
+
+              textAlign: TextAlign.center,
+
+              style: TextStyle(
+                fontSize: 15,
+                color: Colors.black54,
+                height: 1.5,
+              ),
             ),
-          ),
 
-          const SizedBox(height: 10),
+            const SizedBox(height: 35),
 
-          const Text(
-            '우리가 함께 고민했던 소중한 순간들이에요 ✨',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 15, color: Colors.black54, height: 1.5),
-          ),
+            /// 기록 카드 리스트
+            ...historyList.map(
+              (history) {
 
-          const SizedBox(height: 35),
+                return Padding(
+                  padding:
+                      const EdgeInsets.only(
+                    bottom: 20,
+                  ),
 
-          /// 기록 카드들
-          _historyCard(
-            context,
-            icon: Icons.favorite,
-            color: Colors.pink,
-            title: '고백하기',
-            percent: '32%',
-            date: 'MAY 14, 2024',
-          ),
+                  child: _historyCard(
+                    context,
 
-          const SizedBox(height: 20),
+                    icon: history['icon'],
+                    color: history['color'],
 
-          _historyCard(
-            context,
-            icon: Icons.work,
-            color: Colors.blue,
-            title: '이직하기',
-            percent: '78%',
-            date: 'APRIL 28, 2024',
-          ),
+                    title:
+                        history['title'],
 
-          const SizedBox(height: 20),
+                    percent:
+                        history['percent']
+                            .toString(),
 
-          _historyCard(
-            context,
-            icon: Icons.flight,
-            color: Colors.purple,
-            title: '혼자 여행 떠나기',
-            percent: '92%',
-            date: 'MARCH 12, 2024',
-          ),
+                    date:
+                        history['date'],
 
-          const SizedBox(height: 40),
-        ],
+                    category:
+                        history['category'],
+                  ),
+                );
+              },
+            ),
+
+            const SizedBox(height: 40),
+          ],
+        ),
       ),
     );
   }
 
   Widget _historyCard(
     BuildContext context, {
+
     required IconData icon,
     required Color color,
     required String title,
     required String percent,
     required String date,
+    required String category,
   }) {
+
     return GestureDetector(
       onTap: () {
+
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const HistoryDetailPage()),
+
+          MaterialPageRoute(
+            builder: (_) =>
+                const HistoryDetailPage(),
+          ),
         );
       },
 
@@ -115,11 +197,17 @@ class HistoryPage extends StatelessWidget {
 
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(32),
+
+          borderRadius:
+              BorderRadius.circular(32),
 
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.03),
+              color:
+                  Colors.black.withOpacity(
+                0.03,
+              ),
+
               blurRadius: 15,
               offset: const Offset(0, 5),
             ),
@@ -127,20 +215,62 @@ class HistoryPage extends StatelessWidget {
         ),
 
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment:
+              CrossAxisAlignment.start,
 
           children: [
-            /// 아이콘
-            Container(
-              width: 54,
-              height: 54,
 
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.12),
-                shape: BoxShape.circle,
-              ),
+            /// 상단 아이콘 + 카테고리
+            Row(
+              children: [
 
-              child: Icon(icon, color: color),
+                Container(
+                  width: 54,
+                  height: 54,
+
+                  decoration: BoxDecoration(
+                    color:
+                        color.withOpacity(0.12),
+
+                    shape: BoxShape.circle,
+                  ),
+
+                  child: Icon(
+                    icon,
+                    color: color,
+                  ),
+                ),
+
+                const Spacer(),
+
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
+
+                  decoration: BoxDecoration(
+                    color:
+                        color.withOpacity(0.12),
+
+                    borderRadius:
+                        BorderRadius.circular(
+                      20,
+                    ),
+                  ),
+
+                  child: Text(
+                    category,
+
+                    style: TextStyle(
+                      color: color,
+                      fontWeight:
+                          FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
             ),
 
             const SizedBox(height: 22),
@@ -148,6 +278,7 @@ class HistoryPage extends StatelessWidget {
             /// 날짜
             Text(
               date,
+
               style: const TextStyle(
                 fontSize: 11,
                 color: Colors.black45,
@@ -160,32 +291,46 @@ class HistoryPage extends StatelessWidget {
             /// 제목 + 퍼센트
             Row(
               children: [
+
                 Expanded(
                   child: Text(
                     title,
+
                     style: const TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                      fontWeight:
+                          FontWeight.bold,
+                      height: 1.3,
                     ),
                   ),
                 ),
 
                 Container(
-                  padding: const EdgeInsets.symmetric(
+                  padding:
+                      const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 8,
                   ),
 
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE8F3FF),
-                    borderRadius: BorderRadius.circular(20),
+                    color:
+                        const Color(0xFFE8F3FF),
+
+                    borderRadius:
+                        BorderRadius.circular(
+                      20,
+                    ),
                   ),
 
                   child: Text(
-                    '$percent Prediction',
+                    '$percent%',
+
                     style: const TextStyle(
-                      color: Color(0xFF4A6480),
-                      fontWeight: FontWeight.bold,
+                      color:
+                          Color(0xFF4A6480),
+
+                      fontWeight:
+                          FontWeight.bold,
                     ),
                   ),
                 ),
@@ -194,31 +339,46 @@ class HistoryPage extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            /// 하단 버튼 느낌
+            /// 하단 버튼
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              padding:
+                  const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
+              ),
 
               decoration: BoxDecoration(
-                color: const Color(0xFFF7F5F2),
-                borderRadius: BorderRadius.circular(18),
+                color:
+                    const Color(0xFFF7F5F2),
+
+                borderRadius:
+                    BorderRadius.circular(18),
               ),
 
               child: const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment:
+                    MainAxisAlignment
+                        .spaceBetween,
 
                 children: [
+
                   Text(
                     '기록 자세히 보기',
+
                     style: TextStyle(
-                      color: Color(0xFF4A6480),
-                      fontWeight: FontWeight.bold,
+                      color:
+                          Color(0xFF4A6480),
+
+                      fontWeight:
+                          FontWeight.bold,
                     ),
                   ),
 
                   Icon(
                     Icons.arrow_forward_ios,
                     size: 16,
-                    color: Color(0xFF4A6480),
+                    color:
+                        Color(0xFF4A6480),
                   ),
                 ],
               ),
