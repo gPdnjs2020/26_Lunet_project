@@ -125,7 +125,10 @@ class _HistoryPageState extends State<HistoryPage> {
                 ),
               ),
 
-            ...histories.map((history) {
+            ...histories.asMap().entries.map((entry) {
+              final index = entry.key;
+              final history = entry.value;
+
               return Padding(
                 padding: const EdgeInsets.only(bottom: 20),
                 child: _historyCard(
@@ -137,9 +140,10 @@ class _HistoryPageState extends State<HistoryPage> {
                   date: history.date,
                   category: history.category,
                   history: history,
+                  index: index,
                 ),
               );
-            }),
+            }).toList(),
 
             const SizedBox(height: 40),
           ],
@@ -157,16 +161,18 @@ class _HistoryPageState extends State<HistoryPage> {
     required String date,
     required String category,
     required HistoryModel history,
+    required int index,
   }) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => HistoryDetailPage(history: history),
+            builder: (_) => HistoryDetailPage(history: history, index: index),
           ),
         );
       },
+
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(24),

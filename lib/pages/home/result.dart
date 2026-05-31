@@ -25,7 +25,9 @@ class ResultPage extends StatelessWidget {
 
   void saveToHistory() async {
     final history = HistoryModel(
-      title: aiResult['profile_title'] ?? '결과',
+      title: situation.length > 20
+          ? '${situation.substring(0, 20)}...'
+          : situation,
       successRate: aiResult['success_rate'] ?? 50,
       category: aiResult['category'] ?? '기타',
       situation: situation,
