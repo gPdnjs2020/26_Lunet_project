@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import '../../model/history_model.dart';
 
 class HistoryDetailPage extends StatelessWidget {
-  const HistoryDetailPage({super.key});
+  final HistoryModel history;
+
+  const HistoryDetailPage({
+    super.key,
+    required this.history,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +19,10 @@ class HistoryDetailPage extends StatelessWidget {
         elevation: 0,
 
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
 
           onPressed: () {
             Navigator.pop(context);
@@ -23,11 +32,14 @@ class HistoryDetailPage extends StatelessWidget {
 
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 24,
+          ),
 
           child: SingleChildScrollView(
             child: Column(
               children: [
+
                 /// 캐릭터
                 Container(
                   width: 180,
@@ -35,11 +47,18 @@ class HistoryDetailPage extends StatelessWidget {
 
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(0.7),
+                    color: Colors.white.withOpacity(
+                      0.7,
+                    ),
 
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF4A6480).withOpacity(0.08),
+                        color: const Color(
+                          0xFF4A6480,
+                        ).withOpacity(
+                          0.08,
+                        ),
+
                         blurRadius: 30,
                         spreadRadius: 5,
                       ),
@@ -58,18 +77,28 @@ class HistoryDetailPage extends StatelessWidget {
 
                 /// 말풍선
                 Container(
-                  padding: const EdgeInsets.all(24),
-
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE9D8FF),
-                    borderRadius: BorderRadius.circular(30),
+                  padding: const EdgeInsets.all(
+                    24,
                   ),
 
-                  child: const Text(
-                    '고백하기 결과가 궁금해!\n루나가 기다리고 있었어요 ✨',
-                    textAlign: TextAlign.center,
+                  decoration: BoxDecoration(
+                    color: const Color(
+                      0xFFE9D8FF,
+                    ),
 
-                    style: TextStyle(
+                    borderRadius:
+                        BorderRadius.circular(
+                      30,
+                    ),
+                  ),
+
+                  child: Text(
+                    '${history.title} 결과가 궁금해!\n루나가 기다리고 있었어요 ✨',
+
+                    textAlign:
+                        TextAlign.center,
+
+                    style: const TextStyle(
                       fontSize: 18,
                       color: Colors.black54,
                       height: 1.6,
@@ -82,52 +111,124 @@ class HistoryDetailPage extends StatelessWidget {
                 /// 결과 카드
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(30),
+                  padding: const EdgeInsets.all(
+                    30,
+                  ),
 
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(35),
+
+                    borderRadius:
+                        BorderRadius.circular(
+                      35,
+                    ),
 
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.03),
+                        color: Colors.black
+                            .withOpacity(
+                          0.03,
+                        ),
+
                         blurRadius: 15,
-                        offset: const Offset(0, 5),
+                        offset:
+                            const Offset(
+                          0,
+                          5,
+                        ),
                       ),
                     ],
                   ),
 
-                  child: const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Column(
+                    crossAxisAlignment:
+                        CrossAxisAlignment
+                            .start,
 
                     children: [
-                      Text(
+
+                      const Text(
                         'ORIGINAL PREDICTION',
+
                         style: TextStyle(
-                          color: Colors.black45,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1,
+                          color:
+                              Colors.black45,
+
+                          fontWeight:
+                              FontWeight.bold,
+
+                          letterSpacing:
+                              1,
                         ),
                       ),
 
-                      SizedBox(height: 16),
+                      const SizedBox(
+                        height: 16,
+                      ),
 
                       Text(
-                        '고백하기',
-                        style: TextStyle(
+                        history.title,
+
+                        style:
+                            const TextStyle(
                           fontSize: 30,
-                          fontWeight: FontWeight.bold,
+
+                          fontWeight:
+                              FontWeight
+                                  .bold,
                         ),
                       ),
 
-                      SizedBox(height: 8),
+                      const SizedBox(
+                        height: 8,
+                      ),
 
                       Text(
-                        '32%',
-                        style: TextStyle(
+                        '${history.successRate}%',
+
+                        style:
+                            const TextStyle(
                           fontSize: 54,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF4A6480),
+
+                          fontWeight:
+                              FontWeight
+                                  .bold,
+
+                          color: Color(
+                            0xFF4A6480,
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(
+                        height: 12,
+                      ),
+
+                      Text(
+                        history.category,
+
+                        style:
+                            const TextStyle(
+                          fontSize: 16,
+
+                          color:
+                              Colors.black54,
+                        ),
+                      ),
+
+                      const SizedBox(
+                        height: 4,
+                      ),
+
+                      Text(
+                        history.date,
+
+                        style:
+                            const TextStyle(
+                          fontSize: 14,
+
+                          color:
+                              Colors.black38,
                         ),
                       ),
                     ],
@@ -136,28 +237,94 @@ class HistoryDetailPage extends StatelessWidget {
 
                 const SizedBox(height: 32),
 
-                /// 질문
+                /// 상황 설명
+                Container(
+                  width: double.infinity,
+
+                  padding:
+                      const EdgeInsets.all(
+                    24,
+                  ),
+
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+
+                    borderRadius:
+                        BorderRadius.circular(
+                      30,
+                    ),
+                  ),
+
+                  child: Column(
+                    crossAxisAlignment:
+                        CrossAxisAlignment
+                            .start,
+
+                    children: [
+
+                      const Text(
+                        '고민 내용',
+
+                        style: TextStyle(
+                          fontSize: 18,
+
+                          fontWeight:
+                              FontWeight.bold,
+                        ),
+                      ),
+
+                      const SizedBox(
+                        height: 12,
+                      ),
+
+                      Text(
+                        history.situation,
+
+                        style:
+                            const TextStyle(
+                          fontSize: 15,
+                          height: 1.6,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 32),
+
                 const Text(
                   '실제로 어떻게 되었나요?',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight:
+                        FontWeight.bold,
+                  ),
                 ),
 
                 const SizedBox(height: 24),
 
-                /// 버튼들
                 Row(
                   children: [
+
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(
                             const SnackBar(
-                              content: Text('루나가 당신의 성공을 축하해요 ❤️'),
+                              content: Text(
+                                '루나가 당신의 성공을 축하해요 ❤️',
+                              ),
                             ),
                           );
                         },
 
-                        child: _resultCard(emoji: '❤️', title: '성공했어요!'),
+                        child: _resultCard(
+                          emoji: '❤️',
+                          title: '성공했어요!',
+                        ),
                       ),
                     ),
 
@@ -166,14 +333,21 @@ class HistoryDetailPage extends StatelessWidget {
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(
                             const SnackBar(
-                              content: Text('다음엔 더 좋은 결과가 있을 거예요 🌙'),
+                              content: Text(
+                                '다음엔 더 좋은 결과가 있을 거예요 🌙',
+                              ),
                             ),
                           );
                         },
 
-                        child: _resultCard(emoji: '🥲', title: '아쉬워요..'),
+                        child: _resultCard(
+                          emoji: '🥲',
+                          title: '아쉬워요..',
+                        ),
                       ),
                     ),
                   ],
@@ -188,32 +362,56 @@ class HistoryDetailPage extends StatelessWidget {
     );
   }
 
-  static Widget _resultCard({required String emoji, required String title}) {
+  static Widget _resultCard({
+    required String emoji,
+    required String title,
+  }) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 32),
+      padding:
+          const EdgeInsets.symmetric(
+        vertical: 32,
+      ),
 
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(30),
+
+        borderRadius:
+            BorderRadius.circular(30),
 
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withOpacity(
+              0.03,
+            ),
+
             blurRadius: 12,
-            offset: const Offset(0, 4),
+            offset: const Offset(
+              0,
+              4,
+            ),
           ),
         ],
       ),
 
       child: Column(
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 42)),
+          Text(
+            emoji,
+            style: const TextStyle(
+              fontSize: 42,
+            ),
+          ),
 
           const SizedBox(height: 12),
 
           Text(
             title,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight:
+                  FontWeight.bold,
+            ),
           ),
         ],
       ),
