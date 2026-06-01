@@ -11,7 +11,11 @@ class HistoryModel {
     required this.category,
     required this.situation,
     required this.date,
+
+    
   });
+
+  
 
   Map<String, dynamic> toJson() {
     return {
