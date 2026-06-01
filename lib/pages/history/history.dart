@@ -105,7 +105,7 @@ class _HistoryPageState extends State<HistoryPage> {
             const SizedBox(height: 10),
 
             const Text(
-              '루넷이 함께 고민했던\n소중한 순간들이에요 ✨',
+              '루나이 함께 고민했던\n소중한 순간들이에요 ✨',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 15,
