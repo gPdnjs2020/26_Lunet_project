@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import '../../model/history_model.dart';
 import '../../services/history_service.dart';
 import '../history/history_detail.dart';
+import 'dart:io';
+import '../../services/profile_service.dart';
+
+String nickname = '루넷 사용자';
+String? profileImage;
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -72,6 +77,9 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> loadData() async {
+    nickname = await ProfileService.loadNickname();
+    profileImage = await ProfileService.loadProfileImage();
+
     final result = await HistoryService.loadHistories();
 
     if (result.isEmpty) {
@@ -157,16 +165,16 @@ class _ProfilePageState extends State<ProfilePage> {
                   alignment: Alignment.bottomCenter,
 
                   children: [
-                    Container(
-                      padding: const EdgeInsets.only(bottom: 10),
+                    CircleAvatar(
+                      radius: 55,
+                      backgroundColor: Colors.white,
 
-                      child: const CircleAvatar(
-                        radius: 55,
-                        backgroundColor: Colors.white,
-                        backgroundImage: AssetImage(
-                          'assets/images/user_avatar_placeholder.png',
-                        ),
-                      ),
+                      backgroundImage: profileImage != null
+                          ? FileImage(File(profileImage!))
+                          : const AssetImage(
+                                  'assets/images/user_avatar_placeholder.png',
+                                )
+                                as ImageProvider,
                     ),
 
                     Container(
@@ -190,6 +198,17 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                   ],
+                ),
+
+                const SizedBox(height: 12),
+
+                Text(
+                  nickname,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF334A66),
+                  ),
                 ),
 
                 const SizedBox(height: 18),

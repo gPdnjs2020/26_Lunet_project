@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../services/profile_service.dart';
 
 class ProfileEditPage extends StatefulWidget {
   const ProfileEditPage({super.key});
@@ -8,17 +9,16 @@ class ProfileEditPage extends StatefulWidget {
 }
 
 class _ProfileEditPageState extends State<ProfileEditPage> {
-  final TextEditingController nicknameController =
-      TextEditingController(text: "루넷 사용자");
+  final TextEditingController nicknameController = TextEditingController(
+    text: "루넷 사용자",
+  );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF7F5F2),
 
-      appBar: AppBar(
-        title: const Text("프로필 수정"),
-      ),
+      appBar: AppBar(title: const Text("프로필 수정")),
 
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -81,8 +81,10 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
               width: double.infinity,
 
               child: ElevatedButton(
-                onPressed: () {
-                  // 저장
+                onPressed: () async {
+                  await ProfileService.saveNickname(nicknameController.text);
+
+                  Navigator.pop(context);
                 },
 
                 child: const Text('저장'),
