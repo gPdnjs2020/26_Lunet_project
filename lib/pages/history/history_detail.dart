@@ -20,18 +20,53 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
   bool isSuccessSelected = false;
   bool isFailSelected = false;
 
-  void selectSuccess() {
+  void selectSuccess() async {
     setState(() {
       isSuccessSelected = true;
       isFailSelected = false;
     });
+
+    final updated = HistoryModel(
+      title: widget.history.title,
+      successRate: widget.history.successRate,
+      category: widget.history.category,
+      situation: widget.history.situation,
+      date: widget.history.date,
+      userResult: 'success',
+    );
+
+    await HistoryService.updateHistory(widget.index, updated);
   }
 
-  void selectFail() {
+  void selectFail() async {
     setState(() {
       isSuccessSelected = false;
       isFailSelected = true;
     });
+
+    final updated = HistoryModel(
+      title: widget.history.title,
+      successRate: widget.history.successRate,
+      category: widget.history.category,
+      situation: widget.history.situation,
+      date: widget.history.date,
+      userResult: 'fail',
+    );
+
+    await HistoryService.updateHistory(widget.index, updated);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.history.userResult == 'success') {
+      isSuccessSelected = true;
+    }
+
+    if (widget.history.userResult == 'fail') {
+      isFailSelected = true;
+    }
   }
 
   @override
@@ -60,9 +95,9 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
               if (context.mounted) {
                 Navigator.pop(context);
 
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('기록이 삭제되었습니다')),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(const SnackBar(content: Text('기록이 삭제되었습니다')));
               }
             },
           ),
@@ -188,10 +223,7 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
                       const SizedBox(height: 12),
                       Text(
                         history.situation,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          height: 1.6,
-                        ),
+                        style: const TextStyle(fontSize: 15, height: 1.6),
                       ),
                     ],
                   ),
@@ -201,10 +233,7 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
 
                 const Text(
                   '실제로 어떻게 되었나요?',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
 
                 const SizedBox(height: 24),

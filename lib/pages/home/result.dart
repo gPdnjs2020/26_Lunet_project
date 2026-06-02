@@ -32,6 +32,8 @@ class ResultPage extends StatelessWidget {
       category: aiResult['category'] ?? '기타',
       situation: situation,
       date: DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now()),
+
+      userResult: '',
     );
 
     await HistoryService.saveHistory(history);

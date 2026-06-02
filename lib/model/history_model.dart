@@ -5,6 +5,8 @@ class HistoryModel {
   final String situation;
   final String date;
 
+  final String userResult;
+
   HistoryModel({
     required this.title,
     required this.successRate,
@@ -12,7 +14,7 @@ class HistoryModel {
     required this.situation,
     required this.date,
 
-    
+    this.userResult = '',
   });
 
   
@@ -24,6 +26,7 @@ class HistoryModel {
       'category': category,
       'situation': situation,
       'date': date,
+      'userResult': userResult,
     };
   }
 
@@ -36,6 +39,7 @@ class HistoryModel {
       category: json['category'],
       situation: json['situation'],
       date: json['date'],
+      userResult: json['userResult'] ?? '',
     );
   }
 }

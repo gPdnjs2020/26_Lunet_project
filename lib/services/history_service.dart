@@ -29,6 +29,20 @@ class HistoryService {
     await prefs.setStringList(key, histories);
   }
 
+  static Future<void> updateHistory(int index, HistoryModel history) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final histories = await loadHistories();
+
+    if (index < 0 || index >= histories.length) return;
+
+    histories[index] = history;
+
+    final jsonList = histories.map((e) => jsonEncode(e.toJson())).toList();
+
+    await prefs.setStringList(key, jsonList);
+  }
+
   /// 불러오기
   static Future<List<HistoryModel>> loadHistories() async {
     final prefs = await SharedPreferences.getInstance();
