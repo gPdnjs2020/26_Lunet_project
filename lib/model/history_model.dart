@@ -7,6 +7,14 @@ class HistoryModel {
 
   final String userResult;
 
+  final String advice;
+  final String positive;
+  final String warning;
+  final String lunaMessage;
+
+  final String profileTitle;
+  final String profileStyle;
+
   HistoryModel({
     required this.title,
     required this.successRate,
@@ -15,6 +23,13 @@ class HistoryModel {
     required this.date,
 
     this.userResult = '',
+
+    this.advice = '',
+    this.positive = '',
+    this.warning = '',
+    this.lunaMessage = '',
+    this.profileTitle = '',
+    this.profileStyle = '',
   });
 
   
@@ -27,6 +42,13 @@ class HistoryModel {
       'situation': situation,
       'date': date,
       'userResult': userResult,
+
+      'advice': advice,
+      'positive': positive,
+      'warning': warning,
+      'lunaMessage': lunaMessage,
+      'profileTitle': profileTitle,
+      'profileStyle': profileStyle,
     };
   }
 
@@ -40,6 +62,13 @@ class HistoryModel {
       situation: json['situation'],
       date: json['date'],
       userResult: json['userResult'] ?? '',
+
+      advice: json['advice'] ?? '',
+      positive: json['positive'] ?? '',
+      warning: json['warning'] ?? '',
+      lunaMessage: json['lunaMessage'] ?? '',
+      profileTitle: json['profileTitle'] ?? '',
+      profileStyle: json['profileStyle'] ?? '',
     );
   }
 }

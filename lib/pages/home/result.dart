@@ -34,6 +34,15 @@ class ResultPage extends StatelessWidget {
       date: DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now()),
 
       userResult: '',
+
+      advice: aiResult['advice'] ?? '',
+      positive: aiResult['positive'] ?? '',
+      warning: aiResult['warning'] ?? '',
+      lunaMessage: aiResult['luna_message'] ?? '',
+
+      profileTitle: aiResult['profile_title'] ?? '',
+
+      profileStyle: aiResult['profile_style'] ?? '',
     );
 
     await HistoryService.saveHistory(history);
