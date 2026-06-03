@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:geolocator/geolocator.dart'; // ⭐ [GPS 추가] 기기 GPS 수집을 위한 패키지 임포트
 
 import '../profile/profile.dart';
 import 'selection.dart';
@@ -52,50 +53,85 @@ class _HomeContent extends StatefulWidget {
 }
 
 class _HomeContentState extends State<_HomeContent> {
-  String _weatherTemp = '--°C'; // 기온을 저장할 변수
-  String _weatherIconUrl = ''; // 날씨 아이콘 주소를 저장할 변수
-  bool _isLoadingWeather = true; // 데이터를 불러오는 중인지 여부
+  String _weatherTemp = '--°C';
+  String _weatherIconUrl = '';
+  bool _isLoadingWeather = true;
+  String _currentAreaName = '';
 
   @override
   void initState() {
     super.initState();
-    _fetchPohangWeather(); // 화면이 열릴 때 포항 날씨를 가져옴
+    _initGPSAndWeather();
   }
 
-  /// 🌍 [포항시 날씨 API를 호출하는 비동기 함수]
-  Future<void> _fetchPohangWeather() async {
+  Future<void> _initGPSAndWeather() async {
     try {
-      // ⚠️ 1단계에서 발급받은 본인의 실제 API Key를 여기에 꼭 넣어주세요!
+      // 1. 스마트폰 자체의 GPS 기능(위치 서비스)이 활성화되어 있는지 검사
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        throw '스마트폰의 GPS 기능이 꺼져 있습니다.';
+      }
+
+      // 2. 앱에 위치 권한이 허용되어 있는지 체크
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        // 권한이 없다면 유저에게 허용해달라는 팝업 시스템 창을 띄움
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          throw '위치 권한이 거부되었습니다.';
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        throw '위치 권한이 설정에서 영구 거부되었습니다.';
+      }
+
+      // 3. 기기 센서로부터 위도(latitude)와 경도(longitude) GPS 신호 획득
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.low,
+      ); // low 설정 시 배터리 소모 최적화 및 로딩 속도 향상
+
+      // 4. 획득한 실시간 위도, 경도 좌표 값을 들고 아래의 날씨 수집 함수로 전달
+      await _fetchWeatherByGPS(position.latitude, position.longitude);
+    } catch (e) {
+      debugPrint("GPS 연동 에러: $e");
+      setState(() {
+        _weatherTemp = '오류';
+        _isLoadingWeather = false;
+      });
+    }
+  }
+
+  /// 🌍 ⭐ [GPS 추가] 실시간 위도/경도 좌표를 사용하여 OpenWeatherMap 서버에 날씨 요청
+  Future<void> _fetchWeatherByGPS(double lat, double lon) async {
+    try {
       final String apiKey = "75af31a92acaa7c17e9e76ce3bcb0c8e";
 
-      // 포항시 날씨를 섭씨온도(&units=metric)로 요청하는 주소
       final String url =
-          'https://api.openweathermap.org/data/2.5/weather?q=Pohang&appid=$apiKey&units=metric';
+          'https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=$apiKey&units=metric';
 
       final response = await http.get(Uri.parse(url));
 
       if (response.statusCode == 200) {
-        // 성공적으로 데이터를 받았을 때 데이터 파싱
         final data = jsonDecode(response.body);
         final double temp = data['main']['temp'];
         final String iconCode = data['weather'][0]['icon'];
+        final String areaName = data['name'];
 
         setState(() {
-          _weatherTemp =
-              '${temp.toStringAsFixed(1)}°C'; // 소수점 한 자리까지 표현 (예: 23.4°C)
+          _weatherTemp = '${temp.toStringAsFixed(1)}°C';
           _weatherIconUrl =
-              'https://openweathermap.org/img/wn/$iconCode@2x.png'; // 아이콘 이미지 URL 생성
-          _isLoadingWeather = false; // 로딩 종료
+              'https://openweathermap.org/img/wn/$iconCode@2x.png';
+          _currentAreaName = areaName;
+          _isLoadingWeather = false;
         });
       } else {
-        // 서버 응답 에러 (키 미활성화 등)
         setState(() {
           _isLoadingWeather = false;
         });
       }
     } catch (e) {
-      // 인터넷 연결 끊김 등의 에러 처리
-      debugPrint("날씨 로딩 오류: $e");
+      debugPrint("날씨 API 로딩 오류: $e");
       setState(() {
         _isLoadingWeather = false;
       });
@@ -168,7 +204,6 @@ class _HomeContentState extends State<_HomeContent> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          // 인터넷에서 날씨 아이콘을 받아와 표시 (실패 시 기본 해 아이콘)
                           _weatherIconUrl.isNotEmpty
                               ? Image.network(
                                   _weatherIconUrl,
@@ -191,9 +226,23 @@ class _HomeContentState extends State<_HomeContent> {
                             style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF4A6480), // 기존 테마 포인트 컬러 사용
+                              color: Color(0xFF4A6480),
                             ),
                           ),
+
+                          /// ⭐ [GPS 추가] 기온 아래에 현재 잡힌 실제 영문 동네 이름을 작게 표시해 가독성 극대화
+                          if (_currentAreaName.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 1),
+                              child: Text(
+                                _currentAreaName,
+                                style: TextStyle(
+                                  fontSize: 9,
+                                  color: Colors.grey[600],
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                     ),
