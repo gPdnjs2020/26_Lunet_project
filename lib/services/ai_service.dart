@@ -5,7 +5,7 @@ class AiService {
   /// 🔥 API KEY (여기에 실제 키 넣기)
   /// 예: "AIzaSyXXXXXXX"
   static const String apiKey =
-      "AIzaSyBhi5KmpNOCNPz2cZb19qqVOzkT0S3-bHc";
+      "AQ.Ab8RN6LvSgU3dz2quAJ8bNM-yAnrBmwI87RnU7F9nRSOMYiuig";
 
   static Future<Map<String, dynamic>> analyzeDecision({
     required String target,
@@ -26,10 +26,11 @@ class AiService {
     }
 
     final url = Uri.parse(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyBhi5KmpNOCNPz2cZb19qqVOzkT0S3-bHc",
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AQ.Ab8RN6LvSgU3dz2quAJ8bNM-yAnrBmwI87RnU7F9nRSOMYiuighi5KmpNOCNPz2cZb19qqVOzkT0S3-bHc",
     );
 
-    final prompt = '''
+    final prompt =
+        '''
 너는 감성 AI 상담사 "루나"야.
 
 절대 규칙:
