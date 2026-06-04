@@ -210,7 +210,7 @@ class _HomeContentState extends State<_HomeContent> {
                           : const Icon(
                               Icons.wb_sunny_rounded,
                               color: Colors.orange,
-                              size: 70,
+                              size: 40,
                             ),
                       const SizedBox(width: 10),
                       // 온도 및 지역 명 세로 정렬

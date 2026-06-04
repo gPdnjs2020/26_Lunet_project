@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // 🌟 [필수] 파이어베이스 연동 패키지
 import '../../model/history_model.dart';
 import '../../services/history_service.dart';
 import '../history/history_detail.dart';
 import 'dart:io';
 import '../../services/profile_service.dart';
-
-String nickname = '루넷 사용자';
-String? profileImage;
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -16,6 +14,9 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  String nickname = '루넷 사용자';
+  String? profileImage;
+
   List<HistoryModel> histories = [];
 
   double avgRate = 0;
@@ -30,6 +31,18 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
     loadData();
+
+    // 🌟 [핵심] 프로필 수정창에서 사진/이름을 바꾸고 탭으로 돌아오면 "즉각" 화면에 반영해주는 감지기!
+    FirebaseAuth.instance.userChanges().listen((User? user) {
+      if (mounted && user != null) {
+        setState(() {
+          nickname = user.displayName ?? '루넷 사용자';
+          if (user.photoURL != null && user.photoURL!.isNotEmpty) {
+            profileImage = user.photoURL;
+          }
+        });
+      }
+    });
   }
 
   void analyzeProfile(List<HistoryModel> histories) {
@@ -51,15 +64,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
     if (avgSuccess >= 80) {
       profileTitle = '대담한 도전자';
-
       profileStyle = '당신은 결정을 빠르게 내리고 기회를 잡는 타입이에요 🚀';
     } else if (avgSuccess >= 60) {
       profileTitle = '균형 잡힌 전략가';
-
       profileStyle = '신중함과 실행력을 적절히 조화시키는 스타일이에요 ⚖️';
     } else {
       profileTitle = '깊은 통찰의 분석가';
-
       profileStyle = '충분히 고민한 뒤 움직이는 신중한 타입이에요 🔍';
     }
 
@@ -77,12 +87,24 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> loadData() async {
-    nickname = await ProfileService.loadNickname();
-    profileImage = await ProfileService.loadProfileImage();
+    User? user = FirebaseAuth.instance.currentUser;
+    await user?.reload();
+    user = FirebaseAuth.instance.currentUser;
+
+    String fetchedNickname =
+        user?.displayName ?? await ProfileService.loadNickname();
+    String? fetchedProfileImage =
+        user?.photoURL ?? await ProfileService.loadProfileImage();
 
     final result = await HistoryService.loadHistories();
 
     if (result.isEmpty) {
+      if (mounted) {
+        setState(() {
+          nickname = fetchedNickname;
+          profileImage = fetchedProfileImage;
+        });
+      }
       return;
     }
 
@@ -100,33 +122,32 @@ class _ProfilePageState extends State<ProfilePage> {
         .reduce((a, b) => a.value > b.value ? a : b)
         .key;
 
-    setState(() {
-      histories = result;
-      avgRate = average;
-      topCategory = mostCategory;
+    if (mounted) {
+      setState(() {
+        nickname = fetchedNickname;
+        profileImage = fetchedProfileImage;
+        histories = result;
+        avgRate = average;
+        topCategory = mostCategory;
 
-      level = (result.length ~/ 5) + 1;
-      analyzeProfile(result);
-    });
+        level = (result.length ~/ 5) + 1;
+        analyzeProfile(result);
+      });
+    }
   }
 
   String getEmoji(String category) {
     switch (category) {
       case '연애':
         return '❤️';
-
       case '회사':
         return '💼';
-
       case '공부':
         return '📚';
-
       case '진로':
         return '🚀';
-
       case '가족':
         return '🏡';
-
       default:
         return '✨';
     }
@@ -136,58 +157,52 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24),
-
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-
         children: [
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(24),
-
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(32),
-
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-
                 colors: [
                   const Color(0xFFE2E9F3).withOpacity(0.6),
                   const Color(0xFFF3F1ED),
                 ],
               ),
             ),
-
             child: Column(
               children: [
                 Stack(
                   alignment: Alignment.bottomCenter,
-
                   children: [
                     CircleAvatar(
                       radius: 55,
                       backgroundColor: Colors.white,
-
-                      backgroundImage: profileImage != null
-                          ? FileImage(File(profileImage!))
+                      // 🌟 [해결 포인트] 크롬 웹 환경의 사진('blob')도 완벽하게 띄워주도록 수정했습니다!
+                      backgroundImage:
+                          profileImage != null && profileImage!.isNotEmpty
+                          ? (profileImage!.startsWith('http') ||
+                                    profileImage!.startsWith('blob')
+                                ? NetworkImage(profileImage!)
+                                : FileImage(File(profileImage!))
+                                      as ImageProvider)
                           : const AssetImage(
-                                  'assets/images/user_avatar_placeholder.png',
-                                )
-                                as ImageProvider,
+                              'assets/images/user_avatar_placeholder.png',
+                            ),
                     ),
-
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
                         vertical: 4,
                       ),
-
                       decoration: BoxDecoration(
                         color: const Color(0xFFF9D6DC),
                         borderRadius: BorderRadius.circular(10),
                       ),
-
                       child: Text(
                         'LEVEL $level',
                         style: const TextStyle(
@@ -199,9 +214,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 12),
-
                 Text(
                   nickname,
                   style: const TextStyle(
@@ -210,13 +223,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     color: Color(0xFF334A66),
                   ),
                 ),
-
                 const SizedBox(height: 18),
-
                 Text(
                   profileStyle,
                   textAlign: TextAlign.center,
-
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -224,39 +234,30 @@ class _ProfilePageState extends State<ProfilePage> {
                     height: 1.4,
                   ),
                 ),
-
                 const SizedBox(height: 8),
-
                 const Text(
                   '루나가 분석한 당신의 결정 스타일',
                   style: TextStyle(fontSize: 13, color: Colors.black45),
                 ),
-
                 const SizedBox(height: 20),
-
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 20,
                     vertical: 12,
                   ),
-
                   decoration: BoxDecoration(
                     color: const Color(0xFFD9E4EE),
                     borderRadius: BorderRadius.circular(20),
                   ),
-
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
-
                     children: [
                       const Icon(
                         Icons.verified_outlined,
                         size: 18,
                         color: Color(0xFF4A6480),
                       ),
-
                       const SizedBox(width: 6),
-
                       Text(
                         profileTitle,
                         style: const TextStyle(
@@ -271,9 +272,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ],
             ),
           ),
-
           const SizedBox(height: 16),
-
           Row(
             children: [
               Expanded(
@@ -283,9 +282,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   icon: Icons.trending_up,
                 ),
               ),
-
               const SizedBox(width: 16),
-
               Expanded(
                 child: _statCard(
                   title: '많이 고민한 분야',
@@ -295,18 +292,14 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ],
           ),
-
           const SizedBox(height: 16),
-
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(20),
-
             decoration: BoxDecoration(
               color: const Color(0xFFFCEFEF),
               borderRadius: BorderRadius.circular(24),
             ),
-
             child: Text(
               '지금까지 총 ${histories.length}번의 결정을 분석했어요.\n루넷은 당신의 선택을 기억하고 있어요 ✨',
               style: const TextStyle(
@@ -316,19 +309,14 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
           ),
-
           const SizedBox(height: 30),
-
           const Text(
             '최근의 발자취',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-
           const SizedBox(height: 14),
-
           ...histories.reversed.take(3).map((history) {
             final index = histories.indexOf(history);
-
             return Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: _historyItem(
@@ -341,7 +329,6 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             );
           }),
-
           const SizedBox(height: 40),
         ],
       ),
@@ -356,11 +343,9 @@ class _ProfilePageState extends State<ProfilePage> {
     return Container(
       height: 120,
       padding: const EdgeInsets.all(16),
-
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.03),
@@ -369,18 +354,14 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ],
       ),
-
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
         children: [
           Row(
             children: [
               Icon(icon, size: 16, color: const Color(0xFF4A6480)),
-
               const SizedBox(width: 4),
-
               Expanded(
                 child: Text(
                   title,
@@ -393,7 +374,6 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ],
           ),
-
           Text(
             value,
             style: const TextStyle(
@@ -424,37 +404,28 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         );
       },
-
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-
         decoration: BoxDecoration(
           color: const Color(0xFFF5F3F0),
           borderRadius: BorderRadius.circular(20),
         ),
-
         child: Row(
           children: [
             Container(
               width: 44,
               height: 44,
-
               decoration: const BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
               ),
-
               alignment: Alignment.center,
-
               child: Text(emoji, style: const TextStyle(fontSize: 20)),
             ),
-
             const SizedBox(width: 16),
-
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-
                 children: [
                   Text(
                     title,
@@ -463,9 +434,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-
                   const SizedBox(height: 4),
-
                   Text(
                     subtitle,
                     style: const TextStyle(fontSize: 12, color: Colors.black38),
@@ -473,7 +442,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
             ),
-
             const Icon(
               Icons.arrow_forward_ios,
               size: 14,
