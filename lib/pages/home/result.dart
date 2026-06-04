@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import '../../model/history_model.dart';
 import '../../services/history_service.dart';
 
-class ResultPage extends StatelessWidget {
+class ResultPage extends StatefulWidget {
   final String situation;
   final String relation;
   final double readiness;
@@ -23,15 +23,43 @@ class ResultPage extends StatelessWidget {
     required this.aiResult,
   });
 
+  @override
+  State<ResultPage> createState() => _ResultPageState();
+}
+
+class _ResultPageState extends State<ResultPage> {
+  bool _saved = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (!_saved) {
+      _saved = true;
+      saveToHistory();
+    }
+  }
+
   void saveToHistory() async {
     final history = HistoryModel(
-      title: situation.length > 20
-          ? '${situation.substring(0, 20)}...'
-          : situation,
-      successRate: aiResult['success_rate'] ?? 50,
-      category: aiResult['category'] ?? '기타',
-      situation: situation,
+      title: widget.situation.length > 20
+          ? '${widget.situation.substring(0, 20)}...'
+          : widget.situation,
+      successRate: widget.aiResult['success_rate'] ?? 50,
+      category: widget.aiResult['category'] ?? '기타',
+      situation: widget.situation,
       date: DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now()),
+
+      userResult: '',
+
+      advice: widget.aiResult['advice'] ?? '',
+      positive: widget.aiResult['positive'] ?? '',
+      warning: widget.aiResult['warning'] ?? '',
+      lunaMessage: widget.aiResult['luna_message'] ?? '',
+
+      profileTitle: widget.aiResult['profile_title'] ?? '',
+
+      profileStyle: widget.aiResult['profile_style'] ?? '',
     );
 
     await HistoryService.saveHistory(history);
@@ -39,27 +67,27 @@ class ResultPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      saveToHistory();
-    });
 
     /// AI 데이터
-    final int successPercent = aiResult['success_rate'] ?? 50;
+    final int successPercent = widget.aiResult['success_rate'] ?? 50;
 
     final double successRate = successPercent / 100;
 
-    final String advice = aiResult['advice'] ?? '조금 더 자신감을 가져보세요.';
+    final String advice = widget.aiResult['advice'] ?? '조금 더 자신감을 가져보세요.';
 
-    final String positive = aiResult['positive'] ?? '긍정적인 분위기가 형성되고 있어요.';
+    final String positive =
+        widget.aiResult['positive'] ?? '긍정적인 분위기가 형성되고 있어요.';
 
-    final String warning = aiResult['warning'] ?? '조금 더 타이밍을 지켜보는 것도 좋아요.';
+    final String warning =
+        widget.aiResult['warning'] ?? '조금 더 타이밍을 지켜보는 것도 좋아요.';
 
     final String lunaMessage =
-        aiResult['luna_message'] ?? '당신은 이미 충분히 멋진 사람이에요 💜';
+        widget.aiResult['luna_message'] ?? '당신은 이미 충분히 멋진 사람이에요 💜';
 
-    final String profileStyle = aiResult['profile_style'] ?? '신중한 스타일';
+    final String profileStyle = widget.aiResult['profile_style'] ?? '신중한 스타일';
 
-    final String profileTitle = aiResult['profile_title'] ?? '깊은 통찰의 분석가';
+    final String profileTitle =
+        widget.aiResult['profile_title'] ?? '깊은 통찰의 분석가';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF7F5F2),
@@ -181,7 +209,7 @@ class ResultPage extends StatelessWidget {
                     const SizedBox(height: 18),
 
                     Text(
-                      situation,
+                      widget.situation,
 
                       style: const TextStyle(
                         fontSize: 16,
@@ -194,11 +222,11 @@ class ResultPage extends StatelessWidget {
 
                     Row(
                       children: [
-                        Expanded(child: _miniInfoCard('관계', relation)),
+                        Expanded(child: _miniInfoCard('관계', widget.relation)),
 
                         const SizedBox(width: 12),
 
-                        Expanded(child: _miniInfoCard('실행 시기', timing)),
+                        Expanded(child: _miniInfoCard('실행 시기', widget.timing)),
                       ],
                     ),
                   ],
@@ -489,7 +517,7 @@ class ResultPage extends StatelessWidget {
                       context,
 
                       MaterialPageRoute(
-                        builder: (_) => StrategyPage(aiResult: aiResult),
+                        builder: (_) => StrategyPage(aiResult: widget.aiResult),
                       ),
                     );
                   },

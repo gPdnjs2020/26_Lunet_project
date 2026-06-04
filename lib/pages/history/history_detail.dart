@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../model/history_model.dart';
 import '../../services/history_service.dart';
 
-class HistoryDetailPage extends StatelessWidget {
+class HistoryDetailPage extends StatefulWidget {
   final HistoryModel history;
   final int index;
 
@@ -13,7 +13,67 @@ class HistoryDetailPage extends StatelessWidget {
   });
 
   @override
+  State<HistoryDetailPage> createState() => _HistoryDetailPageState();
+}
+
+class _HistoryDetailPageState extends State<HistoryDetailPage> {
+  bool isSuccessSelected = false;
+  bool isFailSelected = false;
+
+  void selectSuccess() async {
+    setState(() {
+      isSuccessSelected = true;
+      isFailSelected = false;
+    });
+
+    final updated = HistoryModel(
+      title: widget.history.title,
+      successRate: widget.history.successRate,
+      category: widget.history.category,
+      situation: widget.history.situation,
+      date: widget.history.date,
+      userResult: 'success',
+    );
+
+    await HistoryService.updateHistory(widget.index, updated);
+  }
+
+  void selectFail() async {
+    setState(() {
+      isSuccessSelected = false;
+      isFailSelected = true;
+    });
+
+    final updated = HistoryModel(
+      title: widget.history.title,
+      successRate: widget.history.successRate,
+      category: widget.history.category,
+      situation: widget.history.situation,
+      date: widget.history.date,
+      userResult: 'fail',
+    );
+
+    await HistoryService.updateHistory(widget.index, updated);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.history.userResult == 'success') {
+      isSuccessSelected = true;
+    }
+
+    if (widget.history.userResult == 'fail') {
+      isFailSelected = true;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final history = widget.history;
+    final index = widget.index;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF7F5F2),
 
@@ -23,10 +83,7 @@ class HistoryDetailPage extends StatelessWidget {
 
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
 
         actions: [
@@ -36,7 +93,7 @@ class HistoryDetailPage extends StatelessWidget {
               await HistoryService.deleteHistoryByIndex(index);
 
               if (context.mounted) {
-                Navigator.pop(context); // 삭제 후 뒤로가기
+                Navigator.pop(context);
 
                 ScaffoldMessenger.of(
                   context,
@@ -58,21 +115,17 @@ class HistoryDetailPage extends StatelessWidget {
                 Container(
                   width: 180,
                   height: 180,
-
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: Colors.white.withOpacity(0.7),
-
                     boxShadow: [
                       BoxShadow(
                         color: const Color(0xFF4A6480).withOpacity(0.08),
-
                         blurRadius: 30,
                         spreadRadius: 5,
                       ),
                     ],
                   ),
-
                   child: Center(
                     child: Image.asset(
                       'assets/images/character.png',
@@ -86,18 +139,13 @@ class HistoryDetailPage extends StatelessWidget {
                 /// 말풍선
                 Container(
                   padding: const EdgeInsets.all(24),
-
                   decoration: BoxDecoration(
                     color: const Color(0xFFE9D8FF),
-
                     borderRadius: BorderRadius.circular(30),
                   ),
-
                   child: Text(
                     '${history.title} 결과가 궁금해!\n루나가 기다리고 있었어요 ✨',
-
                     textAlign: TextAlign.center,
-
                     style: const TextStyle(
                       fontSize: 18,
                       color: Colors.black54,
@@ -108,88 +156,49 @@ class HistoryDetailPage extends StatelessWidget {
 
                 const SizedBox(height: 32),
 
-                /// 결과 카드
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(30),
-
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-
-                    borderRadius: BorderRadius.circular(35),
-
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.03),
-
-                        blurRadius: 15,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-
+                /// ORIGINAL RESULT (ResultPage 내용 그대로)
+                _card(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-
                     children: [
                       const Text(
                         'ORIGINAL PREDICTION',
-
                         style: TextStyle(
                           color: Colors.black45,
-
                           fontWeight: FontWeight.bold,
-
                           letterSpacing: 1,
                         ),
                       ),
-
                       const SizedBox(height: 16),
-
                       Text(
                         history.title,
-
                         style: const TextStyle(
                           fontSize: 30,
-
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-
                       const SizedBox(height: 8),
-
                       Text(
                         '${history.successRate}%',
-
                         style: const TextStyle(
                           fontSize: 54,
-
                           fontWeight: FontWeight.bold,
-
                           color: Color(0xFF4A6480),
                         ),
                       ),
-
                       const SizedBox(height: 12),
-
                       Text(
                         history.category,
-
                         style: const TextStyle(
                           fontSize: 16,
-
                           color: Colors.black54,
                         ),
                       ),
-
                       const SizedBox(height: 4),
-
                       Text(
                         history.date,
-
                         style: const TextStyle(
                           fontSize: 14,
-
                           color: Colors.black38,
                         ),
                       ),
@@ -199,37 +208,21 @@ class HistoryDetailPage extends StatelessWidget {
 
                 const SizedBox(height: 32),
 
-                /// 상황 설명
-                Container(
-                  width: double.infinity,
-
-                  padding: const EdgeInsets.all(24),
-
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-
+                /// 고민 내용 (ResultPage 그대로)
+                _card(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-
                     children: [
                       const Text(
                         '고민 내용',
-
                         style: TextStyle(
                           fontSize: 18,
-
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-
                       const SizedBox(height: 12),
-
                       Text(
                         history.situation,
-
                         style: const TextStyle(fontSize: 15, height: 1.6),
                       ),
                     ],
@@ -240,41 +233,33 @@ class HistoryDetailPage extends StatelessWidget {
 
                 const Text(
                   '실제로 어떻게 되었나요?',
-
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
 
                 const SizedBox(height: 24),
 
+                /// 성공 / 실패 선택
                 Row(
                   children: [
                     Expanded(
                       child: GestureDetector(
-                        onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('루나가 당신의 성공을 축하해요 ❤️'),
-                            ),
-                          );
-                        },
-
-                        child: _resultCard(emoji: '❤️', title: '성공했어요!'),
+                        onTap: selectSuccess,
+                        child: _resultCard(
+                          emoji: '❤️',
+                          title: '성공했어요!',
+                          selected: isSuccessSelected,
+                        ),
                       ),
                     ),
-
                     const SizedBox(width: 16),
-
                     Expanded(
                       child: GestureDetector(
-                        onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('다음엔 더 좋은 결과가 있을 거예요 🌙'),
-                            ),
-                          );
-                        },
-
-                        child: _resultCard(emoji: '🥲', title: '아쉬워요..'),
+                        onTap: selectFail,
+                        child: _resultCard(
+                          emoji: '🥲',
+                          title: '아쉬워요..',
+                          selected: isFailSelected,
+                        ),
                       ),
                     ),
                   ],
@@ -289,35 +274,65 @@ class HistoryDetailPage extends StatelessWidget {
     );
   }
 
-  static Widget _resultCard({required String emoji, required String title}) {
+  /// 공통 카드
+  Widget _card({required Widget child}) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 32),
-
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.white,
-
         borderRadius: BorderRadius.circular(30),
-
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.03),
-
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
         ],
       ),
+      child: child,
+    );
+  }
+
+  /// 성공/실패 카드 (눌림 효과)
+  Widget _resultCard({
+    required String emoji,
+    required String title,
+    required bool selected,
+  }) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      padding: const EdgeInsets.symmetric(vertical: 32),
+
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(selected ? 0.12 : 0.03),
+            blurRadius: selected ? 22 : 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+
+        border: Border.all(
+          color: selected ? const Color(0xFF4A6480) : Colors.transparent,
+          width: 2,
+        ),
+      ),
 
       child: Column(
         children: [
           Text(emoji, style: const TextStyle(fontSize: 42)),
-
           const SizedBox(height: 12),
-
           Text(
             title,
-
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: selected ? const Color(0xFF4A6480) : Colors.black,
+            ),
           ),
         ],
       ),

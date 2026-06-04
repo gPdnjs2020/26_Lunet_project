@@ -1,7 +1,136 @@
 import 'package:flutter/material.dart';
+import '../../model/history_model.dart';
+import '../../services/history_service.dart';
+import '../history/history_detail.dart';
+import 'dart:io';
+import '../../services/profile_service.dart';
 
-class ProfilePage extends StatelessWidget {
+String nickname = '루넷 사용자';
+String? profileImage;
+
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  List<HistoryModel> histories = [];
+
+  double avgRate = 0;
+  String topCategory = '없음';
+
+  String profileTitle = '새로운 탐험가';
+  String profileStyle = '아직 분석 데이터가 없어요';
+
+  int level = 1;
+
+  @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
+
+  void analyzeProfile(List<HistoryModel> histories) {
+    if (histories.isEmpty) return;
+
+    double avgSuccess =
+        histories.map((e) => e.successRate).reduce((a, b) => a + b) /
+        histories.length;
+
+    Map<String, int> categoryCount = {};
+
+    for (var h in histories) {
+      categoryCount[h.category] = (categoryCount[h.category] ?? 0) + 1;
+    }
+
+    String topCategory = categoryCount.entries
+        .reduce((a, b) => a.value > b.value ? a : b)
+        .key;
+
+    if (avgSuccess >= 80) {
+      profileTitle = '대담한 도전자';
+
+      profileStyle = '당신은 결정을 빠르게 내리고 기회를 잡는 타입이에요 🚀';
+    } else if (avgSuccess >= 60) {
+      profileTitle = '균형 잡힌 전략가';
+
+      profileStyle = '신중함과 실행력을 적절히 조화시키는 스타일이에요 ⚖️';
+    } else {
+      profileTitle = '깊은 통찰의 분석가';
+
+      profileStyle = '충분히 고민한 뒤 움직이는 신중한 타입이에요 🔍';
+    }
+
+    if (topCategory == '연애') {
+      profileStyle += '\n특히 인간관계와 감정 문제에 관심이 많아요 ❤️';
+    }
+
+    if (topCategory == '진로') {
+      profileStyle += '\n미래와 성장에 대한 고민이 많아요 🚀';
+    }
+
+    if (topCategory == '공부') {
+      profileStyle += '\n배움과 자기계발을 중요하게 생각해요 📚';
+    }
+  }
+
+  Future<void> loadData() async {
+    nickname = await ProfileService.loadNickname();
+    profileImage = await ProfileService.loadProfileImage();
+
+    final result = await HistoryService.loadHistories();
+
+    if (result.isEmpty) {
+      return;
+    }
+
+    double average =
+        result.map((e) => e.successRate).reduce((a, b) => a + b) /
+        result.length;
+
+    Map<String, int> categoryCount = {};
+
+    for (var item in result) {
+      categoryCount[item.category] = (categoryCount[item.category] ?? 0) + 1;
+    }
+
+    String mostCategory = categoryCount.entries
+        .reduce((a, b) => a.value > b.value ? a : b)
+        .key;
+
+    setState(() {
+      histories = result;
+      avgRate = average;
+      topCategory = mostCategory;
+
+      level = (result.length ~/ 5) + 1;
+      analyzeProfile(result);
+    });
+  }
+
+  String getEmoji(String category) {
+    switch (category) {
+      case '연애':
+        return '❤️';
+
+      case '회사':
+        return '💼';
+
+      case '공부':
+        return '📚';
+
+      case '진로':
+        return '🚀';
+
+      case '가족':
+        return '🏡';
+
+      default:
+        return '✨';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +141,6 @@ class ProfilePage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
 
         children: [
-          /// 분석 카드
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(24),
@@ -37,16 +165,16 @@ class ProfilePage extends StatelessWidget {
                   alignment: Alignment.bottomCenter,
 
                   children: [
-                    Container(
-                      padding: const EdgeInsets.only(bottom: 10),
+                    CircleAvatar(
+                      radius: 55,
+                      backgroundColor: Colors.white,
 
-                      child: const CircleAvatar(
-                        radius: 55,
-                        backgroundColor: Colors.white,
-                        backgroundImage: AssetImage(
-                          'assets/images/user_avatar_placeholder.png',
-                        ),
-                      ),
+                      backgroundImage: profileImage != null
+                          ? FileImage(File(profileImage!))
+                          : const AssetImage(
+                                  'assets/images/user_avatar_placeholder.png',
+                                )
+                                as ImageProvider,
                     ),
 
                     Container(
@@ -60,9 +188,9 @@ class ProfilePage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
 
-                      child: const Text(
-                        'LEVEL 12',
-                        style: TextStyle(
+                      child: Text(
+                        'LEVEL $level',
+                        style: const TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFFD65A7F),
@@ -72,11 +200,24 @@ class ProfilePage extends StatelessWidget {
                   ],
                 ),
 
-                const Text(
-                  '당신은 생각보다 신중한\n사람이에요 😊',
+                const SizedBox(height: 12),
+
+                Text(
+                  nickname,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF334A66),
+                  ),
+                ),
+
+                const SizedBox(height: 18),
+
+                Text(
+                  profileStyle,
                   textAlign: TextAlign.center,
 
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF334A66),
@@ -104,21 +245,21 @@ class ProfilePage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
 
-                  child: const Row(
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
 
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.verified_outlined,
                         size: 18,
                         color: Color(0xFF4A6480),
                       ),
 
-                      SizedBox(width: 6),
+                      const SizedBox(width: 6),
 
                       Text(
-                        '깊은 통찰의 분석가',
-                        style: TextStyle(
+                        profileTitle,
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF4A6480),
@@ -133,13 +274,12 @@ class ProfilePage extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          /// 통계 카드
           Row(
             children: [
               Expanded(
                 child: _statCard(
                   title: '평균 성공률',
-                  value: '54%',
+                  value: '${avgRate.toStringAsFixed(0)}%',
                   icon: Icons.trending_up,
                 ),
               ),
@@ -148,8 +288,8 @@ class ProfilePage extends StatelessWidget {
 
               Expanded(
                 child: _statCard(
-                  title: '가장 많이 고민한 분야',
-                  value: '연애',
+                  title: '많이 고민한 분야',
+                  value: topCategory,
                   icon: Icons.favorite_border,
                 ),
               ),
@@ -158,7 +298,6 @@ class ProfilePage extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          /// 조언 카드
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(20),
@@ -168,9 +307,9 @@ class ProfilePage extends StatelessWidget {
               borderRadius: BorderRadius.circular(24),
             ),
 
-            child: const Text(
-              '"지난 주 당신은 총 12번의 어려운 결정을 내렸어요.\n스스로를 믿으셔도 좋아요 ✨"',
-              style: TextStyle(
+            child: Text(
+              '지금까지 총 ${histories.length}번의 결정을 분석했어요.\n루넷은 당신의 선택을 기억하고 있어요 ✨',
+              style: const TextStyle(
                 fontSize: 14,
                 color: Color(0xFF7A5252),
                 height: 1.5,
@@ -180,7 +319,6 @@ class ProfilePage extends StatelessWidget {
 
           const SizedBox(height: 30),
 
-          /// 최근 기록
           const Text(
             '최근의 발자취',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -188,19 +326,21 @@ class ProfilePage extends StatelessWidget {
 
           const SizedBox(height: 14),
 
-          _historyItem(
-            emoji: '🍴',
-            title: '오늘 저녁 메뉴 결정',
-            subtitle: '2시간 전 · 완료',
-          ),
+          ...histories.reversed.take(3).map((history) {
+            final index = histories.indexOf(history);
 
-          const SizedBox(height: 12),
-
-          _historyItem(
-            emoji: '💼',
-            title: '이직 제안에 대한 답변',
-            subtitle: '어제 · 진행 중',
-          ),
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: _historyItem(
+                context: context,
+                history: history,
+                index: index,
+                emoji: getEmoji(history.category),
+                title: history.title,
+                subtitle: history.date,
+              ),
+            );
+          }),
 
           const SizedBox(height: 40),
         ],
@@ -257,7 +397,7 @@ class ProfilePage extends StatelessWidget {
           Text(
             value,
             style: const TextStyle(
-              fontSize: 28,
+              fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Color(0xFF3B5675),
             ),
@@ -268,61 +408,79 @@ class ProfilePage extends StatelessWidget {
   }
 
   static Widget _historyItem({
+    required BuildContext context,
+    required HistoryModel history,
+    required int index,
     required String emoji,
     required String title,
     required String subtitle,
   }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => HistoryDetailPage(history: history, index: index),
+          ),
+        );
+      },
 
-      decoration: BoxDecoration(
-        color: const Color(0xFFF5F3F0),
-        borderRadius: BorderRadius.circular(20),
-      ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
 
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
+        decoration: BoxDecoration(
+          color: const Color(0xFFF5F3F0),
+          borderRadius: BorderRadius.circular(20),
+        ),
 
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+              ),
+
+              alignment: Alignment.center,
+
+              child: Text(emoji, style: const TextStyle(fontSize: 20)),
             ),
 
-            alignment: Alignment.center,
+            const SizedBox(width: 16),
 
-            child: Text(emoji, style: const TextStyle(fontSize: 20)),
-          ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
 
-          const SizedBox(width: 16),
-
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
 
-                const SizedBox(height: 4),
+                  const SizedBox(height: 4),
 
-                Text(
-                  subtitle,
-                  style: const TextStyle(fontSize: 12, color: Colors.black38),
-                ),
-              ],
+                  Text(
+                    subtitle,
+                    style: const TextStyle(fontSize: 12, color: Colors.black38),
+                  ),
+                ],
+              ),
             ),
-          ),
 
-          const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.black26),
-        ],
+            const Icon(
+              Icons.arrow_forward_ios,
+              size: 14,
+              color: Colors.black26,
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -164,13 +164,15 @@ class _HistoryPageState extends State<HistoryPage> {
     required int index,
   }) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
+      onTap: () async {
+        await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (_) => HistoryDetailPage(history: history, index: index),
           ),
         );
+
+        await loadHistory();
       },
 
       child: Container(

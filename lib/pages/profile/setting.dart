@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../profile/profile_edit.dart';
 
 /// [ 설정창 화면 클래스 ]
 class SettingPage extends StatefulWidget {
@@ -21,9 +22,7 @@ class _SettingPageState extends State<SettingPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
 
-        iconTheme: const IconThemeData(
-          color: Color(0xFF4A6480),
-        ),
+        iconTheme: const IconThemeData(color: Color(0xFF4A6480)),
 
         title: const Text(
           '설정',
@@ -37,10 +36,7 @@ class _SettingPageState extends State<SettingPage> {
 
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 24,
-            vertical: 20,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
 
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,9 +50,11 @@ class _SettingPageState extends State<SettingPage> {
               _buildMenuTile(
                 Icons.person_outline,
                 '개인 프로필',
-
                 onTap: () {
-                  Navigator.pushNamed(context, '/profile');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ProfileEditPage()),
+                  );
                 },
               ),
 
@@ -147,10 +145,7 @@ class _SettingPageState extends State<SettingPage> {
 
                     const Text(
                       '부드럽고 지지적이며 깊은 직관력을 가졌어요. 루미에르가 진심으로 귀를 기울입니다.',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.black54,
-                      ),
+                      style: TextStyle(fontSize: 13, color: Colors.black54),
                     ),
 
                     const SizedBox(height: 12),
@@ -173,19 +168,13 @@ class _SettingPageState extends State<SettingPage> {
               Row(
                 children: [
                   Expanded(
-                    child: _buildPersonalityCard(
-                      '철학형',
-                      '생각할 거리를 던져주는 깊은 대화.',
-                    ),
+                    child: _buildPersonalityCard('철학형', '생각할 거리를 던져주는 깊은 대화.'),
                   ),
 
                   const SizedBox(width: 12),
 
                   Expanded(
-                    child: _buildPersonalityCard(
-                      '활기찬형',
-                      '동기부여를 해주는 맑은 에너지.',
-                    ),
+                    child: _buildPersonalityCard('활기찬형', '동기부여를 해주는 맑은 에너지.'),
                   ),
                 ],
               ),
@@ -210,16 +199,13 @@ class _SettingPageState extends State<SettingPage> {
 
               const SizedBox(height: 10),
 
-              _buildSwitchTile(
-                '주간 인사이트',
-                '성장 여정을 요약해 드립니다.',
-                _weeklyInsight,
-                (value) {
-                  setState(() {
-                    _weeklyInsight = value;
-                  });
-                },
-              ),
+              _buildSwitchTile('주간 인사이트', '성장 여정을 요약해 드립니다.', _weeklyInsight, (
+                value,
+              ) {
+                setState(() {
+                  _weeklyInsight = value;
+                });
+              }),
 
               const SizedBox(height: 36),
 
@@ -243,10 +229,7 @@ class _SettingPageState extends State<SettingPage> {
 
               const SizedBox(height: 10),
 
-              _buildMenuTile(
-                Icons.forum_outlined,
-                '상담원 연결',
-              ),
+              _buildMenuTile(Icons.forum_outlined, '상담원 연결'),
 
               const SizedBox(height: 48),
             ],
@@ -307,29 +290,19 @@ class _SettingPageState extends State<SettingPage> {
 
             child: Row(
               children: [
-                Icon(
-                  icon,
-                  color: const Color(0xFF4A6480).withOpacity(0.7),
-                ),
+                Icon(icon, color: const Color(0xFF4A6480).withOpacity(0.7)),
 
                 const SizedBox(width: 12),
 
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.black87,
-                  ),
+                  style: const TextStyle(fontSize: 16, color: Colors.black87),
                 ),
 
                 const Spacer(),
 
                 if (hasArrow)
-                  const Icon(
-                    Icons.chevron_right,
-                    size: 20,
-                    color: Colors.grey,
-                  ),
+                  const Icon(Icons.chevron_right, size: 20, color: Colors.grey),
 
                 if (trailing != null) trailing,
               ],
@@ -341,10 +314,7 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   /// 성격 카드
-  Widget _buildPersonalityCard(
-    String title,
-    String description,
-  ) {
+  Widget _buildPersonalityCard(String title, String description) {
     return Container(
       padding: const EdgeInsets.all(16),
 
@@ -380,10 +350,7 @@ class _SettingPageState extends State<SettingPage> {
           Text(
             description,
 
-            style: const TextStyle(
-              fontSize: 12,
-              color: Colors.black54,
-            ),
+            style: const TextStyle(fontSize: 12, color: Colors.black54),
           ),
         ],
       ),
@@ -424,10 +391,7 @@ class _SettingPageState extends State<SettingPage> {
                 Text(
                   title,
 
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.black87,
-                  ),
+                  style: const TextStyle(fontSize: 16, color: Colors.black87),
                 ),
 
                 const SizedBox(height: 4),
@@ -435,10 +399,7 @@ class _SettingPageState extends State<SettingPage> {
                 Text(
                   description,
 
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: Colors.black54,
-                  ),
+                  style: const TextStyle(fontSize: 13, color: Colors.black54),
                 ),
               ],
             ),
@@ -449,9 +410,7 @@ class _SettingPageState extends State<SettingPage> {
             onChanged: onChanged,
 
             activeColor: const Color(0xFF4A6480),
-            activeTrackColor: const Color(
-              0xFF4A6480,
-            ).withOpacity(0.3),
+            activeTrackColor: const Color(0xFF4A6480).withOpacity(0.3),
           ),
         ],
       ),
