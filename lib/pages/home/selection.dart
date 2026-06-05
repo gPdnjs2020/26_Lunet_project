@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'detail.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 class SelectionPage extends StatefulWidget {
   const SelectionPage({super.key});
@@ -9,12 +10,10 @@ class SelectionPage extends StatefulWidget {
 }
 
 class _SelectionPageState extends State<SelectionPage> {
-
   /// ----------------------------------------------------------
   /// 고민 입력 컨트롤러
   /// ----------------------------------------------------------
-  final TextEditingController situationController =
-      TextEditingController();
+  final TextEditingController situationController = TextEditingController();
 
   /// ----------------------------------------------------------
   /// 예시 고민 자동 입력 함수
@@ -23,15 +22,57 @@ class _SelectionPageState extends State<SelectionPage> {
     situationController.text = text;
   }
 
+  /// 음성인식 기능
+
+  late stt.SpeechToText speech;
+
+  bool isListening = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    speech = stt.SpeechToText();
+  }
+
+  Future<void> startListening() async {
+    bool available = await speech.initialize();
+
+    if (available) {
+      setState(() {
+        isListening = true;
+      });
+
+      speech.listen(
+        localeId: 'ko_KR',
+
+        onResult: (result) {
+          setState(() {
+            situationController.text = result.recognizedWords;
+
+            situationController.selection = TextSelection.fromPosition(
+              TextPosition(offset: situationController.text.length),
+            );
+          });
+        },
+      );
+    }
+  }
+
+  Future<void> stopListening() async {
+    await speech.stop();
+
+    setState(() {
+      isListening = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF7F5F2),
 
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF7F5F2),
-        elevation: 0,
-      ),
+      appBar: AppBar(backgroundColor: const Color(0xFFF7F5F2), elevation: 0),
 
       body: SafeArea(
         child: SingleChildScrollView(
@@ -41,10 +82,6 @@ class _SelectionPageState extends State<SelectionPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
 
             children: [
-
-              /// ----------------------------------------------------------
-              /// 캐릭터
-              /// ----------------------------------------------------------
               Align(
                 alignment: Alignment.centerRight,
 
@@ -58,9 +95,7 @@ class _SelectionPageState extends State<SelectionPage> {
 
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(
-                          0xFF4A6480,
-                        ).withOpacity(0.08),
+                        color: const Color(0xFF4A6480).withOpacity(0.08),
 
                         blurRadius: 20,
                         spreadRadius: 2,
@@ -79,9 +114,6 @@ class _SelectionPageState extends State<SelectionPage> {
 
               const SizedBox(height: 16),
 
-              /// ----------------------------------------------------------
-              /// 말풍선
-              /// ----------------------------------------------------------
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20,
@@ -148,6 +180,34 @@ class _SelectionPageState extends State<SelectionPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
 
                   children: [
+                    /// 음성 입력 안내
+                    Row(
+                      children: [
+                        const Text(
+                          '음성으로 입력하기',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+
+                        const Spacer(),
+
+                        IconButton(
+                          icon: Icon(
+                            isListening ? Icons.mic : Icons.mic_none,
+                            color: isListening ? Colors.red : Colors.blueGrey,
+                          ),
+
+                          onPressed: () {
+                            if (isListening) {
+                              stopListening();
+                            } else {
+                              startListening();
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 10),
 
                     /// 고민 입력
                     TextField(
@@ -155,8 +215,7 @@ class _SelectionPageState extends State<SelectionPage> {
                       maxLines: 6,
 
                       decoration: InputDecoration(
-                        hintText:
-                            '예: 지금 고백해도 될까?\n소개팅 이후 연락이 애매해...',
+                        hintText: '예: 지금 고백해도 될까?\n소개팅 이후 연락이 애매해...',
                         hintStyle: TextStyle(
                           color: Colors.grey.shade400,
                           fontSize: 16,
@@ -201,10 +260,7 @@ class _SelectionPageState extends State<SelectionPage> {
                         borderRadius: BorderRadius.circular(40),
 
                         gradient: const LinearGradient(
-                          colors: [
-                            Color(0xFF486A8A),
-                            Color(0xFFA9C7F2),
-                          ],
+                          colors: [Color(0xFF486A8A), Color(0xFFA9C7F2)],
                         ),
                       ),
 
@@ -215,16 +271,10 @@ class _SelectionPageState extends State<SelectionPage> {
                         ),
 
                         onPressed: () {
-
                           /// 입력값 없을 때
                           if (situationController.text.trim().isEmpty) {
-
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  '고민을 입력해주세요 🌙',
-                                ),
-                              ),
+                              const SnackBar(content: Text('고민을 입력해주세요 🌙')),
                             );
 
                             return;
@@ -236,8 +286,7 @@ class _SelectionPageState extends State<SelectionPage> {
 
                             MaterialPageRoute(
                               builder: (_) => DetailPage(
-                                situation:
-                                    situationController.text.trim(),
+                                situation: situationController.text.trim(),
                               ),
                             ),
                           );
@@ -276,17 +325,14 @@ class _SelectionPageState extends State<SelectionPage> {
               /// 고백하기
               GestureDetector(
                 onTap: () {
-                  fillExample(
-                    '지금 고백해도 괜찮을까?\n상대방도 나를 좋아하는 것 같긴 한데 확신이 없어.',
-                  );
+                  fillExample('지금 고백해도 괜찮을까?\n상대방도 나를 좋아하는 것 같긴 한데 확신이 없어.');
                 },
 
                 child: _exampleCard(
                   icon: Icons.favorite_border,
                   iconColor: const Color(0xFFE6A5AE),
                   title: '고백하기',
-                  description:
-                      '그 사람도 나를 좋아할까?\n타이밍을 물어보세요.',
+                  description: '그 사람도 나를 좋아할까?\n타이밍을 물어보세요.',
                 ),
               ),
 
@@ -295,17 +341,14 @@ class _SelectionPageState extends State<SelectionPage> {
               /// 이직하기
               GestureDetector(
                 onTap: () {
-                  fillExample(
-                    '지금 회사에서 계속 버티는 게 맞을까?\n새로운 회사 제안이 왔는데 고민돼.',
-                  );
+                  fillExample('지금 회사에서 계속 버티는 게 맞을까?\n새로운 회사 제안이 왔는데 고민돼.');
                 },
 
                 child: _exampleCard(
                   icon: Icons.work_outline,
                   iconColor: const Color(0xFFB8A8E6),
                   title: '이직하기',
-                  description:
-                      '지금 옮기는 게 맞을까?\n커리어 성장을 분석해요.',
+                  description: '지금 옮기는 게 맞을까?\n커리어 성장을 분석해요.',
                 ),
               ),
 
@@ -314,17 +357,14 @@ class _SelectionPageState extends State<SelectionPage> {
               /// 공부 vs 놀기
               GestureDetector(
                 onTap: () {
-                  fillExample(
-                    '시험이 얼마 안 남았는데 너무 쉬고 싶어.\n지금 놀아도 괜찮을까?',
-                  );
+                  fillExample('시험이 얼마 안 남았는데 너무 쉬고 싶어.\n지금 놀아도 괜찮을까?');
                 },
 
                 child: _exampleCard(
                   icon: Icons.school_outlined,
                   iconColor: const Color(0xFFA9C7F2),
                   title: '공부 vs 놀기',
-                  description:
-                      '당장 필요한 선택은 무엇인지\n가이드를 드려요.',
+                  description: '당장 필요한 선택은 무엇인지\n가이드를 드려요.',
                 ),
               ),
 
@@ -345,7 +385,6 @@ class _SelectionPageState extends State<SelectionPage> {
     required String title,
     required String description,
   }) {
-
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(22),
@@ -365,7 +404,6 @@ class _SelectionPageState extends State<SelectionPage> {
 
       child: Row(
         children: [
-
           /// 아이콘
           Container(
             width: 52,
@@ -376,10 +414,7 @@ class _SelectionPageState extends State<SelectionPage> {
               shape: BoxShape.circle,
             ),
 
-            child: Icon(
-              icon,
-              color: iconColor,
-            ),
+            child: Icon(icon, color: iconColor),
           ),
 
           const SizedBox(width: 18),
@@ -390,7 +425,6 @@ class _SelectionPageState extends State<SelectionPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
 
               children: [
-
                 Text(
                   title,
 
