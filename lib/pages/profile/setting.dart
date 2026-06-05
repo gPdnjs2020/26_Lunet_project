@@ -180,7 +180,6 @@ class _SettingPageState extends State<SettingPage> {
               const SizedBox(width: 12),
 
               /// 다른 성격 카드
-              /// 다른 성격 카드
               SizedBox(
                 height: 100,
 
