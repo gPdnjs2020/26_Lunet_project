@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../services/profile_service.dart';
 
 class AiService {
   /// 🔥 API KEY (여기에 실제 키 넣기)
@@ -13,16 +14,61 @@ class AiService {
     required String timing,
     required String situation,
   }) async {
+    final personality = await ProfileService.loadPersonality();
     print("=================================");
     print("🚀 AI REQUEST START");
     print("target: $target");
     print("readiness: $readiness");
     print("timing: $timing");
     print("situation: $situation");
+    print("personality: $personality");
     print("=================================");
 
     if (apiKey.isEmpty || apiKey == "YOUR_GEMINI_API_KEY") {
       throw Exception("❌ API KEY를 설정하세요.");
+    }
+
+    String personalityPrompt = '';
+
+    switch (personality) {
+      case '철학형':
+        personalityPrompt = '''
+너는 철학자 스타일의 AI다.
+
+- 정답을 주기보다 생각할 질문을 던진다.
+- 인간의 가치와 의미를 탐구한다.
+- 깊은 통찰을 제공한다.
+''';
+        break;
+
+      case '활기찬형':
+        personalityPrompt = '''
+너는 에너지 넘치는 코치 스타일 AI다.
+
+- 사용자를 적극 응원한다.
+- 용기와 자신감을 북돋아 준다.
+- 긍정적인 표현을 자주 사용한다.
+''';
+        break;
+
+      case '현실조언형':
+        personalityPrompt = '''
+너는 현실적인 컨설턴트 AI다.
+
+- 감정보다 데이터와 확률을 우선한다.
+- 객관적인 장단점을 분석한다.
+- 냉정하고 실용적인 조언을 제공한다.
+''';
+        break;
+
+      default:
+        personalityPrompt = '''
+너는 공감형 AI 상담사다.
+
+- 사용자의 감정을 먼저 이해한다.
+- 따뜻하고 부드럽게 말한다.
+- 위로와 공감을 제공한다.
+''';
     }
 
     final url = Uri.parse(
@@ -30,7 +76,9 @@ class AiService {
     );
 
     final prompt = '''
-너는 감성 AI 상담사 "루나"야.
+너는 AI "루나"야.
+
+$personalityPrompt
 
 절대 규칙:
 - JSON만 출력

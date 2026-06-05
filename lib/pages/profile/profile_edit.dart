@@ -1,9 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart'; // 🌟 [추가] 현재 크롬(웹)인지 모바일인지 확인하는 패키지
+import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../services/profile_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart'; // 🌟 [핵심 추가] 파이어베이스 스토리지
 
 class ProfileEditPage extends StatefulWidget {
   const ProfileEditPage({super.key});
@@ -15,7 +16,6 @@ class ProfileEditPage extends StatefulWidget {
 class _ProfileEditPageState extends State<ProfileEditPage> {
   final TextEditingController nicknameController = TextEditingController();
 
-  // 🌟 [수정] File 대신 XFile 타입 사용 (크롬 웹브라우저 호환성을 위해)
   XFile? _selectedImage;
   String? _existingImageUrl;
 
@@ -42,25 +42,20 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
 
     if (image != null) {
       setState(() {
-        _selectedImage = image; // 🌟 사진을 고르자마자 즉각 화면 리빌드!
+        _selectedImage = image;
       });
     }
   }
 
   /// 🖼️ [프로필 동그라미 안에 사진을 띄워주는 지능형 함수]
   ImageProvider _getAvatarImage() {
-    // 1. 방금 내가 갤러리에서 새로 고른 사진이 있다면 가장 우선순위로 보여줌!
     if (_selectedImage != null) {
       if (kIsWeb) {
-        // 🌟 크롬(웹) 환경에서는 사진을 NetworkImage로 읽어야 화면에 즉시 보입니다!
         return NetworkImage(_selectedImage!.path);
       } else {
-        // 모바일(안드로이드/iOS) 환경
         return FileImage(File(_selectedImage!.path));
       }
-    }
-    // 2. 고른 사진이 없는데, 파이어베이스에 저장된 기존 내 사진이 있다면 그걸 보여줌!
-    else if (_existingImageUrl != null && _existingImageUrl!.isNotEmpty) {
+    } else if (_existingImageUrl != null && _existingImageUrl!.isNotEmpty) {
       if (_existingImageUrl!.startsWith('http') ||
           _existingImageUrl!.startsWith('blob')) {
         return NetworkImage(_existingImageUrl!);
@@ -68,7 +63,6 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         return FileImage(File(_existingImageUrl!));
       }
     }
-    // 3. 둘 다 없으면 기본 루나 캐릭터 실루엣 띄우기!
     return const AssetImage('assets/images/user_avatar_placeholder.png');
   }
 
@@ -97,7 +91,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                 CircleAvatar(
                   radius: 60,
                   backgroundColor: Colors.white,
-                  backgroundImage: _getAvatarImage(), // 🌟 웹에서도 즉각 반영!
+                  backgroundImage: _getAvatarImage(),
                 ),
                 Positioned(
                   right: 0,
@@ -155,22 +149,43 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
 
                         try {
                           User? user = FirebaseAuth.instance.currentUser;
+                          if (user == null) throw Exception("로그인된 사용자가 없습니다.");
 
+                          // 1. 닉네임 변경 (서버 및 로컬)
                           await ProfileService.saveNickname(
                             nicknameController.text,
                           );
-                          await user?.updateDisplayName(
-                            nicknameController.text,
-                          );
+                          await user.updateDisplayName(nicknameController.text);
 
+                          // 2. 🌟 [핵심] 갤러리에서 새로 고른 사진을 진짜 Firebase Storage 서버에 업로드!
                           if (_selectedImage != null) {
-                            await ProfileService.saveProfileImage(
-                              _selectedImage!.path,
-                            );
-                            await user?.updatePhotoURL(_selectedImage!.path);
+                            // 내 유저 고유 ID(uid)로 파일 이름을 만들어 덮어씌웁니다.
+                            final storageRef = FirebaseStorage.instance
+                                .ref()
+                                .child('profile_images')
+                                .child('${user.uid}.jpg');
+
+                            // 웹과 모바일의 업로드 방식 차이 해결
+                            if (kIsWeb) {
+                              final bytes = await _selectedImage!.readAsBytes();
+                              await storageRef.putData(bytes);
+                            } else {
+                              await storageRef.putFile(
+                                File(_selectedImage!.path),
+                              );
+                            }
+
+                            // 3. 업로드가 완료되면 영구적인 다운로드 URL(https://...)을 발급받습니다!
+                            final downloadUrl = await storageRef
+                                .getDownloadURL();
+
+                            // 4. 발급받은 진짜 인터넷 주소를 내 파이어베이스 계정 프로필에 저장합니다!
+                            await ProfileService.saveProfileImage(downloadUrl);
+                            await user.updatePhotoURL(downloadUrl);
                           }
 
-                          await user?.reload();
+                          // 서버 데이터 강제 새로고침
+                          await user.reload();
 
                           if (context.mounted) {
                             Navigator.pop(context);
