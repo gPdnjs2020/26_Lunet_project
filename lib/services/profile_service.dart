@@ -1,6 +1,8 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileService {
+  static const String personalityKey = 'personality';
+
   static Future<void> saveNickname(String nickname) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('nickname', nickname);
@@ -19,5 +21,16 @@ class ProfileService {
   static Future<String?> loadProfileImage() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('profileImage');
+  }
+
+  static Future<void> savePersonality(String personality) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(personalityKey, personality);
+  }
+
+  static Future<String> loadPersonality() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    return prefs.getString(personalityKey) ?? '공감형';
   }
 }
