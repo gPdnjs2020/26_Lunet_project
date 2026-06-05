@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../profile/profile_edit.dart';
-import '../../services/profile_service.dart';
+import 'profile_edit.dart';
+import '../setting/support.dart';
 
 /// [ 설정창 화면 클래스 ]
 class SettingPage extends StatefulWidget {
@@ -13,20 +13,6 @@ class SettingPage extends StatefulWidget {
 class _SettingPageState extends State<SettingPage> {
   bool _mindfulnessAlarm = true;
   bool _weeklyInsight = false;
-
-  String selectedPersonality = '공감형';
-
-  @override
-  void initState() {
-    super.initState();
-    loadPersonality();
-  }
-
-  Future<void> loadPersonality() async {
-    selectedPersonality = await ProfileService.loadPersonality();
-
-    setState(() {});
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -119,14 +105,14 @@ class _SettingPageState extends State<SettingPage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
 
-                    /*child: const Text(
+                    child: const Text(
                       'PREMIUM',
                       style: TextStyle(
                         fontSize: 10,
                         color: Color(0xFFE08E9B),
                         fontWeight: FontWeight.bold,
                       ),
-                    ),*/
+                    ),
                   ),
                 ],
               ),
@@ -147,8 +133,8 @@ class _SettingPageState extends State<SettingPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
 
                   children: [
-                    Text(
-                      selectedPersonality,
+                    const Text(
+                      '공감형',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -158,8 +144,8 @@ class _SettingPageState extends State<SettingPage> {
 
                     const SizedBox(height: 8),
 
-                    Text(
-                      getPersonalityDescription(),
+                    const Text(
+                      '부드럽고 지지적이며 깊은 직관력을 가졌어요. 루미에르가 진심으로 귀를 기울입니다.',
                       style: TextStyle(fontSize: 13, color: Colors.black54),
                     ),
 
@@ -177,75 +163,21 @@ class _SettingPageState extends State<SettingPage> {
                 ),
               ),
 
-              const SizedBox(width: 12),
+              const SizedBox(height: 12),
 
               /// 다른 성격 카드
-              SizedBox(
-                height: 100,
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildPersonalityCard('철학형', '생각할 거리를 던져주는 깊은 대화.'),
+                  ),
 
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
+                  const SizedBox(width: 12),
 
-                  children: [
-                    SizedBox(
-                      width: 140,
-
-                      child: _buildPersonalityCard(
-                        '철학형',
-                        '생각할 거리를 던져주는 깊은 대화.',
-                        isSelected: selectedPersonality == '철학형',
-
-                        onTap: () async {
-                          await ProfileService.savePersonality('철학형');
-
-                          setState(() {
-                            selectedPersonality = '철학형';
-                          });
-                        },
-                      ),
-                    ),
-
-                    const SizedBox(width: 12),
-
-                    SizedBox(
-                      width: 140,
-
-                      child: _buildPersonalityCard(
-                        '활기찬형',
-                        '동기부여를 해주는 맑은 에너지.',
-                        isSelected: selectedPersonality == '활기찬형',
-
-                        onTap: () async {
-                          await ProfileService.savePersonality('활기찬형');
-
-                          setState(() {
-                            selectedPersonality = '활기찬형';
-                          });
-                        },
-                      ),
-                    ),
-
-                    const SizedBox(width: 12),
-
-                    SizedBox(
-                      width: 140,
-
-                      child: _buildPersonalityCard(
-                        '현실조언형',
-                        '객관적 데이터 기반 조언.',
-                        isSelected: selectedPersonality == '현실조언형',
-
-                        onTap: () async {
-                          await ProfileService.savePersonality('현실조언형');
-
-                          setState(() {
-                            selectedPersonality = '현실조언형';
-                          });
-                        },
-                      ),
-                    ),
-                  ],
-                ),
+                  Expanded(
+                    child: _buildPersonalityCard('활기찬형', '동기부여를 해주는 맑은 에너지.'),
+                  ),
+                ],
               ),
 
               const SizedBox(height: 36),
@@ -284,44 +216,21 @@ class _SettingPageState extends State<SettingPage> {
               const SizedBox(height: 12),
 
               _buildMenuTile(
-                Icons.help_outline,
+                Icons.person_outline,
                 '고객센터',
-
-                hasArrow: false,
-
-                trailing: const Icon(
-                  Icons.open_in_new,
-                  size: 18,
-                  color: Colors.grey,
-                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const SupportPage()),
+                  );
+                },
               ),
-
-              const SizedBox(height: 10),
-
-              _buildMenuTile(Icons.forum_outlined, '상담원 연결'),
-
-              const SizedBox(height: 48),
+              const SizedBox(height: 12),
             ],
           ),
         ),
       ),
     );
-  }
-
-  String getPersonalityDescription() {
-    switch (selectedPersonality) {
-      case '철학형':
-        return '생각할 거리를 던져주는 깊은 대화';
-
-      case '활기찬형':
-        return '동기부여를 해주는 맑은 에너지';
-
-      case '현실조언형':
-        return '객관적 데이터 기반의 조언';
-
-      default:
-        return '부드럽고 지지적이며 깊은 직관력을 가졌어요.';
-    }
   }
 
   /// 섹션 제목
@@ -399,60 +308,45 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   /// 성격 카드
-  Widget _buildPersonalityCard(
-    String title,
-    String description, {
-    bool isSelected = false,
-    VoidCallback? onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
+  Widget _buildPersonalityCard(String title, String description) {
+    return Container(
+      padding: const EdgeInsets.all(16),
 
-      child: Container(
-        height: 90,
-        width: double.infinity,
-        padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
 
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFE9D8FF) : Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
 
-          borderRadius: BorderRadius.circular(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
 
-          border: Border.all(
-            color: isSelected ? const Color(0xFF8B5CF6) : Colors.transparent,
-            width: 2,
+        children: [
+          Text(
+            title,
+
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF4A6480),
+            ),
           ),
 
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
+          const SizedBox(height: 6),
 
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          Text(
+            description,
 
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF4A6480),
-              ),
-            ),
-
-            const SizedBox(height: 6),
-
-            Text(
-              description,
-              style: const TextStyle(fontSize: 12, color: Colors.black54),
-            ),
-          ],
-        ),
+            style: const TextStyle(fontSize: 12, color: Colors.black54),
+          ),
+        ],
       ),
     );
   }
