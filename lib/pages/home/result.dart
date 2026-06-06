@@ -373,128 +373,6 @@ class _ResultPageState extends State<ResultPage> {
                   ),
                 ),
 
-                /*const SizedBox(height: 24),
-
-                /// 성공률 카드
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(28),
-
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(35),
-
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.03),
-                        blurRadius: 15,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-
-                  child: Column(
-                    children: [
-                      const Text(
-                        'SUCCESS RATE',
-
-                        style: TextStyle(
-                          letterSpacing: 2,
-                          fontSize: 13,
-                          color: Colors.black45,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      Stack(
-                        alignment: Alignment.center,
-
-                        children: [
-                          SizedBox(
-                            width: 170,
-                            height: 170,
-
-                            child: CircularProgressIndicator(
-                              value: successRate,
-                              strokeWidth: 13,
-
-                              backgroundColor: Colors.blueGrey.shade50,
-
-                              valueColor: const AlwaysStoppedAnimation(
-                                Color(0xFF4A6480),
-                              ),
-                            ),
-                          ),
-
-                          Column(
-                            children: [
-                              Text(
-                                '$successPercent%',
-
-                                style: const TextStyle(
-                                  fontSize: 48,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF4A6480),
-                                ),
-                              ),
-
-                              const SizedBox(height: 5),
-
-                              const Text(
-                                '가능성',
-
-                                style: TextStyle(
-                                  color: Colors.black54,
-                                  fontSize: 15,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 18,
-                          vertical: 12,
-                        ),
-
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFE8F3FF),
-
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.auto_awesome,
-                              color: Color(0xFF4A6480),
-                            ),
-
-                            const SizedBox(width: 10),
-
-                            Expanded(
-                              child: Text(
-                                advice,
-
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black54,
-                                  height: 1.5,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),*/
 
                 const SizedBox(height: 24),
 
@@ -597,7 +475,7 @@ class _ResultPageState extends State<ResultPage> {
 
                         MaterialPageRoute(
                           builder: (_) =>
-                              StrategyPage(aiResult: widget.aiResult),
+                              StrategyPage(aiResult: widget.aiResult, questionType: widget.questionType),
                         ),
                       );
                     },
