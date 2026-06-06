@@ -7,6 +7,7 @@ import '../../services/history_service.dart';
 import 'package:screenshot/screenshot.dart';
 import 'dart:typed_data';
 import 'package:saver_gallery/saver_gallery.dart';
+import 'result_save.dart';
 
 class ResultPage extends StatefulWidget {
   final String situation;
@@ -46,29 +47,35 @@ class _ResultPageState extends State<ResultPage> {
   }
 
   Future<void> saveResultImage() async {
-  try {
-    Uint8List? image = await screenshotController.capture();
+    try {
+      final controller = ScreenshotController();
 
-    print("capture 완료");
+      final image = await controller.captureFromLongWidget(
+        ResultSaveWidget(
+          situation: widget.situation,
+          successPercent: widget.aiResult['success_rate'] ?? 50,
+          profileTitle: widget.aiResult['profile_title'] ?? '',
+          profileStyle: widget.aiResult['profile_style'] ?? '',
+          advice: widget.aiResult['advice'] ?? '',
+          positive: widget.aiResult['positive'] ?? '',
+          warning: widget.aiResult['warning'] ?? '',
+          lunaMessage: widget.aiResult['luna_message'] ?? '',
+        ),
+        context: context,
+        pixelRatio: 3,
+      );
 
-    if (image == null) {
-      print("image null");
-      return;
+      final result = await SaverGallery.saveImage(
+        image,
+        fileName: "lunet_${DateTime.now().millisecondsSinceEpoch}",
+        skipIfExists: false,
+      );
+
+      print(result);
+    } catch (e) {
+      print(e);
     }
-
-    final result = await SaverGallery.saveImage(
-      image,
-      fileName: "lunet_${DateTime.now().millisecondsSinceEpoch}",
-      skipIfExists: false,
-    );
-
-    print(result);
-
-  } catch (e, stack) {
-    print("ERROR : $e");
-    print(stack);
   }
-}
 
   void saveToHistory() async {
     final history = HistoryModel(
