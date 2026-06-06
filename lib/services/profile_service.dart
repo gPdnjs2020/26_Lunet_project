@@ -33,4 +33,16 @@ class ProfileService {
 
     return prefs.getString(personalityKey) ?? '공감형';
   }
+
+  /// ⭐ [추가] 생년월일 저장하기
+  static Future<void> saveBirthdate(String birthdate) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_birthdate', birthdate);
+  }
+
+  /// ⭐ [추가] 생년월일 불러오기
+  static Future<String?> getBirthdate() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('user_birthdate');
+  }
 }
