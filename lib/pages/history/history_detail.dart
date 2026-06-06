@@ -32,6 +32,15 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
       category: widget.history.category,
       situation: widget.history.situation,
       date: widget.history.date,
+
+      advice: widget.history.advice,
+      positive: widget.history.positive,
+      warning: widget.history.warning,
+      lunaMessage: widget.history.lunaMessage,
+
+      profileTitle: widget.history.profileTitle,
+      profileStyle: widget.history.profileStyle,
+
       userResult: 'success',
     );
 
@@ -50,6 +59,15 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
       category: widget.history.category,
       situation: widget.history.situation,
       date: widget.history.date,
+
+      advice: widget.history.advice,
+      positive: widget.history.positive,
+      warning: widget.history.warning,
+      lunaMessage: widget.history.lunaMessage,
+
+      profileTitle: widget.history.profileTitle,
+      profileStyle: widget.history.profileStyle,
+
       userResult: 'fail',
     );
 
@@ -225,6 +243,89 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
                         history.situation,
                         style: const TextStyle(fontSize: 15, height: 1.6),
                       ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 32),
+                
+                _card(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'AI 조언',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      Text(history.advice),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 32),
+
+                _card(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        '긍정 요소',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      Text(history.positive),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 32),
+
+                _card(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        '주의 요소',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      Text(history.warning),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 32),
+
+                _card(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        '루나의 조언',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      Text(history.lunaMessage),
                     ],
                   ),
                 ),
