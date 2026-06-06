@@ -9,6 +9,7 @@ class LoadingPage extends StatefulWidget {
   final String relation;
   final double readiness;
   final String timing;
+  final String questionType;
 
   const LoadingPage({
     super.key,
@@ -16,6 +17,7 @@ class LoadingPage extends StatefulWidget {
     required this.relation,
     required this.readiness,
     required this.timing,
+    required this.questionType,
   });
 
   @override
@@ -73,6 +75,7 @@ class _LoadingPageState extends State<LoadingPage>
         readiness: widget.readiness * 100,
         timing: widget.timing,
         situation: widget.situation,
+        questionType: widget.questionType,
       );
 
       if (!mounted) return;
@@ -86,6 +89,7 @@ class _LoadingPageState extends State<LoadingPage>
             readiness: widget.readiness,
             timing: widget.timing,
             aiResult: aiResult,
+            questionType: widget.questionType,
           ),
         ),
       );

@@ -13,6 +13,7 @@ class AiService {
     required double readiness,
     required String timing,
     required String situation,
+    required String questionType,
     // ⭐ [추가] 지역, 생년월일, 성별, 그리고 날씨 파라미터 추가
     String location = '위치 모름',
     String birthdate = '정보 없음',
@@ -26,6 +27,7 @@ class AiService {
     print("readiness: $readiness");
     print("timing: $timing");
     print("situation: $situation");
+    print("questionType: $questionType");
     print("location: $location");
     print("birthdate: $birthdate");
     print("gender: $gender");
@@ -145,6 +147,7 @@ boost 규칙
 - 준비도: ${readiness.toStringAsFixed(0)}%
 - 타이밍: $timing
 - 상황: $situation
+- 질문 유형: $questionType
 - 📍 현재 위치: $location
 - 🎂 생년월일: $birthdate
 - 👤 성별: $gender

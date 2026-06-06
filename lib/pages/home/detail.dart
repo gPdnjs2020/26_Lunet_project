@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'loading.dart';
 
-
 class DetailPage extends StatefulWidget {
-
   /// selection 페이지에서 전달받은 고민 내용
   final String situation;
   final String questionType;
@@ -11,6 +9,7 @@ class DetailPage extends StatefulWidget {
   const DetailPage({
     super.key,
     required this.situation,
+    required this.questionType,
   });
 
   @override
@@ -18,7 +17,6 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
-
   int selectedRelation = 0;
   int selectedTiming = 0;
 
@@ -33,25 +31,15 @@ class _DetailPageState extends State<DetailPage> {
   ];
 
   final List<Map<String, String>> timings = [
-    {
-      'title': '지금 바로',
-      'desc': '더 이상 지체할 수 없어요.',
-    },
+    {'title': '지금 바로', 'desc': '더 이상 지체할 수 없어요.'},
 
-    {
-      'title': '이번 주 내로',
-      'desc': '충분히 고민해보고 결정할게요.',
-    },
+    {'title': '이번 주 내로', 'desc': '충분히 고민해보고 결정할게요.'},
 
-    {
-      'title': '나중에 천천히',
-      'desc': '아직은 서두르고 싶지 않아요.',
-    },
+    {'title': '나중에 천천히', 'desc': '아직은 서두르고 싶지 않아요.'},
   ];
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: const Color(0xFFF7F5F2),
 
@@ -63,10 +51,7 @@ class _DetailPageState extends State<DetailPage> {
         elevation: 0,
 
         leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            color: Colors.black87,
-          ),
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.black87),
 
           onPressed: () {
             Navigator.pop(context);
@@ -93,7 +78,6 @@ class _DetailPageState extends State<DetailPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
 
             children: [
-
               /// ----------------------------------------------------------
               /// 말풍선
               /// ----------------------------------------------------------
@@ -101,11 +85,7 @@ class _DetailPageState extends State<DetailPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
 
                 children: [
-
-                  Image.asset(
-                    'assets/images/character.png',
-                    width: 55,
-                  ),
+                  Image.asset('assets/images/character.png', width: 55),
 
                   const SizedBox(width: 10),
 
@@ -230,7 +210,6 @@ class _DetailPageState extends State<DetailPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
 
                   children: [
-
                     const Text(
                       '얼마나 준비됐다고 생각해?',
                       style: TextStyle(
@@ -244,28 +223,20 @@ class _DetailPageState extends State<DetailPage> {
 
                     const Text(
                       '마음의 준비 정도를 알려주세요.',
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontSize: 15,
-                      ),
+                      style: TextStyle(color: Colors.black54, fontSize: 15),
                     ),
 
                     const SizedBox(height: 24),
 
                     SliderTheme(
                       data: SliderTheme.of(context).copyWith(
-                        activeTrackColor:
-                            const Color(0xFF4A6480),
+                        activeTrackColor: const Color(0xFF4A6480),
 
-                        inactiveTrackColor:
-                            Colors.blueGrey.shade100,
+                        inactiveTrackColor: Colors.blueGrey.shade100,
 
-                        thumbColor:
-                            const Color(0xFF4A6480),
+                        thumbColor: const Color(0xFF4A6480),
 
-                        overlayColor:
-                            const Color(0xFF4A6480)
-                                .withOpacity(0.2),
+                        overlayColor: const Color(0xFF4A6480).withOpacity(0.2),
 
                         trackHeight: 6,
                       ),
@@ -282,17 +253,12 @@ class _DetailPageState extends State<DetailPage> {
                     ),
 
                     Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
                       children: const [
-
                         Column(
                           children: [
-                            Icon(
-                              Icons.lightbulb_outline,
-                              color: Colors.grey,
-                            ),
+                            Icon(Icons.lightbulb_outline, color: Colors.grey),
 
                             SizedBox(height: 4),
 
@@ -308,10 +274,7 @@ class _DetailPageState extends State<DetailPage> {
 
                         Column(
                           children: [
-                            Icon(
-                              Icons.rocket_launch,
-                              color: Color(0xFF4A6480),
-                            ),
+                            Icon(Icons.rocket_launch, color: Color(0xFF4A6480)),
 
                             SizedBox(height: 4),
 
@@ -356,8 +319,7 @@ class _DetailPageState extends State<DetailPage> {
                     child: _timingCard(
                       title: timings[index]['title']!,
                       desc: timings[index]['desc']!,
-                      selected:
-                          selectedTiming == index,
+                      selected: selectedTiming == index,
 
                       onTap: () {
                         setState(() {
@@ -382,10 +344,7 @@ class _DetailPageState extends State<DetailPage> {
                   borderRadius: BorderRadius.circular(40),
 
                   gradient: const LinearGradient(
-                    colors: [
-                      Color(0xFF486A8A),
-                      Color(0xFFA9C7F2),
-                    ],
+                    colors: [Color(0xFF486A8A), Color(0xFFA9C7F2)],
                   ),
                 ),
 
@@ -396,18 +355,16 @@ class _DetailPageState extends State<DetailPage> {
                   ),
 
                   onPressed: () {
-
                     Navigator.push(
                       context,
 
                       MaterialPageRoute(
                         builder: (_) => LoadingPage(
                           situation: widget.situation,
-                          relation:
-                              relations[selectedRelation],
+                          relation: relations[selectedRelation],
                           readiness: readiness,
-                          timing: timings[selectedTiming]
-                              ['title']!,
+                          timing: timings[selectedTiming]['title']!,
+                          questionType: widget.questionType,
                         ),
                       ),
                     );
@@ -430,10 +387,7 @@ class _DetailPageState extends State<DetailPage> {
                 child: Text(
                   '"당신의 최선의 결정을 루나가 함께 응원할게요." 💞',
 
-                  style: TextStyle(
-                    color: Colors.black54,
-                    fontSize: 13,
-                  ),
+                  style: TextStyle(color: Colors.black54, fontSize: 13),
                 ),
               ),
 
@@ -453,29 +407,21 @@ class _DetailPageState extends State<DetailPage> {
     required bool isSelected,
     required VoidCallback onTap,
   }) {
-
     return GestureDetector(
       onTap: onTap,
 
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
 
-        padding: const EdgeInsets.symmetric(
-          horizontal: 18,
-          vertical: 14,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
 
         decoration: BoxDecoration(
-          color: isSelected
-              ? const Color(0xFFEAF2FF)
-              : Colors.white,
+          color: isSelected ? const Color(0xFFEAF2FF) : Colors.white,
 
           borderRadius: BorderRadius.circular(30),
 
           border: Border.all(
-            color: isSelected
-                ? const Color(0xFF8EB5E8)
-                : Colors.transparent,
+            color: isSelected ? const Color(0xFF8EB5E8) : Colors.transparent,
 
             width: 2,
           ),
@@ -486,9 +432,7 @@ class _DetailPageState extends State<DetailPage> {
 
           style: TextStyle(
             fontSize: 16,
-            fontWeight: isSelected
-                ? FontWeight.bold
-                : FontWeight.normal,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
 
             color: const Color(0xFF4A6480),
           ),
@@ -506,7 +450,6 @@ class _DetailPageState extends State<DetailPage> {
     required bool selected,
     required VoidCallback onTap,
   }) {
-
     return GestureDetector(
       onTap: onTap,
 
@@ -521,9 +464,7 @@ class _DetailPageState extends State<DetailPage> {
           borderRadius: BorderRadius.circular(28),
 
           border: Border.all(
-            color: selected
-                ? const Color(0xFF8EB5E8)
-                : Colors.transparent,
+            color: selected ? const Color(0xFF8EB5E8) : Colors.transparent,
 
             width: 2,
           ),
@@ -531,7 +472,6 @@ class _DetailPageState extends State<DetailPage> {
 
         child: Row(
           children: [
-
             Container(
               width: 54,
               height: 54,
@@ -545,9 +485,7 @@ class _DetailPageState extends State<DetailPage> {
               ),
 
               child: Icon(
-                selected
-                    ? Icons.check
-                    : Icons.schedule,
+                selected ? Icons.check : Icons.schedule,
 
                 color: const Color(0xFF4A6480),
               ),
@@ -557,11 +495,9 @@ class _DetailPageState extends State<DetailPage> {
 
             Expanded(
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
 
                 children: [
-
                   Text(
                     title,
 
@@ -576,19 +512,13 @@ class _DetailPageState extends State<DetailPage> {
                   Text(
                     desc,
 
-                    style: const TextStyle(
-                      color: Colors.black54,
-                      height: 1.4,
-                    ),
+                    style: const TextStyle(color: Colors.black54, height: 1.4),
                   ),
                 ],
               ),
             ),
 
-            const Icon(
-              Icons.chevron_right,
-              color: Colors.grey,
-            ),
+            const Icon(Icons.chevron_right, color: Colors.grey),
           ],
         ),
       ),

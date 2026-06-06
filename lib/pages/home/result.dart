@@ -14,6 +14,7 @@ class ResultPage extends StatefulWidget {
   final String relation;
   final double readiness;
   final String timing;
+  final String questionType;
 
   /// AI 결과
   final Map<String, dynamic> aiResult;
@@ -25,6 +26,7 @@ class ResultPage extends StatefulWidget {
     required this.readiness,
     required this.timing,
     required this.aiResult,
+    required this.questionType,
   });
 
   @override
@@ -104,6 +106,8 @@ class _ResultPageState extends State<ResultPage> {
 
   @override
   Widget build(BuildContext context) {
+    final String questionType = widget.questionType;
+
     /// AI 데이터
     final int successPercent = widget.aiResult['success_rate'] ?? 50;
 
@@ -182,17 +186,38 @@ class _ResultPageState extends State<ResultPage> {
                 const SizedBox(height: 24),
 
                 /// 메인 텍스트
-                Text(
-                  '지금은 약 $successPercent%\n가능해 보여요!',
-                  textAlign: TextAlign.center,
-
-                  style: const TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                    height: 1.3,
-                    color: Color(0xFF2B2B2B),
+                if (questionType == '할까말까')
+                  Text(
+                    '지금은 약 $successPercent%\n가능해 보여요!',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 36,
+                      fontWeight: FontWeight.bold,
+                      height: 1.3,
+                      color: Color(0xFF2B2B2B),
+                    ),
                   ),
-                ),
+
+                if (questionType == 'A or B')
+                  const Text(
+                    '두 선택지를 비교해봤어요',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+                  ),
+
+                if (questionType == '추천')
+                  const Text(
+                    '루나의 추천 결과예요',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+                  ),
+
+                if (questionType == '고민 상담')
+                  const Text(
+                    '당신의 마음을 분석했어요',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+                  ),
 
                 const SizedBox(height: 12),
 
@@ -205,8 +230,17 @@ class _ResultPageState extends State<ResultPage> {
 
                 const SizedBox(height: 24),
 
+                if (questionType == '할까말까')
+                  _successCard(successPercent, successRate, advice),
+
+                if (questionType == 'A or B') _compareCard(),
+
+                if (questionType == '추천') _recommendCard(),
+
+                if (questionType == '고민 상담') _counselCard(),
+
                 /// 고민 카드
-                Container(
+                /*Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(24),
 
@@ -274,8 +308,7 @@ class _ResultPageState extends State<ResultPage> {
                       ),
                     ],
                   ),
-                ),
-
+                ),*/
                 const SizedBox(height: 24),
 
                 /// 프로필 카드
@@ -340,7 +373,7 @@ class _ResultPageState extends State<ResultPage> {
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                /*const SizedBox(height: 24),
 
                 /// 성공률 카드
                 Container(
@@ -461,7 +494,7 @@ class _ResultPageState extends State<ResultPage> {
                       ),
                     ],
                   ),
-                ),
+                ),*/
 
                 const SizedBox(height: 24),
 
@@ -723,6 +756,190 @@ class _ResultPageState extends State<ResultPage> {
               color: Colors.black54,
               height: 1.6,
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _compareCard() {
+    final a = widget.aiResult['choice_a'] ?? '선택지 A';
+
+    final b = widget.aiResult['choice_b'] ?? '선택지 B';
+
+    final aScore = widget.aiResult['a_score'] ?? 50;
+
+    final bScore = widget.aiResult['b_score'] ?? 50;
+
+    final recommended = widget.aiResult['recommended'] ?? a;
+
+    return Container(
+      padding: const EdgeInsets.all(24),
+
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+      ),
+
+      child: Column(
+        children: [
+          Text(
+            '루나의 추천',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+
+          SizedBox(height: 20),
+
+          Text('$a : $aScore%'),
+
+          Text('$b : $bScore%'),
+
+          SizedBox(height: 20),
+
+          Text(
+            '👉 $recommended',
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF4A6480),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _recommendCard() {
+    final list = widget.aiResult['recommendations'] ?? [];
+
+    return Container(
+      padding: const EdgeInsets.all(24),
+
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+      ),
+
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+
+        children: [
+          const Text(
+            '루나 추천 TOP 3',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+
+          const SizedBox(height: 20),
+
+          for (int i = 0; i < list.length; i++)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+
+              child: Text(
+                '${i + 1}. ${list[i]}',
+                style: const TextStyle(fontSize: 18),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _counselCard() {
+    final emotion = widget.aiResult['emotion'] ?? '보통';
+
+    return Container(
+      padding: const EdgeInsets.all(24),
+
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+      ),
+
+      child: Column(
+        children: [
+          const Text(
+            '현재 감정 상태',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+
+          const SizedBox(height: 20),
+
+          Text(
+            emotion,
+            style: const TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF4A6480),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 고민 카드
+  Widget _successCard(int successPercent, double successRate, String advice) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.chat_bubble_outline, color: Color(0xFF4A6480)),
+
+              const SizedBox(width: 10),
+
+              const Text(
+                '당신의 고민',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF4A6480),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 18),
+
+          Text(
+            widget.situation,
+
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.black87,
+              height: 1.7,
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          Row(
+            children: [
+              Expanded(child: _miniInfoCard('관계', widget.relation)),
+
+              const SizedBox(width: 12),
+
+              Expanded(child: _miniInfoCard('실행 시기', widget.timing)),
+            ],
           ),
         ],
       ),
