@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'loading.dart';
 
+
 class DetailPage extends StatefulWidget {
 
   /// selection 페이지에서 전달받은 고민 내용
