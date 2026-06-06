@@ -48,9 +48,15 @@ class _ProfilePageState extends State<ProfilePage> {
   void analyzeProfile(List<HistoryModel> histories) {
     if (histories.isEmpty) return;
 
-    double avgSuccess =
-        histories.map((e) => e.successRate).reduce((a, b) => a + b) /
-        histories.length;
+    int successCount = histories.where((e) => e.userResult == 'success').length;
+
+    int failCount = histories.where((e) => e.userResult == 'fail').length;
+
+    int totalAnswered = successCount + failCount;
+
+    double avgSuccess = totalAnswered == 0
+        ? 0
+        : (successCount / totalAnswered) * 100;
 
     Map<String, int> categoryCount = {};
 
@@ -107,10 +113,15 @@ class _ProfilePageState extends State<ProfilePage> {
       }
       return;
     }
+    int successCount = result.where((e) => e.userResult == 'success').length;
 
-    double average =
-        result.map((e) => e.successRate).reduce((a, b) => a + b) /
-        result.length;
+    int failCount = result.where((e) => e.userResult == 'fail').length;
+
+    int totalAnswered = successCount + failCount;
+
+    double actualSuccessRate = totalAnswered == 0
+        ? 0
+        : (successCount / totalAnswered) * 100;
 
     Map<String, int> categoryCount = {};
 
@@ -127,7 +138,7 @@ class _ProfilePageState extends State<ProfilePage> {
         nickname = fetchedNickname;
         profileImage = fetchedProfileImage;
         histories = result;
-        avgRate = average;
+        avgRate = actualSuccessRate;
         topCategory = mostCategory;
 
         level = (result.length ~/ 5) + 1;
@@ -277,7 +288,7 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               Expanded(
                 child: _statCard(
-                  title: '평균 성공률',
+                  title: '실제 성공률',
                   value: '${avgRate.toStringAsFixed(0)}%',
                   icon: Icons.trending_up,
                 ),

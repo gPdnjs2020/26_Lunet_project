@@ -15,6 +15,10 @@ class _SelectionPageState extends State<SelectionPage> {
   /// ----------------------------------------------------------
   final TextEditingController situationController = TextEditingController();
 
+  String _selectedCategory = '할까 말까';
+
+  final List<String> _categories = ['할까 말까', 'A or B', '추천', '고민 상담'];
+
   /// ----------------------------------------------------------
   /// 예시 고민 자동 입력 함수
   /// ----------------------------------------------------------
@@ -152,6 +156,52 @@ class _SelectionPageState extends State<SelectionPage> {
 
               const SizedBox(height: 24),
 
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: _categories.map((category) {
+                    final isSelected = _selectedCategory == category;
+
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _selectedCategory = category;
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 18,
+                            vertical: 12,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? const Color(0xFF4A6480)
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: isSelected
+                                  ? const Color(0xFF4A6480)
+                                  : Colors.grey.shade300,
+                            ),
+                          ),
+                          child: Text(
+                            category,
+                            style: TextStyle(
+                              color: isSelected ? Colors.white : Colors.black87,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
               /// ----------------------------------------------------------
               /// 입력 카드
               /// ----------------------------------------------------------
@@ -283,6 +333,7 @@ class _SelectionPageState extends State<SelectionPage> {
                             MaterialPageRoute(
                               builder: (_) => DetailPage(
                                 situation: situationController.text.trim(),
+                                questionType: _selectedCategory,
                               ),
                             ),
                           );
@@ -322,6 +373,10 @@ class _SelectionPageState extends State<SelectionPage> {
               GestureDetector(
                 onTap: () {
                   fillExample('지금 고백해도 괜찮을까?\n상대방도 나를 좋아하는 것 같긴 한데 확신이 없어.');
+
+                  setState(() {
+                    _selectedCategory = '할까 말까';
+                  });
                 },
 
                 child: _exampleCard(
