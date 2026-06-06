@@ -13,6 +13,11 @@ class AiService {
     required double readiness,
     required String timing,
     required String situation,
+    // ⭐ [추가] 지역, 생년월일, 성별, 그리고 날씨 파라미터 추가
+    String location = '위치 모름',
+    String birthdate = '정보 없음',
+    String gender = '선택 안 함',
+    String weather = '알 수 없음', // ☀️ 날씨 추가!
   }) async {
     final personality = await ProfileService.loadPersonality();
     print("=================================");
@@ -21,6 +26,10 @@ class AiService {
     print("readiness: $readiness");
     print("timing: $timing");
     print("situation: $situation");
+    print("location: $location");
+    print("birthdate: $birthdate");
+    print("gender: $gender");
+    print("weather: $weather"); // ☀️ 로그에도 출력
     print("personality: $personality");
     print("=================================");
 
@@ -72,10 +81,11 @@ class AiService {
     }
 
     final url = Uri.parse(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AQ.Ab8RN6LvSgU3dz2quAJ8bNM-yAnrBmwI87RnU7F9nRSOMYiuig",
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$apiKey",
     );
 
-    final prompt = '''
+    final prompt =
+        '''
 너는 AI "루나"야.
 
 $personalityPrompt
@@ -85,6 +95,12 @@ $personalityPrompt
 - 설명 금지
 - 누락 금지
 - 키 이름 변경 금지
+
+⭐ [특별 지시사항] ⭐
+- 사용자의 위치(지역)가 파악된다면, 해당 지역의 특색, 유명한 데이트 코스나 랜드마크(예: 서울이면 한강, 대구면 동성로, 포항이면 영일대 등)를 조언에 자연스럽게 녹여내.
+- 지역에 따라 어울리는 말투나 친근한 사투리 뉘앙스를 아주 살짝 섞어도 좋아. (예: 경상도 지역이면 경상도 느낌으로)
+- 사용자의 나이대(생년월일 기반)와 성별에 맞는 현실적이고 구체적인 조언을 해줘.
+- ☀️ 현재 날씨 상태를 적극적으로 반영해! (예: 비가 오면 실내 데이트나 파전에 막걸리 비유를 쓰고, 맑으면 야외 활동이나 산뜻한 분위기를 강조해).
 
 출력 필드 (반드시 모두 포함):
 
@@ -111,6 +127,10 @@ $personalityPrompt
 - 준비도: ${(readiness * 100).toInt()}%
 - 타이밍: $timing
 - 상황: $situation
+- 📍 현재 위치: $location
+- 🎂 생년월일: $birthdate
+- 👤 성별: $gender
+- 🌤️ 현재 날씨: $weather
 ''';
 
     try {
@@ -129,7 +149,7 @@ $personalityPrompt
             "temperature": 0.9,
             "topK": 40,
             "topP": 0.95,
-            "maxOutputTokens": 3000, // 🔥 수정 (중요)
+            "maxOutputTokens": 3000,
           },
         }),
       );
