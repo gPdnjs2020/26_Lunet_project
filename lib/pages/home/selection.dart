@@ -43,18 +43,14 @@ class _SelectionPageState extends State<SelectionPage> {
         isListening = true;
       });
 
-      speech.listen(
-        localeId: 'ko_KR',
-
+      await speech.listen(
         onResult: (result) {
           setState(() {
             situationController.text = result.recognizedWords;
-
-            situationController.selection = TextSelection.fromPosition(
-              TextPosition(offset: situationController.text.length),
-            );
           });
         },
+
+        listenOptions: stt.SpeechListenOptions(localeId: 'ko_KR'),
       );
     }
   }
