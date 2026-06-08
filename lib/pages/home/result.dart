@@ -373,7 +373,6 @@ class _ResultPageState extends State<ResultPage> {
                   ),
                 ),
 
-
                 const SizedBox(height: 24),
 
                 /// 분석 카드
@@ -474,8 +473,10 @@ class _ResultPageState extends State<ResultPage> {
                         context,
 
                         MaterialPageRoute(
-                          builder: (_) =>
-                              StrategyPage(aiResult: widget.aiResult, questionType: widget.questionType),
+                          builder: (_) => StrategyPage(
+                            aiResult: widget.aiResult,
+                            questionType: widget.questionType,
+                          ),
                         ),
                       );
                     },
@@ -688,8 +689,7 @@ class _ResultPageState extends State<ResultPage> {
   }
 
   Widget _recommendCard() {
-    final list = widget.aiResult['recommendations'] ?? [];
-
+    final List list = widget.aiResult['strategies'] ?? [];
     return Container(
       padding: const EdgeInsets.all(24),
 
@@ -711,11 +711,23 @@ class _ResultPageState extends State<ResultPage> {
 
           for (int i = 0; i < list.length; i++)
             Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-
-              child: Text(
-                '${i + 1}. ${list[i]}',
-                style: const TextStyle(fontSize: 18),
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${i + 1}. ${list[i]["title"]}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    list[i]["description"],
+                    style: const TextStyle(color: Colors.black54),
+                  ),
+                ],
               ),
             ),
         ],

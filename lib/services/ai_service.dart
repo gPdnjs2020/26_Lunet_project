@@ -122,6 +122,24 @@ boost 규칙
 - 총합이 25를 넘지 않음
 - 절대로 99%를 보장하지 않음
 
+출력 규칙:
+
+- advice 300자 이하
+- positive 200자 이하
+- warning 200자 이하
+- luna_message 200자 이하
+- strategy description 150자 이하
+
+질문 유형이 "추천"이면 반드시
+
+"recommendations": [
+  "",
+  "",
+  ""
+]
+
+필드를 포함한다.
+
 출력 필드 (반드시 모두 포함):
 
 {
@@ -167,10 +185,10 @@ boost 규칙
             },
           ],
           "generationConfig": {
-            "temperature": 0.9,
-            "topK": 40,
-            "topP": 0.95,
-            "maxOutputTokens": 3000,
+            "temperature": 0.7,
+            "topK": 20,
+            "topP": 0.8,
+            "maxOutputTokens": 4096,
           },
         }),
       );
@@ -192,6 +210,9 @@ boost 규칙
 
       print("=================================");
       print("🤖 RAW AI TEXT:");
+      print("TEXT LENGTH = ${text.length}");
+      print(text.endsWith('}'));
+      print(text.substring(text.length > 500 ? text.length - 500 : 0));
       print(text);
       print("=================================");
 
@@ -207,6 +228,10 @@ boost 규칙
       }
 
       final cleanJson = text.substring(start, end + 1);
+      String cleanText = text
+          .replaceAll('```json', '')
+          .replaceAll('```', '')
+          .trim();
 
       print("=================================");
       print("📦 FINAL JSON:");
