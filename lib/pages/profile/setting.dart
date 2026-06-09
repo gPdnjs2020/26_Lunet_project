@@ -245,6 +245,26 @@ class _SettingPageState extends State<SettingPage> {
                         },
                       ),
                     ),
+
+                    const SizedBox(width: 12),
+
+                    SizedBox(
+                      width: 140,
+
+                      child: _buildPersonalityCard(
+                        '공감형',
+                        '부드럽고 지지적이며 깊은 직관력 조언',
+                        isSelected: selectedPersonality == '공감형',
+
+                        onTap: () async {
+                          await ProfileService.savePersonality('공감형');
+
+                          setState(() {
+                            selectedPersonality = '공감형';
+                          });
+                        },
+                      ),
+                    ),
                   ],
                 ),
               ),

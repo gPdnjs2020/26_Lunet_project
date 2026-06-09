@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../services/profile_service.dart'; // ⭐ [추가] ProfileService 연동
 
 /// [ 회원가입 화면 클래스 ]
 class SignupPage extends StatefulWidget {
@@ -17,9 +18,10 @@ class _SignupPageState extends State<SignupPage> {
   final TextEditingController confirmPasswordController =
       TextEditingController();
 
-  /// ⭐ [추가] 생년월일과 성별을 저장할 변수
   final TextEditingController birthdateController = TextEditingController();
-  String? _selectedGender;
+
+  /// ⭐ [수정] 아무것도 선택하지 않았을 때의 기본값을 '선택 안 함'으로 지정합니다.
+  String _selectedGender = '선택 안 함';
 
   /// 회원가입 함수
   Future<void> signUp() async {
@@ -31,35 +33,35 @@ class _SignupPageState extends State<SignupPage> {
       return;
     }
 
-    /// 필수 입력값 확인 (선택 사항)
-    if (nameController.text.isEmpty ||
-        birthdateController.text.isEmpty ||
-        _selectedGender == null) {
+    /// 필수 입력값 확인 (⭐ 성별(_selectedGender)은 기본값이 있으므로 필수 검사에서 제외)
+    if (nameController.text.isEmpty || birthdateController.text.isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('모든 정보를 입력해주세요')));
+      ).showSnackBar(const SnackBar(content: Text('이름과 생년월일을 모두 입력해주세요')));
       return;
     }
 
     try {
       /// Firebase 회원가입 (이메일, 비밀번호)
-      // UserCredential userCredential =
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+            email: emailController.text.trim(),
+            password: passwordController.text.trim(),
+          );
 
-      /// 💡 참고: 이름(nameController.text), 생년월일(birthdateController.text),
-      /// 성별(_selectedGender)은 Firebase Auth에 바로 들어가지 않으므로,
-      /// 실제 앱에서는 이 타이밍에 Firebase Firestore나 Realtime DB에 추가로 저장해주어야 합니다!
+      /// ⭐ [추가] Firebase Auth에 닉네임 업데이트
+      await userCredential.user?.updateDisplayName(nameController.text.trim());
 
-      /// 성공 메시지
+      /// ⭐ [핵심 추가] 회원가입 성공 시, 로컬 저장소에 닉네임, 생년월일, 성별 저장
+      await ProfileService.saveNickname(nameController.text.trim());
+      await ProfileService.saveBirthdate(birthdateController.text.trim());
+      await ProfileService.saveGender(_selectedGender);
+
+      /// 성공 메시지 및 홈 이동
       if (mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('회원가입 성공 ✨')));
-
-        /// 홈 이동
         Navigator.pushReplacementNamed(context, '/home');
       }
     } on FirebaseAuthException catch (e) {
@@ -72,7 +74,7 @@ class _SignupPageState extends State<SignupPage> {
       } else if (e.code == 'invalid-email') {
         message = '올바른 이메일 형식이 아닙니다';
       } else {
-        message = '회원가입 실패';
+        message = '회원가입 실패: ${e.message}';
       }
 
       if (mounted) {
@@ -80,10 +82,16 @@ class _SignupPageState extends State<SignupPage> {
           context,
         ).showSnackBar(SnackBar(content: Text(message)));
       }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('오류 발생: $e')));
+      }
     }
   }
 
-  /// ⭐ [추가] 생년월일 선택 달력 띄우기 함수
+  /// 생년월일 선택 달력 띄우기 함수
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -104,7 +112,6 @@ class _SignupPageState extends State<SignupPage> {
 
     if (picked != null) {
       setState(() {
-        // 선택한 날짜를 YYYY-MM-DD 형식으로 텍스트 필드에 입력
         birthdateController.text =
             "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
       });
@@ -159,17 +166,17 @@ class _SignupPageState extends State<SignupPage> {
                 ),
                 const SizedBox(height: 16),
 
-                /// ⭐ [추가] 생년월일 (클릭 시 달력 팝업)
+                /// 생년월일
                 _buildTextField(
                   '생년월일',
                   Icons.calendar_today_outlined,
                   controller: birthdateController,
-                  readOnly: true, // 직접 타이핑 방지
-                  onTap: () => _selectDate(context), // 탭했을 때 달력 열기
+                  readOnly: true,
+                  onTap: () => _selectDate(context),
                 ),
                 const SizedBox(height: 16),
 
-                /// ⭐ [추가] 성별 (드롭다운)
+                /// 성별
                 _buildDropdownField('성별', Icons.people_outline),
                 const SizedBox(height: 16),
 
@@ -236,7 +243,7 @@ class _SignupPageState extends State<SignupPage> {
     );
   }
 
-  /// 입력창 공통 함수 (기존 코드에서 readOnly, onTap 기능 추가)
+  /// 입력창 공통 함수
   Widget _buildTextField(
     String hintText,
     IconData icon, {
@@ -248,8 +255,8 @@ class _SignupPageState extends State<SignupPage> {
     return TextField(
       controller: controller,
       obscureText: isPassword,
-      readOnly: readOnly, // ⭐ 추가 (달력 텍스트 필드를 위해)
-      onTap: onTap, // ⭐ 추가 (달력 텍스트 필드를 위해)
+      readOnly: readOnly,
+      onTap: onTap,
       decoration: InputDecoration(
         hintText: hintText,
         prefixIcon: Icon(icon, color: const Color(0xFF4A6480).withOpacity(0.7)),
@@ -272,10 +279,10 @@ class _SignupPageState extends State<SignupPage> {
     );
   }
 
-  /// ⭐ [추가] 성별 선택용 드롭다운 위젯 (기존 입력창과 디자인 통일)
+  /// 성별 선택용 드롭다운 위젯
   Widget _buildDropdownField(String hintText, IconData icon) {
     return DropdownButtonFormField<String>(
-      value: _selectedGender,
+      value: _selectedGender, // ⭐ 기본값이 '선택 안 함'으로 할당됨
       decoration: InputDecoration(
         hintText: hintText,
         prefixIcon: Icon(icon, color: const Color(0xFF4A6480).withOpacity(0.7)),
@@ -299,9 +306,11 @@ class _SignupPageState extends State<SignupPage> {
           .map((label) => DropdownMenuItem(value: label, child: Text(label)))
           .toList(),
       onChanged: (value) {
-        setState(() {
-          _selectedGender = value;
-        });
+        if (value != null) {
+          setState(() {
+            _selectedGender = value;
+          });
+        }
       },
     );
   }

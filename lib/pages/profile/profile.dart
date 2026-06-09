@@ -17,6 +17,10 @@ class _ProfilePageState extends State<ProfilePage> {
   String nickname = '루넷 사용자';
   String? profileImage;
 
+  // ⭐ [추가] 생년월일과 성별을 저장할 상태 변수
+  String birthdate = '정보 없음';
+  String gender = '선택 안 함';
+
   List<HistoryModel> histories = [];
 
   double avgRate = 0;
@@ -48,15 +52,9 @@ class _ProfilePageState extends State<ProfilePage> {
   void analyzeProfile(List<HistoryModel> histories) {
     if (histories.isEmpty) return;
 
-    int successCount = histories.where((e) => e.userResult == 'success').length;
-
-    int failCount = histories.where((e) => e.userResult == 'fail').length;
-
-    int totalAnswered = successCount + failCount;
-
-    double avgSuccess = totalAnswered == 0
-        ? 0
-        : (successCount / totalAnswered) * 100;
+    double avgSuccess =
+        histories.map((e) => e.successRate).reduce((a, b) => a + b) /
+        histories.length;
 
     Map<String, int> categoryCount = {};
 
@@ -64,7 +62,7 @@ class _ProfilePageState extends State<ProfilePage> {
       categoryCount[h.category] = (categoryCount[h.category] ?? 0) + 1;
     }
 
-    String topCategory = categoryCount.entries
+    String mostCategory = categoryCount.entries
         .reduce((a, b) => a.value > b.value ? a : b)
         .key;
 
@@ -79,15 +77,15 @@ class _ProfilePageState extends State<ProfilePage> {
       profileStyle = '충분히 고민한 뒤 움직이는 신중한 타입이에요 🔍';
     }
 
-    if (topCategory == '연애') {
+    if (mostCategory == '연애') {
       profileStyle += '\n특히 인간관계와 감정 문제에 관심이 많아요 ❤️';
     }
 
-    if (topCategory == '진로') {
+    if (mostCategory == '진로') {
       profileStyle += '\n미래와 성장에 대한 고민이 많아요 🚀';
     }
 
-    if (topCategory == '공부') {
+    if (mostCategory == '공부') {
       profileStyle += '\n배움과 자기계발을 중요하게 생각해요 📚';
     }
   }
@@ -102,6 +100,10 @@ class _ProfilePageState extends State<ProfilePage> {
     String? fetchedProfileImage =
         user?.photoURL ?? await ProfileService.loadProfileImage();
 
+    // ⭐ [추가] 로컬 저장소에 저장되어 있는 생일과 성별 불러오기
+    String fetchedBirthdate = await ProfileService.loadBirthdate();
+    String fetchedGender = await ProfileService.loadGender();
+
     final result = await HistoryService.loadHistories();
 
     if (result.isEmpty) {
@@ -109,19 +111,16 @@ class _ProfilePageState extends State<ProfilePage> {
         setState(() {
           nickname = fetchedNickname;
           profileImage = fetchedProfileImage;
+          birthdate = fetchedBirthdate; // 상태 반영
+          gender = fetchedGender; // 상태 반영
         });
       }
       return;
     }
-    int successCount = result.where((e) => e.userResult == 'success').length;
 
-    int failCount = result.where((e) => e.userResult == 'fail').length;
-
-    int totalAnswered = successCount + failCount;
-
-    double actualSuccessRate = totalAnswered == 0
-        ? 0
-        : (successCount / totalAnswered) * 100;
+    double average =
+        result.map((e) => e.successRate).reduce((a, b) => a + b) /
+        result.length;
 
     Map<String, int> categoryCount = {};
 
@@ -137,8 +136,10 @@ class _ProfilePageState extends State<ProfilePage> {
       setState(() {
         nickname = fetchedNickname;
         profileImage = fetchedProfileImage;
+        birthdate = fetchedBirthdate; // 상태 반영
+        gender = fetchedGender; // 상태 반영
         histories = result;
-        avgRate = actualSuccessRate;
+        avgRate = average;
         topCategory = mostCategory;
 
         level = (result.length ~/ 5) + 1;
@@ -193,7 +194,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     CircleAvatar(
                       radius: 55,
                       backgroundColor: Colors.white,
-                      // 🌟 [해결 포인트] 크롬 웹 환경의 사진('blob')도 완벽하게 띄워주도록 수정했습니다!
                       backgroundImage:
                           profileImage != null && profileImage!.isNotEmpty
                           ? (profileImage!.startsWith('http') ||
@@ -234,6 +234,18 @@ class _ProfilePageState extends State<ProfilePage> {
                     color: Color(0xFF334A66),
                   ),
                 ),
+
+                // ⭐ [UI 추가] 닉네임 바로 밑에 생년월일과 성별을 아주 깔끔하게 표시해 줍니다.
+                const SizedBox(height: 4),
+                Text(
+                  '$birthdate  •  $gender',
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Colors.black38,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+
                 const SizedBox(height: 18),
                 Text(
                   profileStyle,
@@ -288,7 +300,7 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               Expanded(
                 child: _statCard(
-                  title: '실제 성공률',
+                  title: '평균 성공률',
                   value: '${avgRate.toStringAsFixed(0)}%',
                   icon: Icons.trending_up,
                 ),

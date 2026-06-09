@@ -108,8 +108,6 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
           IconButton(
             icon: const Icon(Icons.delete, color: Colors.red),
             onPressed: () async {
-              await HistoryService.deleteHistoryByIndex(index);
-
               if (context.mounted) {
                 Navigator.pop(context);
 
@@ -247,7 +245,7 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
                   ),
                 ),
                 const SizedBox(height: 32),
-                
+
                 _card(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

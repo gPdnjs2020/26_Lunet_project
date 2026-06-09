@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart'; // ⭐ [GPS 추가] 기기 GPS 수집을 위한 패키지
+import 'package:geocoding/geocoding.dart';
 
 import '../profile/profile.dart';
 import 'selection.dart';
@@ -96,27 +97,48 @@ class _HomeContentState extends State<_HomeContent> {
     }
   }
 
-  /// 🌍 [GPS 좌표를 사용해 OpenWeatherMap에서 날씨 데이터 가져오기]
+  /// 🌍 [GPS 좌표를 사용해 OpenWeatherMap에서 날씨 데이터와 '시/군/구' 가져오기]
   Future<void> _fetchWeatherByGPS(double lat, double lon) async {
     try {
-      final String apiKey =
-          "75af31a92acaa7c17e9e76ce3bcb0c8e"; // 유저님의 API Key 사용
-      final String url =
-          'https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=$apiKey&units=metric';
+      final String apiKey = "75af31a92acaa7c17e9e76ce3bcb0c8e"; // 유저님의 API Key
 
-      final response = await http.get(Uri.parse(url));
+      // 1. 날씨 정보 호출
+      final String weatherUrl =
+          'https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=$apiKey&units=metric&lang=kr';
+      final weatherResponse = await http.get(Uri.parse(weatherUrl));
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final double temp = data['main']['temp'];
-        final String iconCode = data['weather'][0]['icon'];
-        final String areaName = data['name']; // 현재 위치 지역 명 (영문)
+      // 2. ⭐ '시/군/구' 단위의 도시 이름을 가져오기 위한 지오코딩 API 호출
+      // 이 API는 '흥해읍' 대신 상위 행정구역인 '포항시'를 반환해 줍니다.
+      final String geoUrl =
+          'http://api.openweathermap.org/geo/1.0/reverse?lat=$lat&lon=$lon&limit=1&appid=$apiKey';
+      final geoResponse = await http.get(Uri.parse(geoUrl));
+
+      if (weatherResponse.statusCode == 200) {
+        final weatherData = jsonDecode(weatherResponse.body);
+        final double temp = weatherData['main']['temp'];
+        final String iconCode = weatherData['weather'][0]['icon'];
+
+        String areaName = '알 수 없는 위치';
+
+        // 3. 지오코딩 응답에서 한국어(ko) 도시 이름 추출
+        if (geoResponse.statusCode == 200) {
+          final List geoData = jsonDecode(geoResponse.body);
+          if (geoData.isNotEmpty) {
+            final localNames = geoData[0]['local_names'];
+            if (localNames != null && localNames['ko'] != null) {
+              areaName = localNames['ko']; // 결과: '포항시', '서울특별시' 등
+            } else {
+              areaName =
+                  geoData[0]['name'] ?? weatherData['name'] ?? '알 수 없는 위치';
+            }
+          }
+        }
 
         setState(() {
           _weatherTemp = '${temp.toStringAsFixed(1)}°C';
           _weatherIconUrl =
               'https://openweathermap.org/img/wn/$iconCode@2x.png';
-          _currentAreaName = areaName;
+          _currentAreaName = areaName; // ⭐ 화면에 '포항시' 출력
           _isLoadingWeather = false;
         });
       } else {
@@ -125,8 +147,9 @@ class _HomeContentState extends State<_HomeContent> {
         });
       }
     } catch (e) {
-      debugPrint("날씨 API 로딩 오류: $e");
+      debugPrint("날씨/위치 API 로딩 오류: $e");
       setState(() {
+        _currentAreaName = '위치 확인 불가';
         _isLoadingWeather = false;
       });
     }
