@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 import '../../services/ai_service.dart';
 import 'result.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../services/profile_service.dart';
 
 class LoadingPage extends StatefulWidget {
   final String situation;
@@ -70,13 +72,21 @@ class _LoadingPageState extends State<LoadingPage>
 
   Future<void> _analyzeWithAI() async {
     try {
+      final user = FirebaseAuth.instance.currentUser;
+
+      final nickname = user?.displayName ?? await ProfileService.loadNickname();
+
+      print("닉네임 = $nickname");
+
       final aiResult = await AiService.analyzeDecision(
         target: widget.relation,
         readiness: widget.readiness * 100,
         timing: widget.timing,
         situation: widget.situation,
         questionType: widget.questionType,
+        userName: nickname,
       );
+      
 
       if (!mounted) return;
 
@@ -93,6 +103,7 @@ class _LoadingPageState extends State<LoadingPage>
           ),
         ),
       );
+      
     } catch (e) {
       debugPrint('AI 오류: $e');
 
