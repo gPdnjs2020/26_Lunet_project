@@ -129,6 +129,31 @@ class _ResultPageState extends State<ResultPage> {
     final String profileTitle =
         widget.aiResult['profile_title'] ?? '깊은 통찰의 분석가';
 
+    String blueBoxTitle = '';
+    String blueBoxContent = '';
+
+    if (questionType == '할까말까') {
+      blueBoxTitle = profileTitle;
+      blueBoxContent = profileStyle;
+    } else if (questionType == 'A or B') {
+      blueBoxTitle = '루나의 선택';
+
+      blueBoxContent =
+          widget.aiResult['recommended'] ??
+          widget.aiResult['choice_a'] ??
+          '선택지 A';
+    } else if (questionType == '추천') {
+      blueBoxTitle = '루나 추천';
+
+      final List list = widget.aiResult['recommendations'] ?? [];
+
+      blueBoxContent = list.isNotEmpty ? list.first.toString() : '추천 결과 없음';
+    } else if (questionType == '고민 상담') {
+      blueBoxTitle = '현재 감정 상태';
+
+      blueBoxContent = widget.aiResult['emotion'] ?? '보통';
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFFF7F5F2),
 
@@ -239,92 +264,22 @@ class _ResultPageState extends State<ResultPage> {
 
                 if (questionType == '고민 상담') _counselCard(),
 
-                /// 고민 카드
-                /*Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(24),
-
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(30),
-
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.03),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-
-                    children: [
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.chat_bubble_outline,
-                            color: Color(0xFF4A6480),
-                          ),
-
-                          const SizedBox(width: 10),
-
-                          const Text(
-                            '당신의 고민',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF4A6480),
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 18),
-
-                      Text(
-                        widget.situation,
-
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.black87,
-                          height: 1.7,
-                        ),
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      Row(
-                        children: [
-                          Expanded(child: _miniInfoCard('관계', widget.relation)),
-
-                          const SizedBox(width: 12),
-
-                          Expanded(
-                            child: _miniInfoCard('실행 시기', widget.timing),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),*/
                 const SizedBox(height: 24),
 
                 /// 프로필 카드
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(24),
-
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
                       colors: [Color(0xFF486A8A), Color(0xFFA9C7F2)],
                     ),
-
                     borderRadius: BorderRadius.circular(32),
                   ),
+                  child: _buildResultHeader(),
+                ),
 
-                  child: Column(
+                /*child: Column(
                     children: [
                       const Icon(
                         Icons.auto_awesome,
@@ -335,7 +290,7 @@ class _ResultPageState extends State<ResultPage> {
                       const SizedBox(height: 18),
 
                       Text(
-                        profileTitle,
+                        blueBoxTitle,
                         textAlign: TextAlign.center,
 
                         style: const TextStyle(
@@ -360,7 +315,7 @@ class _ResultPageState extends State<ResultPage> {
                         ),
 
                         child: Text(
-                          profileStyle,
+                          blueBoxContent,
 
                           style: const TextStyle(
                             color: Colors.white,
@@ -371,8 +326,7 @@ class _ResultPageState extends State<ResultPage> {
                       ),
                     ],
                   ),
-                ),
-
+                ),*/
                 const SizedBox(height: 24),
 
                 /// 분석 카드
@@ -641,14 +595,71 @@ class _ResultPageState extends State<ResultPage> {
     );
   }
 
+  Widget _buildResultHeader() {
+    if (widget.questionType == 'A or B') {
+      return Column(
+        children: [
+          const Text('루나의 선택', style: TextStyle(color: Colors.white70)),
+          const SizedBox(height: 12),
+          Text(
+            widget.aiResult['recommended'] ?? '',
+            style: const TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      );
+    }
+
+    if (widget.questionType == '추천') {
+      final strategies = widget.aiResult['strategies'] ?? [];
+
+      return Column(
+        children: [
+          const Text('루나의 추천', style: TextStyle(color: Colors.white70)),
+          const SizedBox(height: 12),
+          Text(
+            strategies.isNotEmpty ? strategies[0]['title'] : '추천 없음',
+            style: const TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      );
+    }
+
+    if (widget.questionType == '고민 상담') {
+      return Column(
+        children: [
+          const Text('현재 감정 상태', style: TextStyle(color: Colors.white70)),
+          const SizedBox(height: 12),
+          Text(
+            widget.aiResult['emotion'] ?? '보통',
+            style: const TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      );
+    }
+
+    return const SizedBox.shrink();
+  }
+
   Widget _compareCard() {
     final a = widget.aiResult['choice_a'] ?? '선택지 A';
 
     final b = widget.aiResult['choice_b'] ?? '선택지 B';
 
-    final aScore = widget.aiResult['a_score'] ?? 50;
+    ///final aScore = widget.aiResult['a_score'] ?? 50;
 
-    final bScore = widget.aiResult['b_score'] ?? 50;
+    ///final bScore = widget.aiResult['b_score'] ?? 50;
 
     final recommended = widget.aiResult['recommended'] ?? a;
 
@@ -668,10 +679,21 @@ class _ResultPageState extends State<ResultPage> {
           ),
 
           SizedBox(height: 20),
+          Text(
+            a,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
 
-          Text('$a : $aScore%'),
+          const SizedBox(height: 12),
 
-          Text('$b : $bScore%'),
+          Text('VS', style: TextStyle(fontSize: 22, color: Colors.grey)),
+
+          const SizedBox(height: 12),
+
+          Text(
+            b,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
 
           SizedBox(height: 20),
 
