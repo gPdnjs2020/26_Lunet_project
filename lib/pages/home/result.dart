@@ -163,7 +163,6 @@ class _ResultPageState extends State<ResultPage> {
 
         leading: IconButton(
           icon: const Icon(Icons.home_rounded, color: Colors.black),
-
           onPressed: () {
             Navigator.pushNamedAndRemoveUntil(
               context,
@@ -172,6 +171,14 @@ class _ResultPageState extends State<ResultPage> {
             );
           },
         ),
+
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.download_rounded, color: Color(0xFF7E57C2)),
+            tooltip: '결과 저장',
+            onPressed: saveResultImage,
+          ),
+        ],
       ),
 
       body: Screenshot(
@@ -442,35 +449,6 @@ class _ResultPageState extends State<ResultPage> {
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF4A6480),
-                      ),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
-                SizedBox(
-                  width: double.infinity,
-                  height: 65,
-
-                  child: ElevatedButton.icon(
-                    onPressed: saveResultImage,
-
-                    icon: const Icon(Icons.download, color: Colors.white),
-
-                    label: const Text(
-                      '결과 저장하기',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF7E57C2),
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(40),
                       ),
                     ),
                   ),
