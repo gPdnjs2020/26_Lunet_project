@@ -106,10 +106,13 @@ class _ResultPageState extends State<ResultPage> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.aiResult);
+    print(widget.aiResult['success_rate']);
     final String questionType = widget.questionType;
 
     /// AI 데이터
-    final int successPercent = widget.aiResult['success_rate'] ?? 50;
+    final int successPercent =
+        (widget.aiResult['success_rate'] as num?)?.round() ?? 50;
 
     final double successRate = successPercent / 100;
 
@@ -132,7 +135,7 @@ class _ResultPageState extends State<ResultPage> {
     String blueBoxTitle = '';
     String blueBoxContent = '';
 
-    if (questionType == '할까말까') {
+    if (questionType == '할까 말까') {
       blueBoxTitle = profileTitle;
       blueBoxContent = profileStyle;
     } else if (questionType == 'A or B') {
@@ -218,7 +221,7 @@ class _ResultPageState extends State<ResultPage> {
                 const SizedBox(height: 24),
 
                 /// 메인 텍스트
-                if (questionType == '할까말까')
+                if (questionType == '할까 말까')
                   Text(
                     '지금은 약 $successPercent%\n가능해 보여요!',
                     textAlign: TextAlign.center,
@@ -262,7 +265,7 @@ class _ResultPageState extends State<ResultPage> {
 
                 const SizedBox(height: 24),
 
-                if (questionType == '할까말까')
+                if (questionType == '할까 말까')
                   _successCard(successPercent, successRate, advice),
 
                 if (questionType == 'A or B') _compareCard(),
@@ -574,6 +577,40 @@ class _ResultPageState extends State<ResultPage> {
   }
 
   Widget _buildResultHeader() {
+    print("===== RESULT =====");
+    print(widget.aiResult);
+    print(widget.aiResult['success_rate']);
+
+    if (widget.questionType == '할까 말까') {
+      return Column(
+        children: [
+          const Text(
+            '성공 확률',
+            style: TextStyle(color: Colors.white70, fontSize: 16),
+          ),
+
+          const SizedBox(height: 12),
+
+          Text(
+            '${widget.aiResult['success_rate'] ?? 50}%',
+            style: const TextStyle(
+              fontSize: 42,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          Text(
+            widget.aiResult['profile_title'] ?? '',
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.white, fontSize: 18),
+          ),
+        ],
+      );
+    }
+
     if (widget.questionType == 'A or B') {
       return Column(
         children: [

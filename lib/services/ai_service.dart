@@ -6,7 +6,7 @@ class AiService {
   /// 🔥 API KEY (여기에 실제 키 넣기)
   /// 예: "AIzaSyXXXXXXX"
   static const String apiKey =
-      "AIzaSyAjWht9x-XpXnHJAZCru9sCp1PKgN5c-Sg";
+      "AQ.Ab8RN6IjpFEv4IRUtYcbsnjDULub3ckUX32KOccLUI5WBRD84A";
 
   static Future<Map<String, dynamic>> analyzeDecision({
     required String target,
@@ -15,6 +15,7 @@ class AiService {
     required String situation,
     required String questionType,
     // ⭐ [추가] 지역, 생년월일, 성별, 그리고 날씨 파라미터 추가
+    int retryCount = 0,
     String location = '위치 모름',
     String birthdate = '정보 없음',
     String gender = '선택 안 함',
@@ -84,7 +85,7 @@ class AiService {
     }
 
     final url = Uri.parse(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$apiKey",
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$apiKey",
     );
 
     final prompt =
@@ -149,6 +150,48 @@ boost 규칙
 
 필드를 포함한다.
 
+recommendations에는 반드시
+동일한 카테고리의 추천 항목 3개를 넣어라.
+
+예:
+여행 → 여행지 3개
+음식 → 음식 3개
+영화 → 영화 3개
+
+관광지와 여행지를 섞지 말 것.
+
+- advice에는 추천 이유를 작성
+- success_rate는 사용하지 않음
+- strategies에는 추천 목록을 넣는다.
+
+예시
+
+{
+  "category":"여행",
+  "success_rate":0,
+  "advice":"철학형 성향이라면 자연과 사색이 가능한 여행지가 잘 맞습니다.",
+  "positive":"...",
+  "warning":"...",
+  "luna_message":"...",
+  "strategies":[
+    {
+      "title":"교토",
+      "description":"고즈넉한 사찰과 전통거리를 걸으며 사색하기 좋은 도시",
+      "boost":8
+    },
+    {
+      "title":"제주도",
+      "description":"자연 속에서 휴식을 즐기기 좋은 여행지",
+      "boost":7
+    },
+    {
+      "title":"포항 호미곶",
+      "description":"바다를 보며 생각을 정리하기 좋은 장소",
+      "boost":6
+    }
+  ]
+}
+
 출력 필드 (반드시 모두 포함):
 
 {
@@ -197,7 +240,7 @@ boost 규칙
             "temperature": 0.7,
             "topK": 20,
             "topP": 0.8,
-            "maxOutputTokens": 4096,
+            "maxOutputTokens": 3000,
           },
         }),
       );
@@ -208,6 +251,28 @@ boost 규칙
       print("📡 RAW RESPONSE:");
       print(response.body);
       print("=================================");
+
+      print("📡 RAW RESPONSE:");
+      print(response.body);
+
+      if (response.statusCode == 503 && retryCount < 3) {
+        print("⚠️ Gemini 서버 과부하. 2초 후 재시도");
+
+        await Future.delayed(const Duration(seconds: 2));
+
+        return analyzeDecision(
+          target: target,
+          readiness: readiness,
+          timing: timing,
+          situation: situation,
+          questionType: questionType,
+          location: location,
+          birthdate: birthdate,
+          gender: gender,
+          weather: weather,
+          userName: userName,
+        );
+      }
 
       if (response.statusCode != 200) {
         throw Exception("API 실패: ${response.body}");
