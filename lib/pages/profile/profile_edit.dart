@@ -65,7 +65,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   Future<void> _loadSavedBirthdate() async {
     try {
       // ProfileService에서 저장된 생년월일을 가져옵니다. (예: "1995-08-15")
-      String? savedDate = await ProfileService.loadBirthdate();
+      String? savedDate = await ProfileService.getBirthdate();
 
       if (savedDate != null && savedDate.isNotEmpty) {
         // "-" 기호를 기준으로 글자를 자릅니다. [1995, 08, 15]

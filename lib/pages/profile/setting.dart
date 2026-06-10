@@ -119,15 +119,6 @@ class _SettingPageState extends State<SettingPage> {
                       color: const Color(0xFFFDF0F2),
                       borderRadius: BorderRadius.circular(10),
                     ),
-
-                    /*child: const Text(
-                      'PREMIUM',
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Color(0xFFE08E9B),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),*/
                   ),
                 ],
               ),
@@ -189,11 +180,31 @@ class _SettingPageState extends State<SettingPage> {
 
                   children: [
                     SizedBox(
-                      width: 140,
+                      width: 210,
+
+                      child: _buildPersonalityCard(
+                        '공감형',
+                        '부드럽고 지지적이며 깊은 공감선을 가진 대화',
+                        isSelected: selectedPersonality == '공감형',
+
+                        onTap: () async {
+                          await ProfileService.savePersonality('공감형');
+
+                          setState(() {
+                            selectedPersonality = '공감형';
+                          });
+                        },
+                      ),
+                    ),
+
+                    const SizedBox(width: 12),
+
+                    SizedBox(
+                      width: 210,
 
                       child: _buildPersonalityCard(
                         '철학형',
-                        '생각할 거리를 던져주는 깊은 대화.',
+                        '생각할 수 있는 요소들을 던져주는 깊은 대화.',
                         isSelected: selectedPersonality == '철학형',
 
                         onTap: () async {
@@ -209,11 +220,11 @@ class _SettingPageState extends State<SettingPage> {
                     const SizedBox(width: 12),
 
                     SizedBox(
-                      width: 140,
+                      width: 210,
 
                       child: _buildPersonalityCard(
                         '활기찬형',
-                        '동기부여를 해주는 맑은 에너지.',
+                        '동기부여를 해주는 맑고 활기찬 에너지를 가진 대화.',
                         isSelected: selectedPersonality == '활기찬형',
 
                         onTap: () async {
@@ -229,11 +240,11 @@ class _SettingPageState extends State<SettingPage> {
                     const SizedBox(width: 12),
 
                     SizedBox(
-                      width: 140,
+                      width: 210,
 
                       child: _buildPersonalityCard(
                         '현실조언형',
-                        '객관적 데이터 기반 조언.',
+                        '객관적 데이터를 기반으로 해주는 현실적인 대화.',
                         isSelected: selectedPersonality == '현실조언형',
 
                         onTap: () async {
@@ -241,26 +252,6 @@ class _SettingPageState extends State<SettingPage> {
 
                           setState(() {
                             selectedPersonality = '현실조언형';
-                          });
-                        },
-                      ),
-                    ),
-
-                    const SizedBox(width: 12),
-
-                    SizedBox(
-                      width: 140,
-
-                      child: _buildPersonalityCard(
-                        '공감형',
-                        '부드럽고 지지적이며 깊은 직관력 조언',
-                        isSelected: selectedPersonality == '공감형',
-
-                        onTap: () async {
-                          await ProfileService.savePersonality('공감형');
-
-                          setState(() {
-                            selectedPersonality = '공감형';
                           });
                         },
                       ),
@@ -325,16 +316,19 @@ class _SettingPageState extends State<SettingPage> {
   String getPersonalityDescription() {
     switch (selectedPersonality) {
       case '철학형':
-        return '생각할 거리를 던져주는 깊은 대화';
+        return '생각할 수 있는 요소들을 던져주는 깊은 대화.';
 
       case '활기찬형':
-        return '동기부여를 해주는 맑은 에너지';
+        return '동기부여를 해주는 맑고 활기찬 에너지를 가진 대화.';
 
       case '현실조언형':
-        return '객관적 데이터 기반의 조언';
+        return '객관적 데이터를 기반으로 해주는 현실적인 대화.';
+
+      case '공감형':
+        return '부드럽고 지지적이며 깊은 공감선을 가진 대화.';
 
       default:
-        return '부드럽고 지지적이며 깊은 직관력을 가졌어요.';
+        return '부드럽고 지지적이며 깊은 공감선을 가진 대화.';
     }
   }
 

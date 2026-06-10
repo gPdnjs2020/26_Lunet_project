@@ -3,7 +3,14 @@ import 'detail.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 class SelectionPage extends StatefulWidget {
-  const SelectionPage({super.key});
+  final String location;
+  final String weather;
+
+  const SelectionPage({
+    super.key,
+    required this.location,
+    required this.weather,
+  });
 
   @override
   State<SelectionPage> createState() => _SelectionPageState();

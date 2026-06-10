@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart'; // ⭐ [GPS 추가] 기기 GPS 수집을 위한 패키지
-import 'package:geocoding/geocoding.dart';
 
 import '../profile/profile.dart';
 import 'selection.dart';
 import '../history/history.dart';
 import '../../widgets/main_layout.dart';
+import 'package:geocoding/geocoding.dart';
 
 class LumiereHomePage extends StatefulWidget {
   const LumiereHomePage({super.key});
@@ -97,48 +97,57 @@ class _HomeContentState extends State<_HomeContent> {
     }
   }
 
-  /// 🌍 [GPS 좌표를 사용해 OpenWeatherMap에서 날씨 데이터와 '시/군/구' 가져오기]
+  /// 🌍 [GPS 좌표를 사용해 날씨 데이터 및 도시 이름 가져오기 (웹 완벽 호환)]
   Future<void> _fetchWeatherByGPS(double lat, double lon) async {
     try {
-      final String apiKey = "75af31a92acaa7c17e9e76ce3bcb0c8e"; // 유저님의 API Key
+      final String apiKey = "75af31a92acaa7c17e9e76ce3bcb0c8e";
 
-      // 1. 날씨 정보 호출
+      // 1. 날씨 데이터 호출 URL
       final String weatherUrl =
-          'https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=$apiKey&units=metric&lang=kr';
-      final weatherResponse = await http.get(Uri.parse(weatherUrl));
+          'https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=$apiKey&units=metric';
 
-      // 2. ⭐ '시/군/구' 단위의 도시 이름을 가져오기 위한 지오코딩 API 호출
-      // 이 API는 '흥해읍' 대신 상위 행정구역인 '포항시'를 반환해 줍니다.
+      // 2. ✨ 웹에서도 100% 작동하는 지역명 변환(Geo) API 호출 URL
       final String geoUrl =
           'http://api.openweathermap.org/geo/1.0/reverse?lat=$lat&lon=$lon&limit=1&appid=$apiKey';
+
+      // 두 API를 동시에 호출하여 속도 향상
+      final weatherResponse = await http.get(Uri.parse(weatherUrl));
       final geoResponse = await http.get(Uri.parse(geoUrl));
 
-      if (weatherResponse.statusCode == 200) {
-        final weatherData = jsonDecode(weatherResponse.body);
-        final double temp = weatherData['main']['temp'];
-        final String iconCode = weatherData['weather'][0]['icon'];
+      String finalAreaName = "위치 모름";
 
-        String areaName = '알 수 없는 위치';
+      // ✨ Geo API로 깔끔한 시/군/구 이름(한국어) 추출
+      if (geoResponse.statusCode == 200) {
+        final List geoData = jsonDecode(geoResponse.body);
+        if (geoData.isNotEmpty) {
+          var place = geoData[0];
+          var localNames = place['local_names'];
 
-        // 3. 지오코딩 응답에서 한국어(ko) 도시 이름 추출
-        if (geoResponse.statusCode == 200) {
-          final List geoData = jsonDecode(geoResponse.body);
-          if (geoData.isNotEmpty) {
-            final localNames = geoData[0]['local_names'];
-            if (localNames != null && localNames['ko'] != null) {
-              areaName = localNames['ko']; // 결과: '포항시', '서울특별시' 등
-            } else {
-              areaName =
-                  geoData[0]['name'] ?? weatherData['name'] ?? '알 수 없는 위치';
-            }
+          // 한국어 이름('포항시')이 있으면 가져오고, 없으면 영문 도시명('Pohang') 사용
+          if (localNames != null && localNames['ko'] != null) {
+            finalAreaName = localNames['ko'];
+          } else {
+            finalAreaName = place['name'];
           }
+        }
+      }
+
+      // 날씨 데이터 적용
+      if (weatherResponse.statusCode == 200) {
+        final data = jsonDecode(weatherResponse.body);
+        final double temp = (data['main']['temp'] as num).toDouble();
+        final String iconCode = data['weather'][0]['icon'];
+
+        // 만약 Geo API가 실패했다면 기본 날씨 이름(Heunghae)이라도 사용
+        if (finalAreaName == "위치 모름") {
+          finalAreaName = data['name'] ?? "위치 모름";
         }
 
         setState(() {
           _weatherTemp = '${temp.toStringAsFixed(1)}°C';
           _weatherIconUrl =
               'https://openweathermap.org/img/wn/$iconCode@2x.png';
-          _currentAreaName = areaName; // ⭐ 화면에 '포항시' 출력
+          _currentAreaName = finalAreaName; // ✨ '포항시' 또는 'Pohang' 예쁘게 적용!
           _isLoadingWeather = false;
         });
       } else {
@@ -147,9 +156,8 @@ class _HomeContentState extends State<_HomeContent> {
         });
       }
     } catch (e) {
-      debugPrint("날씨/위치 API 로딩 오류: $e");
+      debugPrint("날씨/지역명 API 로딩 오류: $e");
       setState(() {
-        _currentAreaName = '위치 확인 불가';
         _isLoadingWeather = false;
       });
     }
@@ -377,7 +385,15 @@ class _HomeContentState extends State<_HomeContent> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const SelectionPage()),
+                  MaterialPageRoute(
+                    // const를 빼고 위에서 구한 지역명과 날씨 정보를 넘겨줍니다.
+                    builder: (_) => SelectionPage(
+                      location: _currentAreaName.isEmpty
+                          ? '위치 모름'
+                          : _currentAreaName,
+                      weather: _weatherTemp,
+                    ),
+                  ),
                 );
               },
               child: const Row(

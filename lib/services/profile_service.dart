@@ -30,6 +30,7 @@ class ProfileService {
 
   static Future<String> loadPersonality() async {
     final prefs = await SharedPreferences.getInstance();
+
     return prefs.getString(personalityKey) ?? '공감형';
   }
 
@@ -39,21 +40,9 @@ class ProfileService {
     await prefs.setString('user_birthdate', birthdate);
   }
 
-  /// ⭐ [수정] 생년월일 불러오기 (UI 에러 방지를 위해 기본값 '정보 없음' 반환)
-  static Future<String> loadBirthdate() async {
+  /// ⭐ [추가] 생년월일 불러오기
+  static Future<String?> getBirthdate() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('user_birthdate') ?? '정보 없음';
-  }
-
-  /// ⭐ [추가] 성별 저장하기
-  static Future<void> saveGender(String gender) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('user_gender', gender);
-  }
-
-  /// ⭐ [추가] 성별 불러오기 (UI 에러 방지를 위해 기본값 '선택 안 함' 반환)
-  static Future<String> loadGender() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('user_gender') ?? '선택 안 함';
+    return prefs.getString('user_birthdate');
   }
 }
