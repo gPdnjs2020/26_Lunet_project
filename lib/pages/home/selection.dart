@@ -329,18 +329,19 @@ class _SelectionPageState extends State<SelectionPage> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('고민을 입력해주세요 🌙')),
                             );
-
                             return;
                           }
 
                           /// detail 페이지 이동
                           Navigator.push(
                             context,
-
                             MaterialPageRoute(
                               builder: (_) => DetailPage(
                                 situation: situationController.text.trim(),
                                 questionType: _selectedCategory,
+                                // ⭐ [수정 포인트] DetailPage로 위치와 날씨 전달
+                                location: widget.location,
+                                weather: widget.weather,
                               ),
                             ),
                           );

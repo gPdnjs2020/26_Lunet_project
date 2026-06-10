@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../services/profile_service.dart'; // ⭐ [추가] ProfileService 불러오기
 
 /// [ 회원가입 화면 클래스 ]
 class SignupPage extends StatefulWidget {
@@ -43,16 +44,24 @@ class _SignupPageState extends State<SignupPage> {
 
     try {
       /// Firebase 회원가입 (이메일, 비밀번호)
-      // UserCredential userCredential =
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+            email: emailController.text.trim(),
+            password: passwordController.text.trim(),
+          );
 
       /// 💡 참고: 이름(nameController.text), 생년월일(birthdateController.text),
       /// 성별(_selectedGender)은 Firebase Auth에 바로 들어가지 않으므로,
       /// 실제 앱에서는 이 타이밍에 Firebase Firestore나 Realtime DB에 추가로 저장해주어야 합니다!
-
+      // ==========================================
+      // ⭐ 기기(ProfileService)에 내 정보 저장하기
+      await userCredential.user?.updateDisplayName(nameController.text.trim());
+      await ProfileService.saveNickname(nameController.text.trim());
+      await ProfileService.saveBirthdate(birthdateController.text.trim());
+      if (_selectedGender != null) {
+        await ProfileService.saveGender(_selectedGender!);
+      }
+      // ==========================================
       /// 성공 메시지
       if (mounted) {
         ScaffoldMessenger.of(
