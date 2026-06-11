@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'detail.dart';
+import 'loading.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 class SelectionPage extends StatefulWidget {
@@ -332,19 +333,40 @@ class _SelectionPageState extends State<SelectionPage> {
                             return;
                           }
 
-                          /// detail 페이지 이동
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => DetailPage(
-                                situation: situationController.text.trim(),
-                                questionType: _selectedCategory,
-                                // ⭐ [수정 포인트] DetailPage로 위치와 날씨 전달
-                                location: widget.location,
-                                weather: widget.weather,
+                          // ✨ [UX 개선 포인트] 'A or B'나 '추천'은 디테일 설정 없이 바로 로딩 화면으로 이동!
+                          if (_selectedCategory == 'A or B' ||
+                              _selectedCategory == '추천') {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => LoadingPage(
+                                  situation: situationController.text.trim(),
+                                  questionType: _selectedCategory,
+                                  location: widget.location,
+                                  weather: widget.weather,
+
+                                  // 💡 디테일 페이지를 건너뛰므로, LoadingPage가 요구하는
+                                  // 나머지 필수 변수들은 기본값(더미 데이터)으로 채워서 넘겨줍니다.
+                                  relation: '기본값',
+                                  readiness: 50.0,
+                                  timing: '지금 당장',
+                                ),
                               ),
-                            ),
-                          );
+                            );
+                          } else {
+                            /// '할까 말까', '고민 상담'은 기존대로 detail 페이지로 이동하여 세부 설정 진행
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => DetailPage(
+                                  situation: situationController.text.trim(),
+                                  questionType: _selectedCategory,
+                                  location: widget.location,
+                                  weather: widget.weather,
+                                ),
+                              ),
+                            );
+                          }
                         },
 
                         child: const Text(
@@ -381,12 +403,11 @@ class _SelectionPageState extends State<SelectionPage> {
               GestureDetector(
                 onTap: () {
                   fillExample('지금 고백해도 괜찮을까?\n상대방도 나를 좋아하는 것 같긴 한데 확신이 없어.');
-
+                  // ⭐ '할까 말까' 카테고리 자동 선택
                   setState(() {
                     _selectedCategory = '할까 말까';
                   });
                 },
-
                 child: _exampleCard(
                   icon: Icons.favorite_border,
                   iconColor: const Color(0xFFE6A5AE),
@@ -397,12 +418,34 @@ class _SelectionPageState extends State<SelectionPage> {
 
               const SizedBox(height: 16),
 
+              /// ⭐ [신규 추가] 여름 VS 겨울
+              GestureDetector(
+                onTap: () {
+                  fillExample('여름? 겨울? 둘 중 어느 계절이 좋아?');
+                  // ⭐ 'A or B' 카테고리 자동 선택
+                  setState(() {
+                    _selectedCategory = 'A or B';
+                  });
+                },
+                child: _exampleCard(
+                  icon: Icons.ac_unit_outlined, // ❄️ 눈꽃 아이콘 적용
+                  iconColor: const Color(0xFF90D8D8), // 상쾌한 민트 계열 색상
+                  title: '여름 VS 겨울',
+                  description: '짜장 vs 짬뽕처럼\n둘 중 하나를 고르기 힘들 때!',
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
               /// 이직하기
               GestureDetector(
                 onTap: () {
                   fillExample('지금 회사에서 계속 버티는 게 맞을까?\n새로운 회사 제안이 왔는데 고민돼.');
+                  // ⭐ '추천' 카테고리 자동 선택
+                  setState(() {
+                    _selectedCategory = '추천';
+                  });
                 },
-
                 child: _exampleCard(
                   icon: Icons.work_outline,
                   iconColor: const Color(0xFFB8A8E6),
@@ -417,8 +460,11 @@ class _SelectionPageState extends State<SelectionPage> {
               GestureDetector(
                 onTap: () {
                   fillExample('시험이 얼마 안 남았는데 너무 쉬고 싶어.\n지금 놀아도 괜찮을까?');
+                  // ⭐ '고민 상담' 카테고리 자동 선택
+                  setState(() {
+                    _selectedCategory = '고민 상담';
+                  });
                 },
-
                 child: _exampleCard(
                   icon: Icons.school_outlined,
                   iconColor: const Color(0xFFA9C7F2),
@@ -426,8 +472,7 @@ class _SelectionPageState extends State<SelectionPage> {
                   description: '당장 필요한 선택은 무엇인지\n가이드를 드려요.',
                 ),
               ),
-
-              const SizedBox(height: 30),
+              const SizedBox(height: 16),
             ],
           ),
         ),

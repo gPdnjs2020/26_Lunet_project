@@ -89,6 +89,9 @@ class _ResultPageState extends State<ResultPage> {
       situation: widget.situation,
       date: DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now()),
 
+      // ✨ [추가된 부분] 이제 우리가 골랐던 질문 유형("A or B", "추천" 등)이 정상적으로 함께 저장됩니다!
+      questionType: widget.questionType,
+
       userResult: '',
 
       advice: widget.aiResult['advice'] ?? '',

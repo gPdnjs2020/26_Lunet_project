@@ -55,9 +55,39 @@ class _HomeContent extends StatefulWidget {
 
 class _HomeContentState extends State<_HomeContent> {
   String _weatherTemp = '--°C';
-  String _weatherIconUrl = '';
+  String _weatherEmoji = '☀️';
   bool _isLoadingWeather = true;
   String _currentAreaName = ''; // ⭐ [GPS 추가] 지역 명을 저장할 변수
+
+  // ✨ 날씨 코드를 낮/밤 상관없이 이모티콘으로 바꿔주는 함수
+  String _getWeatherEmoji(String iconCode) {
+    if (iconCode.isEmpty) return '☀️';
+
+    // '01d', '01n' 등에서 앞의 숫자 두 자리만 추출
+    String code = iconCode.substring(0, 2);
+
+    switch (code) {
+      case '01':
+        return '☀️'; // 맑음
+      case '02':
+        return '⛅'; // 구름 조금
+      case '03':
+      case '04':
+        return '☁️'; // 흐림/구름 많음
+      case '09':
+        return '🌧️'; // 소나기
+      case '10':
+        return '🌦️'; // 비
+      case '11':
+        return '⛈️'; // 천둥번개
+      case '13':
+        return '❄️'; // 눈
+      case '50':
+        return '🌫️'; // 안개
+      default:
+        return '☀️';
+    }
+  }
 
   @override
   void initState() {
@@ -145,8 +175,7 @@ class _HomeContentState extends State<_HomeContent> {
 
         setState(() {
           _weatherTemp = '${temp.toStringAsFixed(1)}°C';
-          _weatherIconUrl =
-              'https://openweathermap.org/img/wn/$iconCode@2x.png';
+          _weatherEmoji = _getWeatherEmoji(iconCode); // ✨ 이모티콘 함수 사용
           _currentAreaName = finalAreaName; // ✨ '포항시' 또는 'Pohang' 예쁘게 적용!
           _isLoadingWeather = false;
         });
@@ -227,23 +256,11 @@ class _HomeContentState extends State<_HomeContent> {
                     mainAxisSize: MainAxisSize.min, // 내부 내용만큼만 크기 차지하도록 설정
                     children: [
                       // 날씨 아이콘
-                      _weatherIconUrl.isNotEmpty
-                          ? Image.network(
-                              _weatherIconUrl,
-                              width: 56,
-                              height: 56,
-                              errorBuilder: (c, e, s) => const Icon(
-                                Icons.wb_sunny_rounded,
-                                color: Colors.orange,
-                                size: 60,
-                              ),
-                            )
-                          : const Icon(
-                              Icons.wb_sunny_rounded,
-                              color: Colors.orange,
-                              size: 40,
-                            ),
-                      const SizedBox(width: 10),
+                      Text(
+                        _weatherEmoji,
+                        style: const TextStyle(fontSize: 46), // 크기 조절
+                      ),
+                      const SizedBox(width: 14),
                       // 온도 및 지역 명 세로 정렬
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

@@ -27,37 +27,108 @@ class _HistoryPageState extends State<HistoryPage> {
     });
   }
 
-  IconData getIcon(String category) {
+  // 👇 기존 getIcon 함수를 지우고 이 코드로 덮어써주세요!
+  String getEmoji(String category) {
     switch (category) {
+      // 💖 사랑 & 사람
       case "연애":
-        return Icons.favorite_outline;
-      case "회사":
-        return Icons.work_outline;
-      case "공부":
-        return Icons.school_outlined;
-      case "진로":
-        return Icons.trending_up;
+        return '❤️';
+      case "친구":
+      case "인간관계":
+        return '🤝';
       case "가족":
-        return Icons.home_outlined;
+        return '👨‍👩‍👧';
+
+      // 💼 일 & 성장
+      case "회사":
+      case "이직":
+        return '💼';
+      case "공부":
+        return '📚';
+      case "진로":
+      case "취업":
+        return '🚀';
+
+      // 💰 현실 & 생활
+      case "돈":
+      case "재테크":
+        return '💰';
+      case "쇼핑":
+      case "구매":
+        return '🛍️';
+      case "음식":
+      case "메뉴":
+        return '🍽️'; // 짜장 vs 짬뽕 같은 고민
+      case "건강":
+      case "다이어트":
+        return '🏃‍♀️';
+      case "이사":
+        return '🏠';
+
+      // 🎨 여가 & 기타
+      case "여행":
+        return '✈️';
+      case "취미":
+        return '🎨';
+      case "반려동물":
+        return '🐾';
+      case "멘탈":
+      case "심리":
+        return '🧠';
+
       default:
-        return Icons.auto_awesome;
+        return '✨'; // 지정되지 않은 나머지 모든 카테고리
     }
   }
 
   Color getColor(String category) {
     switch (category) {
+      // 💖 따뜻한 핑크/피치 계열 (사랑, 관계)
       case "연애":
         return const Color(0xFFFF8FB1);
+      case "친구":
+      case "인간관계":
+        return const Color(0xFFFFA07A); // 라이트 살몬
+      case "가족":
+        return const Color(0xFF9B8CFF);
+
+      // 💼 차분한 블루/네이비 계열 (일, 진로)
       case "회사":
+      case "이직":
         return const Color(0xFF7EA7FF);
       case "공부":
         return const Color(0xFF64C7B2);
       case "진로":
-        return const Color(0xFFFFC857);
-      case "가족":
-        return const Color(0xFF9B8CFF);
-      default:
+      case "취업":
         return const Color(0xFF4A6480);
+
+      // 💰 활기찬 옐로우/그린 계열 (현실, 돈, 음식)
+      case "돈":
+      case "재물":
+        return const Color(0xFFFFC857);
+      case "음식":
+      case "메뉴":
+        return const Color(0xFFFFB347); // 피치 오렌지
+      case "건강":
+      case "다이어트":
+        return const Color(0xFF81C784); // 산뜻한 그린
+
+      // 🎨 톡톡 튀는 포인트 컬러 (쇼핑, 여가)
+      case "쇼핑":
+      case "구매":
+        return const Color(0xFFFF6B6B); // 코랄 레드
+      case "여행":
+        return const Color(0xFF4DD0E1); // 스카이 블루
+      case "취미":
+        return const Color(0xFFBA68C8); // 퍼플
+      case "반려동물":
+        return const Color(0xFFA1887F); // 브라운
+      case "멘탈":
+      case "심리":
+        return const Color(0xFF90CAF9);
+
+      default:
+        return const Color(0xFFB0BEC5); // 기타 기본 색상 (부드러운 회색/은색)
     }
   }
 
@@ -133,7 +204,7 @@ class _HistoryPageState extends State<HistoryPage> {
                 padding: const EdgeInsets.only(bottom: 20),
                 child: _historyCard(
                   context,
-                  icon: getIcon(history.category),
+                  emoji: getEmoji(history.category),
                   color: getColor(history.category),
                   title: history.title,
                   percent: history.successRate.toString(),
@@ -154,7 +225,7 @@ class _HistoryPageState extends State<HistoryPage> {
 
   Widget _historyCard(
     BuildContext context, {
-    required IconData icon,
+    required String emoji,
     required Color color,
     required String title,
     required String percent,
@@ -171,10 +242,8 @@ class _HistoryPageState extends State<HistoryPage> {
             builder: (_) => HistoryDetailPage(history: history, index: index),
           ),
         );
-
         await loadHistory();
       },
-
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(24),
@@ -201,57 +270,67 @@ class _HistoryPageState extends State<HistoryPage> {
                     color: color.withOpacity(0.12),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(icon, color: color),
+                  child: Center(
+                    child: Text(
+                      emoji,
+                      style: const TextStyle(fontSize: 24), // 이모티콘 크기
+                    ),
+                  ),
                 ),
                 const Spacer(),
+
+                // ✨ 우상단 회색 박스 (할까말까, 추천, A or B가 들어갑니다!)
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 14,
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.12),
+                    color: Colors.grey.shade200,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    category,
-                    style: TextStyle(color: color, fontWeight: FontWeight.bold),
+                    history.questionType, // 👈 데이터가 무조건 들어갑니다.
+                    style: const TextStyle(
+                      color: Colors.black54,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
             ),
-
             const SizedBox(height: 22),
-
             Text(
               date,
               style: const TextStyle(fontSize: 11, color: Colors.black45),
             ),
-
             const SizedBox(height: 10),
-
             Row(
               children: [
                 Expanded(
                   child: Text(
-                    title,
+                    title, // 메인 주제 큰 글씨
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
+
+                // ✨ 'A or B'나 '추천'이 아닐 때만 % 박스 노출!
+                if (history.questionType != 'A or B' &&
+                    history.questionType != '추천')
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE8F3FF),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text('$percent%'),
                   ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE8F3FF),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text('$percent%'),
-                ),
               ],
             ),
           ],

@@ -30,7 +30,7 @@ class _DetailPageState extends State<DetailPage> {
     '나 자신 🙋',
     '가족 👨‍👩‍👧',
     '친구/연인 ❤️',
-    '직장 동료 💼',
+    '직장 💼',
     '기타',
   ];
 
