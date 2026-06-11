@@ -33,14 +33,15 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
       situation: widget.history.situation,
       date: widget.history.date,
 
+      // ✨ [아주 중요] 이거 안 넣으면 성공 버튼 누를 때마다 우상단 박스 글자가 사라집니다!!
+      questionType: widget.history.questionType,
+
       advice: widget.history.advice,
       positive: widget.history.positive,
       warning: widget.history.warning,
       lunaMessage: widget.history.lunaMessage,
-
       profileTitle: widget.history.profileTitle,
       profileStyle: widget.history.profileStyle,
-
       userResult: 'success',
     );
 
@@ -59,6 +60,8 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
       category: widget.history.category,
       situation: widget.history.situation,
       date: widget.history.date,
+
+      questionType: widget.history.questionType,
 
       advice: widget.history.advice,
       positive: widget.history.positive,
@@ -161,10 +164,10 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
                     color: const Color(0xFFE9D8FF),
                     borderRadius: BorderRadius.circular(30),
                   ),
-                  child: Text(
-                    '${history.title} 결과가 궁금해!\n루나가 기다리고 있었어요 ✨',
+                  child: const Text(
+                    '그때 나눴던 고민의 결과가 궁금해!\n루나가 기다리고 있었어요 ✨', // ✨ 어떤 고민이든 자연스럽도록 문구 수정
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       color: Colors.black54,
                       height: 1.6,
@@ -174,13 +177,13 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
 
                 const SizedBox(height: 32),
 
-                /// ORIGINAL RESULT (ResultPage 내용 그대로)
+                /// ORIGINAL RESULT
                 _card(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'ORIGINAL PREDICTION',
+                        'MY QUESTION TYPE', // ✨ 주제 대신 질문 유형이라는 느낌을 줍니다.
                         style: TextStyle(
                           color: Colors.black45,
                           fontWeight: FontWeight.bold,
@@ -189,30 +192,29 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        history.title,
+                        history.category, // ✨ 원래 주제(title)가 뜨던 자리에 카테고리명 고정!
                         style: const TextStyle(
                           fontSize: 30,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '${history.successRate}%',
-                        style: const TextStyle(
-                          fontSize: 54,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF4A6480),
+
+                      // ✨ 'A or B', '추천' 카테고리가 아닐 때만 % 퍼센트를 보여줌!
+                      if (history.category != 'A or B' &&
+                          history.category != '추천') ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          '${history.successRate}%',
+                          style: const TextStyle(
+                            fontSize: 54,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF4A6480),
+                          ),
                         ),
-                      ),
+                      ],
+
                       const SizedBox(height: 12),
-                      Text(
-                        history.category,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.black54,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
+
                       Text(
                         history.date,
                         style: const TextStyle(
@@ -247,7 +249,7 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
                   ),
                 ),
                 const SizedBox(height: 32),
-                
+
                 _card(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
