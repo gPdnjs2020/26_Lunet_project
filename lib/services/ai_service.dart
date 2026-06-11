@@ -6,7 +6,7 @@ class AiService {
   /// 🔥 API KEY (여기에 실제 키 넣기)
   /// 예: "AIzaSyXXXXXXX"
   static const String apiKey =
-      "AQ.Ab8RN6KPS671dU0LcFls3YFJkY9Of1B0wGAvzqUhXCKl0V0OwQ";
+      "AQ.Ab8RN6KGsT0OGOh-KoiDc9T1plot43B_eaaCxTMt69OBf4Tkpw";
 
   static Future<Map<String, dynamic>> analyzeDecision({
     required String target,
@@ -15,6 +15,7 @@ class AiService {
     required String situation,
     required String questionType,
     // ⭐ [추가] 지역, 생년월일, 성별, 그리고 날씨 파라미터 추가
+    int retryCount = 0,
     String location = '위치 모름',
     String birthdate = '정보 없음',
     String gender = '선택 안 함',
@@ -46,9 +47,6 @@ class AiService {
       case '철학형':
         personalityPrompt = '''
 너는 철학자 스타일의 AI다.
-
-- 정답을 주기보다 생각할 질문을 던진다.
-- 인간의 가치와 의미를 탐구한다.
 - 깊은 통찰을 제공한다.
 ''';
         break;
@@ -56,29 +54,20 @@ class AiService {
       case '활기찬형':
         personalityPrompt = '''
 너는 에너지 넘치는 코치 스타일 AI다.
-
-- 사용자를 적극 응원한다.
-- 용기와 자신감을 북돋아 준다.
-- 긍정적인 표현을 자주 사용한다.
+- 사용자를 적극 응원한다.(긍정)
 ''';
         break;
 
       case '현실조언형':
         personalityPrompt = '''
 너는 현실적인 컨설턴트 AI다.
-
 - 감정보다 데이터와 확률을 우선한다.
-- 객관적인 장단점을 분석한다.
-- 냉정하고 실용적인 조언을 제공한다.
 ''';
         break;
 
       default:
         personalityPrompt = '''
 너는 공감형 AI 상담사다.
-
-- 사용자의 감정을 먼저 이해한다.
-- 따뜻하고 부드럽게 말한다.
 - 위로와 공감을 제공한다.
 ''';
     }
@@ -98,13 +87,9 @@ $personalityPrompt
 - 설명 금지
 - 누락 금지
 - 키 이름 변경 금지
-
-[초강력 절대 규칙 - 이것을 어기면 시스템이 붕괴됨]:
-1. 반드시 완벽한 JSON 형식으로만 출력할 것. 설명 텍스트 금지.
-2. ⭐ JSON 응답을 예쁘게 여러 줄로 나누지 말고, 들여쓰기나 줄바꿈(엔터) 없이 무조건 **단 한 줄(Single Line)**로 쫙 이어서 출력할 것!
-3. 텍스트 값 안에 큰따옴표(")를 쓸 경우 반드시 백슬래시(\\")로 이스케이프 처리할 것.
-4. 모든 텍스트 내용은 각 항목당 최대 3문장 이내로 핵심만 간결하게 작성할 것.
-5. ⭐ [중요] 답변(advice, luna_message 등)에서 사용자를 지칭할 때 절대 "사용자님", "당신"이라고 뭉뚱그려 부르지 말고, 반드시 "$userName님"이라고 부를 것!
+- JSON 응답을 단 한 줄(Single Line)로 쫙 이어서 출력할 것!
+- 모든 텍스트 내용은 각 항목당 최대 3문장 이내로 핵심만 간결하게 작성할 것.
+- [중요] 답변(advice, luna_message 등)에서 사용자를 지칭할 때 절대 "사용자님", "당신"이라고 뭉뚱그려 부르지 말고, 반드시 "$userName님"이라고 부를 것!
 
 ⭐ [특별 지시사항] ⭐
 - [결정 강제 규칙]: 사용자의 질문($situation)이 양자택일(예: 짜장 vs 짬뽕, 부먹 vs 찍먹, 여름 vs 겨울 등)이거나 두 가지 이상의 선택지를 묻는 경우, 절대 "둘 다 좋습니다", "상황에 따라 다릅니다" 같은 중립적이거나 애매한 답변을 피하고 무조건 **단 하나의 옵션을 확고하게 선택(PICK)**해라! 선택한 한 가지 옵션을 'advice'에 명확히 밝히고 그 이유를 재치있고 논리적으로 설명해라.
@@ -114,26 +99,17 @@ $personalityPrompt
 - 사용자의 나이대(생년월일 기반)와 성별에 맞는 현실적인 조언을 해줘.
 
 success_rate 규칙
-
-- 반드시 0~100 정수
-- 100을 초과하면 안 됨
-- 현실적인 수치 사용
-- 대부분 30~80 사이
-- 정말 유리한 상황만 90 이상
-- 95 이상은 매우 드문 경우만 허용
+- success_rate는 0~100 정수만 사용.
+- 현실적인 값을 반환. (냉정하게)
 
 boost 규칙
-
-- 현실적인 상승치만 제공
-- 1~15 범위
-- 대부분 3~8
-- 매우 효과적인 전략만 10~15
+- 현실적인 상승치만 제공 (1~15 정도)
+- 대부분 3~8, 매우 효과적인 전략만 10~15
 - 총합이 25를 넘지 않음
 - 절대로 99%를 보장하지 않음
 
 출력 규칙:
-
-- advice 300자 이하
+- advice 250자 이하
 - positive 200자 이하
 - warning 200자 이하
 - luna_message 200자 이하
@@ -148,6 +124,20 @@ boost 규칙
 ]
 
 필드를 포함한다.
+
+recommendations에는 반드시
+동일한 카테고리의 추천 항목 3개를 넣어라.
+
+예:
+여행 → 여행지 3개
+음식 → 음식 3개
+영화 → 영화 3개
+
+관광지와 여행지를 섞지 말 것.
+
+- advice에는 추천 이유를 작성
+- success_rate는 사용하지 않음
+- strategies에는 추천 목록을 넣는다.
 
 출력 필드 (반드시 모두 포함):
 
@@ -197,7 +187,30 @@ boost 규칙
             "temperature": 0.7,
             "topK": 20,
             "topP": 0.8,
-            "maxOutputTokens": 4096,
+            "maxOutputTokens": 1024,
+            "responseMimeType": "application/json",
+            "responseSchema": {
+              "type": "OBJECT",
+              "properties": {
+                "category": {"type": "STRING"},
+                "success_rate": {"type": "INTEGER"},
+                "advice": {"type": "STRING"},
+                "positive": {"type": "STRING"},
+                "warning": {"type": "STRING"},
+                "luna_message": {"type": "STRING"},
+                "strategies": {
+                  "type": "ARRAY",
+                  "items": {
+                    "type": "OBJECT",
+                    "properties": {
+                      "title": {"type": "STRING"},
+                      "description": {"type": "STRING"},
+                      "boost": {"type": "INTEGER"},
+                    },
+                  },
+                },
+              },
+            },
           },
         }),
       );
@@ -208,6 +221,26 @@ boost 규칙
       print("📡 RAW RESPONSE:");
       print(response.body);
       print("=================================");
+
+      if (response.statusCode == 503 && retryCount < 3) {
+        print("⚠️ Gemini 서버 과부하. 2초 후 재시도");
+
+        await Future.delayed(const Duration(seconds: 10));
+
+        return analyzeDecision(
+          target: target,
+          readiness: readiness,
+          timing: timing,
+          situation: situation,
+          questionType: questionType,
+          location: location,
+          birthdate: birthdate,
+          gender: gender,
+          weather: weather,
+          userName: userName,
+          retryCount: retryCount + 1,
+        );
+      }
 
       if (response.statusCode != 200) {
         throw Exception("API 실패: ${response.body}");
