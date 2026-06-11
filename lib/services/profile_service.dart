@@ -45,4 +45,16 @@ class ProfileService {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('user_birthdate');
   }
+
+  /// ⭐ [추가] 성별 저장하기
+  static Future<void> saveGender(String gender) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_gender', gender);
+  }
+
+  /// ⭐ [추가] 성별 불러오기
+  static Future<String?> getGender() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('user_gender');
+  }
 }

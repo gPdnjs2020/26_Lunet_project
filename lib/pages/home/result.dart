@@ -276,69 +276,6 @@ class _ResultPageState extends State<ResultPage> {
 
                 const SizedBox(height: 24),
 
-                /// 프로필 카드
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF486A8A), Color(0xFFA9C7F2)],
-                    ),
-                    borderRadius: BorderRadius.circular(32),
-                  ),
-                  child: _buildResultHeader(),
-                ),
-
-                /*child: Column(
-                    children: [
-                      const Icon(
-                        Icons.auto_awesome,
-                        color: Colors.white,
-                        size: 34,
-                      ),
-
-                      const SizedBox(height: 18),
-
-                      Text(
-                        blueBoxTitle,
-                        textAlign: TextAlign.center,
-
-                        style: const TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-
-                      const SizedBox(height: 10),
-
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 18,
-                          vertical: 10,
-                        ),
-
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.18),
-
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-
-                        child: Text(
-                          blueBoxContent,
-
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),*/
-                const SizedBox(height: 24),
-
                 /// 분석 카드
                 Row(
                   children: [
@@ -668,56 +605,115 @@ class _ResultPageState extends State<ResultPage> {
   }
 
   Widget _compareCard() {
-    final a = widget.aiResult['choice_a'] ?? '선택지 A';
+    // 1. 사용자의 입력(situation)에서 ' or '를 기준으로 A와 B 텍스트를 자동으로 분리합니다.
+    // 예: "여름 or 겨울?" -> ["여름", "겨울?"]
+    List<String> parts = widget.situation.split(RegExp(r'\s+[oO][rR]\s+'));
+    String a =
+        widget.aiResult['choice_a'] ?? (parts.isNotEmpty ? parts[0] : '선택지 A');
+    String b =
+        widget.aiResult['choice_b'] ??
+        (parts.length > 1 ? parts[1].replaceAll('?', '') : '선택지 B');
 
-    final b = widget.aiResult['choice_b'] ?? '선택지 B';
-
-    ///final aScore = widget.aiResult['a_score'] ?? 50;
-
-    ///final bScore = widget.aiResult['b_score'] ?? 50;
-
-    final recommended = widget.aiResult['recommended'] ?? a;
+    // 2. AI가 내린 결론 (recommended 데이터가 없다면 advice에 적힌 핵심 문장을 가져옴)
+    String? recommended = widget.aiResult['recommended'];
+    String advice = widget.aiResult['advice'] ?? '루나의 분석 결과를 확인해보세요!';
 
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(24),
-
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
-
       child: Column(
         children: [
-          Text(
-            '루나의 추천',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-
-          SizedBox(height: 20),
-          Text(
-            a,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-
-          const SizedBox(height: 12),
-
-          Text('VS', style: TextStyle(fontSize: 22, color: Colors.grey)),
-
-          const SizedBox(height: 12),
-
-          Text(
-            b,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-
-          SizedBox(height: 20),
-
-          Text(
-            '👉 $recommended',
+          const Text(
+            '루나의 선택 ⚖️',
             style: TextStyle(
-              fontSize: 28,
+              fontSize: 22,
               fontWeight: FontWeight.bold,
               color: Color(0xFF4A6480),
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          // ✨ "A VS B" 텍스트 자동 분리 및 표시
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Text(
+                  a.trim(),
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  'VS',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  b.trim(),
+                  textAlign: TextAlign.left,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 28),
+
+          // ✨ AI의 실제 선택(advice)을 보여주는 박스
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: const Color(0xFFEAF2FF),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              children: [
+                const Text(
+                  '👉 루나의 PICK',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF4A6480),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  recommended ??
+                      advice, // 권장값이 없으면 advice 전체를 띄워 자세한 이유를 보여줍니다.
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.black87,
+                    height: 1.6,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

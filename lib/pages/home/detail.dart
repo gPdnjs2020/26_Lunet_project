@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'loading.dart';
 
 class DetailPage extends StatefulWidget {
-  /// selection 페이지에서 전달받은 고민 내용
   final String situation;
   final String questionType;
+  // ⭐ [수정 포인트 1] 변수 추가
+  final String location;
+  final String weather;
 
   const DetailPage({
     super.key,
     required this.situation,
     required this.questionType,
+    required this.location, // ⭐ 추가
+    required this.weather, // ⭐ 추가
   });
 
   @override
@@ -357,7 +361,6 @@ class _DetailPageState extends State<DetailPage> {
                   onPressed: () {
                     Navigator.push(
                       context,
-
                       MaterialPageRoute(
                         builder: (_) => LoadingPage(
                           situation: widget.situation,
@@ -365,6 +368,9 @@ class _DetailPageState extends State<DetailPage> {
                           readiness: readiness,
                           timing: timings[selectedTiming]['title']!,
                           questionType: widget.questionType,
+                          // ⭐ [수정 포인트 2] LoadingPage로 위치와 날씨 최종 전달
+                          location: widget.location,
+                          weather: widget.weather,
                         ),
                       ),
                     );

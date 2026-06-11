@@ -12,6 +12,9 @@ class LoadingPage extends StatefulWidget {
   final double readiness;
   final String timing;
   final String questionType;
+  // ⭐ [수정 포인트 1] 변수 추가
+  final String location;
+  final String weather;
 
   const LoadingPage({
     super.key,
@@ -20,6 +23,8 @@ class LoadingPage extends StatefulWidget {
     required this.readiness,
     required this.timing,
     required this.questionType,
+    required this.location, // ⭐ 추가
+    required this.weather, // ⭐ 추가
   });
 
   @override
@@ -74,7 +79,13 @@ class _LoadingPageState extends State<LoadingPage>
     try {
       final user = FirebaseAuth.instance.currentUser;
 
-      final nickname = user?.displayName ?? await ProfileService.loadNickname();
+      // 💡 닉네임이 안 뜨는 이유: 이메일 회원가입 직후엔 user.displayName이 null일 수 있습니다.
+      // ProfileService에서 무조건 불러오도록 수정합니다.
+      final nickname = await ProfileService.loadNickname();
+
+      // ⭐ [수정 포인트 2] 기기에 저장된 생년월일과 성별 불러오기
+      final birthdate = await ProfileService.getBirthdate() ?? '정보 없음';
+      final gender = await ProfileService.getGender() ?? '선택 안 함';
 
       print("닉네임 = $nickname");
 
@@ -85,8 +96,12 @@ class _LoadingPageState extends State<LoadingPage>
         situation: widget.situation,
         questionType: widget.questionType,
         userName: nickname,
+        // ⭐ [수정 포인트 3] AiService에 모든 데이터 꽉 채워서 전달!
+        location: widget.location,
+        weather: widget.weather,
+        birthdate: birthdate,
+        gender: gender,
       );
-      
 
       if (!mounted) return;
 
@@ -103,7 +118,6 @@ class _LoadingPageState extends State<LoadingPage>
           ),
         ),
       );
-      
     } catch (e) {
       debugPrint('AI 오류: $e');
 

@@ -49,7 +49,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
 
     // ⭐ [임시 데이터] 실제 DB에서 정보를 불러오면 이 곳에 넣어주세요!
     genderController.text = '선택 안 함'; // 성별 초기값 셋팅
-    _loadSavedBirthdate(); //생년월일 불러오기
+    _loadSavedData(); //생년월일 불러오기
   }
 
   @override
@@ -62,13 +62,12 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     super.dispose();
   }
 
-  Future<void> _loadSavedBirthdate() async {
+  Future<void> _loadSavedData() async {
     try {
-      // ProfileService에서 저장된 생년월일을 가져옵니다. (예: "1995-08-15")
+      // 1. 생년월일 불러오기
       String? savedDate = await ProfileService.getBirthdate();
 
       if (savedDate != null && savedDate.isNotEmpty) {
-        // "-" 기호를 기준으로 글자를 자릅니다. [1995, 08, 15]
         List<String> dateParts = savedDate.split('-');
 
         if (dateParts.length == 3) {
@@ -79,8 +78,32 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
           });
         }
       }
+
+      // 2. ⭐ 성별 불러오기 추가!
+      String? savedGender = await ProfileService.getGender();
+      if (savedGender != null && savedGender.isNotEmpty) {
+        setState(() {
+          genderController.text = savedGender;
+        });
+      } else {
+        setState(() {
+          genderController.text = '선택 안 함'; // 저장된 게 없을 때 기본값
+        });
+      }
+
+      // 3. ⭐ [추가] 닉네임도 기기에서 확실히 불러오기!
+      String savedNickname = await ProfileService.loadNickname();
+      User? user = FirebaseAuth.instance.currentUser;
+
+      setState(() {
+        // 파이어베이스 이름이 비어있으면 기기에 저장된 이름으로 채워 넣음
+        nicknameController.text =
+            (user?.displayName != null && user!.displayName!.isNotEmpty)
+            ? user.displayName!
+            : savedNickname;
+      });
     } catch (e) {
-      debugPrint("생년월일 불러오기 에러: $e");
+      debugPrint("정보 불러오기 에러: $e");
     }
   }
 
