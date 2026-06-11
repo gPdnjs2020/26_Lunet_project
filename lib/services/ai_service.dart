@@ -6,7 +6,7 @@ class AiService {
   /// 🔥 API KEY (여기에 실제 키 넣기)
   /// 예: "AIzaSyXXXXXXX"
   static const String apiKey =
-      "AQ.Ab8RN6KPS671dU0LcFls3YFJkY9Of1B0wGAvzqUhXCKl0V0OwQ";
+      "AQ.Ab8RN6KGsT0OGOh-KoiDc9T1plot43B_eaaCxTMt69OBf4Tkpw";
 
   static Future<Map<String, dynamic>> analyzeDecision({
     required String target,
@@ -85,7 +85,7 @@ class AiService {
     }
 
     final url = Uri.parse(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$apiKey",
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$apiKey",
     );
 
     final prompt =
