@@ -5,8 +5,11 @@ import '../services/profile_service.dart';
 class AiService {
   /// 🔥 API KEY (여기에 실제 키 넣기)
   /// 예: "AIzaSyXXXXXXX"
-  static const String apiKey =
-      "AQ.Ab8RN6IjGJf-49bktLbEy3dRTE49aZ26cTWiVimAJh9z4a18bw";
+  /*static const String apiKey =
+      "AIzaSyBMjF4NXCph5rGbeN6W3CHs_MlG_dXt4aM";*/
+
+  final accessToken =
+      "ya29.a0AT3oNZ984JAf1Fj2LIhINAV8Tk9bqwlxET9jSZ77xWmOSPM6meOvDjidG00GQvnv6luRk6gao4ikpZ1Ecqn19ogvz7ygOX-J_35hGKLv5E0AExWETF4Nu-MmmoJjxE5ZReb1IZIbzS-lA0VOG_RP5cmeJVk6a4pYCnJdqAo8gIlCoE2yt-Cup0D8ULAjbGl0cP3wX7EaCgYKARoSARASFQHGX2Mi25DSlA3xgaMgGWF5REq0iw0206";
 
   static Future<Map<String, dynamic>> analyzeDecision({
     required String target,
@@ -15,6 +18,7 @@ class AiService {
     required String situation,
     required String questionType,
     // ⭐ [추가] 지역, 생년월일, 성별, 그리고 날씨 파라미터 추가
+    int retryCount = 0,
     String location = '위치 모름',
     String birthdate = '정보 없음',
     String gender = '선택 안 함',
@@ -36,9 +40,9 @@ class AiService {
     print("personality: $personality");
     print("=================================");
 
-    if (apiKey.isEmpty || apiKey == "YOUR_GEMINI_API_KEY") {
+    /*if (apiKey.isEmpty || apiKey == "YOUR_GEMINI_API_KEY") {
       throw Exception("❌ API KEY를 설정하세요.");
-    }
+    }*/
 
     String personalityPrompt = '';
 
@@ -46,9 +50,6 @@ class AiService {
       case '철학형':
         personalityPrompt = '''
 너는 철학자 스타일의 AI다.
-
-- 정답을 주기보다 생각할 질문을 던진다.
-- 인간의 가치와 의미를 탐구한다.
 - 깊은 통찰을 제공한다.
 ''';
         break;
@@ -56,35 +57,26 @@ class AiService {
       case '활기찬형':
         personalityPrompt = '''
 너는 에너지 넘치는 코치 스타일 AI다.
-
-- 사용자를 적극 응원한다.
-- 용기와 자신감을 북돋아 준다.
-- 긍정적인 표현을 자주 사용한다.
+- 사용자를 적극 응원한다.(긍정)
 ''';
         break;
 
       case '현실조언형':
         personalityPrompt = '''
 너는 현실적인 컨설턴트 AI다.
-
 - 감정보다 데이터와 확률을 우선한다.
-- 객관적인 장단점을 분석한다.
-- 냉정하고 실용적인 조언을 제공한다.
 ''';
         break;
 
       default:
         personalityPrompt = '''
 너는 공감형 AI 상담사다.
-
-- 사용자의 감정을 먼저 이해한다.
-- 따뜻하고 부드럽게 말한다.
 - 위로와 공감을 제공한다.
 ''';
     }
 
     final url = Uri.parse(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$apiKey",
+      "https://us-central1-aiplatform.googleapis.com/v1/projects/platinum-logic-499206-j5/locations/us-central1/publishers/google/models/gemini-2.5-flash:generateContent",
     );
 
     final prompt =
@@ -98,69 +90,72 @@ $personalityPrompt
 - 설명 금지
 - 누락 금지
 - 키 이름 변경 금지
-
-[초강력 절대 규칙 - 이것을 어기면 시스템이 붕괴됨]:
-1. 반드시 완벽한 JSON 형식으로만 출력할 것. 설명 텍스트 금지.
-2. ⭐ JSON 응답을 예쁘게 여러 줄로 나누지 말고, 들여쓰기나 줄바꿈(엔터) 없이 무조건 **단 한 줄(Single Line)**로 쫙 이어서 출력할 것!
-3. 텍스트 값 안에 큰따옴표(")를 쓸 경우 반드시 백슬래시(\\")로 이스케이프 처리할 것.
-4. 모든 텍스트 내용은 각 항목당 최대 3문장 이내로 핵심만 간결하게 작성할 것.
-5. ⭐ [중요] 답변(advice, luna_message 등)에서 사용자를 지칭할 때 절대 "사용자님", "당신"이라고 뭉뚱그려 부르지 말고, 반드시 "$userName님"이라고 부를 것!
+- JSON 응답을 단 한 줄(Single Line)로 쫙 이어서 출력할 것!
+- 모든 텍스트 내용은 각 항목당 최대 3문장 이내로 핵심만 간결하게 작성할 것.
+- [중요] 답변(advice, luna_message 등)에서 사용자를 지칭할 때 절대 "사용자님", "당신"이라고 뭉뚱그려 부르지 말고, 반드시 "$userName님"이라고 부를 것!
 
 ⭐ [특별 지시사항] ⭐
-- [결정 강제 규칙]: 사용자의 질문($situation)이 양자택일(예: 짜장 vs 짬뽕, 여름 vs 겨울 등)이거나 두 가지 이상의 선택지를 묻는 경우, 절대 "둘 다 좋습니다" 같은 애매한 답변을 피하고 무조건 **단 하나의 옵션을 확고하게 선택(PICK)**해라! 
-- "advice" 또는 "luna_message" 항목에 현재 위치($location)와 날씨($weather)를 질문 내용 상황에 맞게 센스 있게 언급할 것.
-- 사용자의 나이대(생년월일 기반)와 성별에 맞는 현실적인 조언을 해줄 것.
-
-[유형별 엄격한 출력 규칙]
-1. "할까 말까": 
-   - 객관적인 성공 가능성(success_rate)을 0~100 사이의 숫자로 반드시 도출해라.
-   - 'advice'와 'luna_message'는 성공 가능성 수치(%)에 기반하여 일관성 있게 작성해라.
-
-2. "A or B":
-   - 사용자의 질문에서 비교 대상인 두 가지 핵심 단어를 각각 'choice_a'와 'choice_b' 필드에 반드시 추출해라. (예: "여름", "겨울")
-   - 'recommended' 필드에는 수식어나 문장을 절대 쓰지 말고, 오직 선택된 "단어 하나"(예: "여름")만 출력해라.
-   - 'advice' 필드에 그 선택지를 고른 명확하고 설득력 있는 이유를 상세히 적어라.
-
-3. "추천":
-   - 주제에 대해 뻔하지 않고, 서로 완전히 다른 관점이나 카테고리로 범위를 넓혀서 다양하게 제안해라.
-
-4. "고민 상담":
-   - 단순한 감정 분석이 아닌, 이 상황을 극복할 수 있는 현실적이고 직접적인 조언을 해라.
-   - 'core_advice' 필드에 사용자를 위한 가장 핵심적인 맞춤 해결책을 한 문장으로 요약해서 제공해라.
-
-[strategies (상세 분석 및 전략) 작성 규칙]
-'strategies' 배열에는 절대 퍼센트(%)나 수치(boost 등)를 포함하지 마라. 오직 사용자의 질문 유형(questionType)에 맞춰 아래 내용으로 3가지를 작성해라.
-1. "할까 말까": 성공 확률을 더 높일 수 있는 구체적인 팁과 행동 가이드
-2. "A or B": 선택된 결과를 뒷받침하는 결정적인 근거와 논리적 이유
-3. "추천": 메인 추천 외에 시도해볼 만한 매력적인 차선책이나 더 나은 방안
-4. "고민 상담": 상황이 앞으로 더 나아질 수 있는 긍정적인 방향과 개선 가능성
+- [결정 강제 규칙]: 사용자의 질문($situation)이 양자택일(예: 짜장 vs 짬뽕, 부먹 vs 찍먹, 여름 vs 겨울 등)이거나 두 가지 이상의 선택지를 묻는 경우, 절대 "둘 다 좋습니다", "상황에 따라 다릅니다" 같은 중립적이거나 애매한 답변을 피하고 무조건 **단 하나의 옵션을 확고하게 선택(PICK)**해라! 선택한 한 가지 옵션을 'advice'에 명확히 밝히고 그 이유를 재치있고 논리적으로 설명해라.
+- "advice" 또는 "luna_message" 항목의 문장 안에 전달받은 현재 위치($location)와 날씨($weather)를 질문 내용 상황에 맞게 필요하다면 언급할 것! (예: "오늘 포항은 비가 오네요! 이런 날씨엔 무조건 짬뽕입니다!")
+- 사용자의 위치(지역)가 파악된다면, 해당 지역의 특색, 유명한 랜드마크를 조언에 자연스럽게 녹여내.
+- 지역에 따라 어울리는 말투를 과하지 않게 살짝 섞어도 좋아.
+- 사용자의 나이대(생년월일 기반)와 성별에 맞는 현실적인 조언을 해줘.
 
 success_rate 규칙
-- 반드시 0~100 정수 (대부분 30~80 사이)
+- success_rate는 0~100 정수만 사용.
+- 현실적인 값을 반환. (냉정하게)
+
+boost 규칙
+- 현실적인 상승치만 제공 (1~15 정도)
+- 대부분 3~8, 매우 효과적인 전략만 10~15
+- 총합이 25를 넘지 않음
+- 절대로 99%를 보장하지 않음
 
 출력 규칙:
-- advice 300자 이하
-- positive 200자 이하
-- warning 200자 이하
-- luna_message 200자 이하
-- strategy description 150자 이하
+- advice 200자 이하
+- positive 150자 이하
+- warning 150자 이하
+- luna_message 150자 이하
+- strategy description 100자 이하
 
-출력 필드 (반드시 아래 필드를 모두 포함할 것, 해당 없는 항목은 "" 빈 문자열 처리):
+질문 유형이 "추천"이면 반드시
+
+"recommendations": [
+  "",
+  "",
+  ""
+]
+
+필드를 포함한다.
+
+recommendations에는 반드시
+동일한 카테고리의 추천 항목 3개를 넣어라.
+
+예:
+여행 → 여행지 3개
+음식 → 음식 3개
+영화 → 영화 3개
+
+관광지와 여행지를 섞지 말 것.
+
+- advice에는 추천 이유를 작성
+- success_rate는 사용하지 않음
+- strategies에는 추천 목록을 넣는다.
+
+출력 필드 (반드시 모두 포함):
+
 {
   "category": "",
   "success_rate": 0,
   "advice": "",
-  "core_advice": "",
-  "choice_a": "",
-  "choice_b": "",
-  "recommended": "",
   "positive": "",
   "warning": "",
   "luna_message": "",
   "strategies": [
     {
       "title": "",
-      "description": ""
+      "description": "",
+      "boost": 0
     }
   ],
   "profile_style": "",
@@ -182,10 +177,15 @@ success_rate 규칙
     try {
       final response = await http.post(
         url,
-        headers: {"Content-Type": "application/json"},
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization":
+              "Bearer ya29.a0AT3oNZ984JAf1Fj2LIhINAV8Tk9bqwlxET9jSZ77xWmOSPM6meOvDjidG00GQvnv6luRk6gao4ikpZ1Ecqn19ogvz7ygOX-J_35hGKLv5E0AExWETF4Nu-MmmoJjxE5ZReb1IZIbzS-lA0VOG_RP5cmeJVk6a4pYCnJdqAo8gIlCoE2yt-Cup0D8ULAjbGl0cP3wX7EaCgYKARoSARASFQHGX2Mi25DSlA3xgaMgGWF5REq0iw0206",
+        },
         body: jsonEncode({
           "contents": [
             {
+              "role": "user",
               "parts": [
                 {"text": prompt},
               ],
@@ -195,10 +195,46 @@ success_rate 규칙
             "temperature": 0.7,
             "topK": 20,
             "topP": 0.8,
-            "maxOutputTokens": 4096,
+            "maxOutputTokens": 8192,
+            "responseMimeType": "application/json",
+            "responseSchema": {
+              "type": "OBJECT",
+              "properties": {
+                "category": {"type": "STRING"},
+                "success_rate": {"type": "INTEGER"},
+                "advice": {"type": "STRING"},
+                "positive": {"type": "STRING"},
+                "warning": {"type": "STRING"},
+                "luna_message": {"type": "STRING"},
+                "strategies": {
+                  "type": "ARRAY",
+                  "items": {
+                    "type": "OBJECT",
+                    "properties": {
+                      "title": {"type": "STRING"},
+                      "description": {"type": "STRING"},
+                      "boost": {"type": "INTEGER"},
+                    },
+                  },
+                },
+              },
+            },
           },
         }),
       );
+      print("========== HEADERS ==========");
+      print(response.headers);
+
+      try {
+        final errorJson = jsonDecode(response.body);
+
+        if (errorJson["error"] != null) {
+          print("========== ERROR DETAILS ==========");
+          print(errorJson["error"]["message"]);
+          print(errorJson["error"]["status"]);
+          print(errorJson["error"]["details"]);
+        }
+      } catch (_) {}
 
       print("=================================");
       print("📡 STATUS: ${response.statusCode}");
@@ -206,6 +242,26 @@ success_rate 규칙
       print("📡 RAW RESPONSE:");
       print(response.body);
       print("=================================");
+
+      if (response.statusCode == 503 && retryCount < 3) {
+        print("⚠️ Gemini 서버 과부하. 2초 후 재시도");
+
+        await Future.delayed(const Duration(seconds: 10));
+
+        return analyzeDecision(
+          target: target,
+          readiness: readiness,
+          timing: timing,
+          situation: situation,
+          questionType: questionType,
+          location: location,
+          birthdate: birthdate,
+          gender: gender,
+          weather: weather,
+          userName: userName,
+          retryCount: retryCount + 1,
+        );
+      }
 
       if (response.statusCode != 200) {
         throw Exception("API 실패: ${response.body}");
