@@ -5,8 +5,11 @@ import '../services/profile_service.dart';
 class AiService {
   /// 🔥 API KEY (여기에 실제 키 넣기)
   /// 예: "AIzaSyXXXXXXX"
-  static const String apiKey =
-      "AQ.Ab8RN6KGsT0OGOh-KoiDc9T1plot43B_eaaCxTMt69OBf4Tkpw";
+  /*static const String apiKey =
+      "AIzaSyBMjF4NXCph5rGbeN6W3CHs_MlG_dXt4aM";*/
+
+  final accessToken =
+      "ya29.a0AT3oNZ984JAf1Fj2LIhINAV8Tk9bqwlxET9jSZ77xWmOSPM6meOvDjidG00GQvnv6luRk6gao4ikpZ1Ecqn19ogvz7ygOX-J_35hGKLv5E0AExWETF4Nu-MmmoJjxE5ZReb1IZIbzS-lA0VOG_RP5cmeJVk6a4pYCnJdqAo8gIlCoE2yt-Cup0D8ULAjbGl0cP3wX7EaCgYKARoSARASFQHGX2Mi25DSlA3xgaMgGWF5REq0iw0206";
 
   static Future<Map<String, dynamic>> analyzeDecision({
     required String target,
@@ -37,9 +40,9 @@ class AiService {
     print("personality: $personality");
     print("=================================");
 
-    if (apiKey.isEmpty || apiKey == "YOUR_GEMINI_API_KEY") {
+    /*if (apiKey.isEmpty || apiKey == "YOUR_GEMINI_API_KEY") {
       throw Exception("❌ API KEY를 설정하세요.");
-    }
+    }*/
 
     String personalityPrompt = '';
 
@@ -73,7 +76,7 @@ class AiService {
     }
 
     final url = Uri.parse(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$apiKey",
+      "https://us-central1-aiplatform.googleapis.com/v1/projects/platinum-logic-499206-j5/locations/us-central1/publishers/google/models/gemini-2.5-flash:generateContent",
     );
 
     final prompt =
@@ -109,11 +112,11 @@ boost 규칙
 - 절대로 99%를 보장하지 않음
 
 출력 규칙:
-- advice 250자 이하
-- positive 200자 이하
-- warning 200자 이하
-- luna_message 200자 이하
-- strategy description 150자 이하
+- advice 200자 이하
+- positive 150자 이하
+- warning 150자 이하
+- luna_message 150자 이하
+- strategy description 100자 이하
 
 질문 유형이 "추천"이면 반드시
 
@@ -174,10 +177,15 @@ recommendations에는 반드시
     try {
       final response = await http.post(
         url,
-        headers: {"Content-Type": "application/json"},
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization":
+              "Bearer ya29.a0AT3oNZ984JAf1Fj2LIhINAV8Tk9bqwlxET9jSZ77xWmOSPM6meOvDjidG00GQvnv6luRk6gao4ikpZ1Ecqn19ogvz7ygOX-J_35hGKLv5E0AExWETF4Nu-MmmoJjxE5ZReb1IZIbzS-lA0VOG_RP5cmeJVk6a4pYCnJdqAo8gIlCoE2yt-Cup0D8ULAjbGl0cP3wX7EaCgYKARoSARASFQHGX2Mi25DSlA3xgaMgGWF5REq0iw0206",
+        },
         body: jsonEncode({
           "contents": [
             {
+              "role": "user",
               "parts": [
                 {"text": prompt},
               ],
@@ -187,7 +195,7 @@ recommendations에는 반드시
             "temperature": 0.7,
             "topK": 20,
             "topP": 0.8,
-            "maxOutputTokens": 1024,
+            "maxOutputTokens": 8192,
             "responseMimeType": "application/json",
             "responseSchema": {
               "type": "OBJECT",
@@ -214,6 +222,19 @@ recommendations에는 반드시
           },
         }),
       );
+      print("========== HEADERS ==========");
+      print(response.headers);
+
+      try {
+        final errorJson = jsonDecode(response.body);
+
+        if (errorJson["error"] != null) {
+          print("========== ERROR DETAILS ==========");
+          print(errorJson["error"]["message"]);
+          print(errorJson["error"]["status"]);
+          print(errorJson["error"]["details"]);
+        }
+      } catch (_) {}
 
       print("=================================");
       print("📡 STATUS: ${response.statusCode}");

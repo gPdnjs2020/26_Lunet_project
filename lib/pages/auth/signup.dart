@@ -56,11 +56,12 @@ class _SignupPageState extends State<SignupPage> {
       // ==========================================
       // ⭐ 기기(ProfileService)에 내 정보 저장하기
       await userCredential.user?.updateDisplayName(nameController.text.trim());
-      await ProfileService.saveNickname(nameController.text.trim());
-      await ProfileService.saveBirthdate(birthdateController.text.trim());
-      if (_selectedGender != null) {
-        await ProfileService.saveGender(_selectedGender!);
-      }
+
+      await ProfileService.saveUserProfile(
+        nickname: nameController.text.trim(),
+        birthdate: birthdateController.text.trim(),
+        gender: _selectedGender ?? '선택 안 함',
+      );
       // ==========================================
       /// 성공 메시지
       if (mounted) {
