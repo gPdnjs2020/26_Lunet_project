@@ -6,7 +6,6 @@ class AiService {
   /// 🔥 API KEY (여기에 실제 키 넣기)
   /// 예: "AIzaSyXXXXXXX"
   static const String apiKey = "";
-  //"AQ.Ab8RN6IjGJf-49bktLbEy3dRTE49aZ26cTWiVimAJh9z4a18bw";
 
   static Future<Map<String, dynamic>> analyzeDecision({
     required String target,
