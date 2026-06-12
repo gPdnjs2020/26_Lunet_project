@@ -192,16 +192,16 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        history.category, // ✨ 원래 주제(title)가 뜨던 자리에 카테고리명 고정!
+                        history.questionType, // 카테고리명 고정
                         style: const TextStyle(
-                          fontSize: 30,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
 
-                      // ✨ 'A or B', '추천' 카테고리가 아닐 때만 % 퍼센트를 보여줌!
-                      if (history.category != 'A or B' &&
-                          history.category != '추천') ...[
+                      // ✨ [수정] 여기도 오직 '할까 말까'일 때만 % 텍스트를 보여줍니다!
+                      if (history.questionType == '할까 말까' ||
+                          history.questionType == '할까말까') ...[
                         const SizedBox(height: 8),
                         Text(
                           '${history.successRate}%',

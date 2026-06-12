@@ -27,109 +27,23 @@ class _HistoryPageState extends State<HistoryPage> {
     });
   }
 
-  // 👇 기존 getIcon 함수를 지우고 이 코드로 덮어써주세요!
-  String getEmoji(String category) {
-    switch (category) {
-      // 💖 사랑 & 사람
-      case "연애":
-        return '❤️';
-      case "친구":
-      case "인간관계":
-        return '🤝';
-      case "가족":
-        return '👨‍👩‍👧';
+  String getEmoji(String questionType) {
+    if (questionType.contains("할까")) return '🔮'; // 할까 말까 (수정 구슬)
+    if (questionType.contains("A or B")) return '⚖️'; // A or B (저울)
+    if (questionType.contains("추천")) return '💡'; // 추천 (전구/아이디어)
+    if (questionType.contains("상담")) return '💬'; // 고민 상담 (말풍선/대화)
 
-      // 💼 일 & 성장
-      case "회사":
-      case "이직":
-        return '💼';
-      case "공부":
-        return '📚';
-      case "진로":
-      case "취업":
-        return '🚀';
-
-      // 💰 현실 & 생활
-      case "돈":
-      case "재테크":
-        return '💰';
-      case "쇼핑":
-      case "구매":
-        return '🛍️';
-      case "음식":
-      case "메뉴":
-        return '🍽️'; // 짜장 vs 짬뽕 같은 고민
-      case "건강":
-      case "다이어트":
-        return '🏃‍♀️';
-      case "이사":
-        return '🏠';
-
-      // 🎨 여가 & 기타
-      case "여행":
-        return '✈️';
-      case "취미":
-        return '🎨';
-      case "반려동물":
-        return '🐾';
-      case "멘탈":
-      case "심리":
-        return '🧠';
-
-      default:
-        return '✨'; // 지정되지 않은 나머지 모든 카테고리
-    }
+    return '✨'; // 기본
   }
 
-  Color getColor(String category) {
-    switch (category) {
-      // 💖 따뜻한 핑크/피치 계열 (사랑, 관계)
-      case "연애":
-        return const Color(0xFFFF8FB1);
-      case "친구":
-      case "인간관계":
-        return const Color(0xFFFFA07A); // 라이트 살몬
-      case "가족":
-        return const Color(0xFF9B8CFF);
+  Color getColor(String questionType) {
+    if (questionType.contains("할까")) return const Color(0xFF9B8CFF); // 은은한 보라색
+    if (questionType.contains("A or B"))
+      return const Color(0xFF7EA7FF); // 부드러운 파란색
+    if (questionType.contains("추천")) return const Color(0xFFFFC857); // 따뜻한 노란색
+    if (questionType.contains("상담")) return const Color(0xFFFF8FB1); // 포근한 핑크색
 
-      // 💼 차분한 블루/네이비 계열 (일, 진로)
-      case "회사":
-      case "이직":
-        return const Color(0xFF7EA7FF);
-      case "공부":
-        return const Color(0xFF64C7B2);
-      case "진로":
-      case "취업":
-        return const Color(0xFF4A6480);
-
-      // 💰 활기찬 옐로우/그린 계열 (현실, 돈, 음식)
-      case "돈":
-      case "재물":
-        return const Color(0xFFFFC857);
-      case "음식":
-      case "메뉴":
-        return const Color(0xFFFFB347); // 피치 오렌지
-      case "건강":
-      case "다이어트":
-        return const Color(0xFF81C784); // 산뜻한 그린
-
-      // 🎨 톡톡 튀는 포인트 컬러 (쇼핑, 여가)
-      case "쇼핑":
-      case "구매":
-        return const Color(0xFFFF6B6B); // 코랄 레드
-      case "여행":
-        return const Color(0xFF4DD0E1); // 스카이 블루
-      case "취미":
-        return const Color(0xFFBA68C8); // 퍼플
-      case "반려동물":
-        return const Color(0xFFA1887F); // 브라운
-      case "멘탈":
-      case "심리":
-        return const Color(0xFF90CAF9);
-
-      default:
-        return const Color(0xFFB0BEC5); // 기타 기본 색상 (부드러운 회색/은색)
-    }
+    return const Color(0xFFB0BEC5); // 기본 회색
   }
 
   @override
@@ -204,12 +118,14 @@ class _HistoryPageState extends State<HistoryPage> {
                 padding: const EdgeInsets.only(bottom: 20),
                 child: _historyCard(
                   context,
-                  emoji: getEmoji(history.category),
-                  color: getColor(history.category),
+                  // ✨ [수정 됨] category 대신 questionType을 넘겨줍니다!
+                  emoji: getEmoji(history.questionType),
+                  color: getColor(history.questionType),
+
                   title: history.title,
                   percent: history.successRate.toString(),
                   date: history.date,
-                  category: history.category,
+                  category: history.category, // 여기는 그대로 둡니다.
                   history: history,
                   index: index,
                 ),
@@ -317,9 +233,9 @@ class _HistoryPageState extends State<HistoryPage> {
                   ),
                 ),
 
-                // ✨ 'A or B'나 '추천'이 아닐 때만 % 박스 노출!
-                if (history.questionType != 'A or B' &&
-                    history.questionType != '추천')
+                // ✨ [수정] 오직 '할까 말까'일 때만 % 박스를 보여줍니다! (띄어쓰기 유무 모두 허용)
+                if (history.questionType == '할까 말까' ||
+                    history.questionType == '할까말까')
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,

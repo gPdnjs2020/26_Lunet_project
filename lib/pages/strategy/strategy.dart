@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class StrategyPage extends StatelessWidget {
-final String questionType;
-final Map<String, dynamic> aiResult;
+  final Map<String, dynamic> aiResult;
+  final String questionType;
 
   const StrategyPage({
     super.key,
@@ -12,409 +12,116 @@ final Map<String, dynamic> aiResult;
 
   @override
   Widget build(BuildContext context) {
-    /// AI 전략 리스트
     final List strategies = aiResult['strategies'] ?? [];
 
-    /// 현재 성공률
-    final int currentRate = aiResult['success_rate'] ?? 50;
+    // ✨ 질문 유형에 따라 상단 제목과 부제목을 똑똑하게 바꿔줍니다!
+    String headerTitle = '';
+    String headerSub = '';
 
-    /// boost 총합 계산
-    int totalBoost = 0;
-
-    for (var strategy in strategies) {
-      totalBoost += (strategy['boost'] ?? 0) as int;
+    if (questionType == '할까 말까') {
+      headerTitle = '성공 확률 높이기 📈';
+      headerSub = '이렇게 행동해보면 훨씬 더 좋은 결과가 있을 거예요.';
+    } else if (questionType == 'A or B') {
+      headerTitle = '이 선택의 근거 ⚖️';
+      headerSub = '루나가 이 선택지를 강력하게 추천하는 이유예요.';
+    } else if (questionType == '추천') {
+      headerTitle = '더 나은 차선책 💡';
+      headerSub = '이런 방안들은 어때요? 선택지를 넓혀 드릴게요.';
+    } else {
+      // 고민 상담 등
+      headerTitle = '나아질 수 있는 방향 🌱';
+      headerSub = '상황은 충분히 좋아질 수 있어요. 이렇게 마음을 다잡아 보세요.';
     }
-
-    /// 최대 99 제한
-    final int improvedRate = (currentRate + totalBoost).clamp(0, 99);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF7F5F2),
-
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-
-        iconTheme: const IconThemeData(color: Color(0xFF4A6480)),
-
-        title: const Text(
-          '수정 전략',
-          style: TextStyle(
-            color: Color(0xFF4A6480),
-            fontWeight: FontWeight.bold,
-          ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.black87),
+          onPressed: () => Navigator.pop(context),
         ),
       ),
-
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-
+          padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-
             children: [
-              /// 상단 카드
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(24),
-
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE9D8FF),
-                  borderRadius: BorderRadius.circular(30),
-                ),
-
-                child: Row(
-                  children: [
-                    Image.asset('assets/images/character.png', width: 80),
-
-                    const SizedBox(width: 20),
-
-                    const Expanded(
-                      child: Text(
-                        '루나가 성공 가능성을 높이기 위한\n맞춤 전략을 분석했어요 ✨',
-
-                        style: TextStyle(
-                          fontSize: 18,
-                          height: 1.5,
-                          color: Colors.black54,
-                        ),
-                      ),
-                    ),
-                  ],
+              const SizedBox(height: 10),
+              // ✨ 변경된 제목 표시
+              Text(
+                headerTitle,
+                style: const TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF4A6480),
                 ),
               ),
-
+              const SizedBox(height: 8),
+              // ✨ 변경된 부제목 표시
+              Text(
+                headerSub,
+                style: const TextStyle(fontSize: 16, color: Colors.black54),
+              ),
               const SizedBox(height: 32),
 
-              /// 전략 리스트
-              ...strategies.map((strategy) {
-                final int boost = strategy['boost'] ?? 0;
-
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 18),
-
-                  child: _strategyCard(
-                    icon: _getIcon(strategy['title'] ?? ''),
-
-                    color: _getColor(strategy['title'] ?? ''),
-
-                    title: strategy['title'] ?? '',
-
-                    desc: strategy['description'] ?? '',
-
-                    boost: boost,
+              // 전략(또는 근거/차선책) 리스트 출력
+              if (strategies.isEmpty)
+                const Center(
+                  child: Text(
+                    '결과를 불러올 수 없습니다.',
+                    style: TextStyle(color: Colors.black54),
                   ),
-                );
-              }),
+                )
+              else
+                ...strategies.map((strategy) {
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 20),
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.03),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // ✨ % 뱃지가 완전히 삭제되고, 제목과 내용만 깔끔하게 나옵니다.
+                        Text(
+                          strategy['title'] ?? '',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF2B2B2B),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          strategy['description'] ?? '',
+                          style: const TextStyle(
+                            fontSize: 15,
+                            color: Colors.black87,
+                            height: 1.6,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
 
-              const SizedBox(height: 20),
-
-              if (questionType == '할까말까')
-                _probabilityCard(currentRate, improvedRate),
-
-              if (questionType == 'A or B') _compareStrategyCard(),
-
-              if (questionType == '추천') _recommendStrategyCard(),
-
-              if (questionType == '고민 상담') _counselStrategyCard(),
+              const SizedBox(height: 40),
             ],
           ),
         ),
       ),
     );
-  }
-
-  Widget _probabilityCard(int currentRate, int improvedRate) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(28),
-
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(32),
-
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-
-      child: Column(
-        children: [
-          const Icon(Icons.auto_awesome, size: 34, color: Color(0xFF4A6480)),
-
-          const SizedBox(height: 18),
-
-          Text(
-            '현재는 약 $currentRate%의 가능성이 있지만\n'
-            '전략들을 잘 실천하면\n'
-            '$improvedRate%까지 성공 가능성을 높일 수 있어요 🌙',
-
-            textAlign: TextAlign.center,
-
-            style: const TextStyle(
-              fontSize: 19,
-              height: 1.7,
-              color: Colors.black54,
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-
-            children: [
-              _rateBox(title: '현재', value: '$currentRate%'),
-
-              const SizedBox(width: 16),
-
-              const Icon(Icons.arrow_forward, color: Color(0xFF4A6480)),
-
-              const SizedBox(width: 16),
-
-              _rateBox(title: '예상', value: '$improvedRate%'),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _compareStrategyCard() {
-  return Container(
-    padding: const EdgeInsets.all(28),
-
-    child: const Column(
-      children: [
-        Icon(Icons.balance),
-
-        SizedBox(height: 20),
-
-        Text(
-          '추천된 선택을 더 유리하게 만들 전략이에요',
-          textAlign: TextAlign.center,
-        ),
-      ],
-    ),
-  );
-}
-
-Widget _recommendStrategyCard() {
-  return Container(
-    padding: const EdgeInsets.all(28),
-
-    child: const Column(
-      children: [
-        Icon(Icons.recommend),
-
-        SizedBox(height: 20),
-
-        Text(
-          '추천 결과를 최대한 활용하기 위한 팁이에요',
-          textAlign: TextAlign.center,
-        ),
-      ],
-    ),
-  );
-}
-
-Widget _counselStrategyCard() {
-  return Container(
-    padding: const EdgeInsets.all(28),
-
-    child: const Column(
-      children: [
-        Icon(Icons.psychology),
-
-        SizedBox(height: 20),
-
-        Text(
-          '감정 회복과 마음 정리를 위한 전략이에요',
-          textAlign: TextAlign.center,
-        ),
-      ],
-    ),
-  );
-}
-
-  /// 전략 카드
-  Widget _strategyCard({
-    required IconData icon,
-    required Color color,
-    required String title,
-    required String desc,
-    required int boost,
-  }) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(22),
-
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(28),
-
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-
-        children: [
-          Container(
-            width: 55,
-            height: 55,
-
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
-              shape: BoxShape.circle,
-            ),
-
-            child: Icon(icon, color: color),
-          ),
-
-          const SizedBox(width: 18),
-
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        title,
-
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
-                      ),
-
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE8F3FF),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-
-                      child: Text(
-                        '+$boost%',
-
-                        style: const TextStyle(
-                          color: Color(0xFF4A6480),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 10),
-
-                Text(
-                  desc,
-
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.black54,
-                    height: 1.6,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// 퍼센트 박스
-  Widget _rateBox({required String title, required String value}) {
-    return Container(
-      width: 110,
-      padding: const EdgeInsets.symmetric(vertical: 18),
-
-      decoration: BoxDecoration(
-        color: const Color(0xFFF7F5F2),
-        borderRadius: BorderRadius.circular(24),
-      ),
-
-      child: Column(
-        children: [
-          Text(title, style: TextStyle(color: Colors.grey.shade600)),
-
-          const SizedBox(height: 10),
-
-          Text(
-            value,
-
-            style: const TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF4A6480),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// 아이콘
-  IconData _getIcon(String title) {
-    if (title.contains('감정')) {
-      return Icons.favorite;
-    }
-
-    if (title.contains('타이밍')) {
-      return Icons.schedule;
-    }
-
-    if (title.contains('대화')) {
-      return Icons.chat_bubble_outline;
-    }
-
-    if (title.contains('자신감')) {
-      return Icons.psychology;
-    }
-
-    return Icons.auto_awesome;
-  }
-
-  /// 색상
-  Color _getColor(String title) {
-    if (title.contains('감정')) {
-      return const Color(0xFFE9A5AF);
-    }
-
-    if (title.contains('타이밍')) {
-      return const Color(0xFFA9C7F2);
-    }
-
-    if (title.contains('대화')) {
-      return const Color(0xFFB8A8E6);
-    }
-
-    if (title.contains('자신감')) {
-      return const Color(0xFFFFC107);
-    }
-
-    return const Color(0xFF4A6480);
   }
 }

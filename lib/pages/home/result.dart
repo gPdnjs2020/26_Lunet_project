@@ -135,7 +135,7 @@ class _ResultPageState extends State<ResultPage> {
     String blueBoxTitle = '';
     String blueBoxContent = '';
 
-    if (questionType == '할까말까') {
+    if (questionType == '할까 말까') {
       blueBoxTitle = profileTitle;
       blueBoxContent = profileStyle;
     } else if (questionType == 'A or B') {
@@ -221,7 +221,7 @@ class _ResultPageState extends State<ResultPage> {
                 const SizedBox(height: 24),
 
                 /// 메인 텍스트
-                if (questionType == '할까말까')
+                if (questionType == '할까 말까')
                   Text(
                     '지금은 약 $successPercent%\n가능해 보여요!',
                     textAlign: TextAlign.center,
@@ -249,7 +249,7 @@ class _ResultPageState extends State<ResultPage> {
 
                 if (questionType == '고민 상담')
                   const Text(
-                    '당신의 마음을 분석했어요',
+                    '당신을 위한 맞춤 해답이에요',
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
                   ),
@@ -265,7 +265,7 @@ class _ResultPageState extends State<ResultPage> {
 
                 const SizedBox(height: 24),
 
-                if (questionType == '할까말까')
+                if (questionType == '할까 말까')
                   _successCard(successPercent, successRate, advice),
 
                 if (questionType == 'A or B') _compareCard(),
@@ -571,16 +571,10 @@ class _ResultPageState extends State<ResultPage> {
   }
 
   Widget _compareCard() {
-    // 1. 사용자의 입력(situation)에서 ' or '를 기준으로 A와 B 텍스트를 자동으로 분리합니다.
-    // 예: "여름 or 겨울?" -> ["여름", "겨울?"]
-    List<String> parts = widget.situation.split(RegExp(r'\s+[oO][rR]\s+'));
-    String a =
-        widget.aiResult['choice_a'] ?? (parts.isNotEmpty ? parts[0] : '선택지 A');
-    String b =
-        widget.aiResult['choice_b'] ??
-        (parts.length > 1 ? parts[1].replaceAll('?', '') : '선택지 B');
+    // ✨ [수정됨] 억지로 문장을 자르지 않고, AI가 추출해준 핵심 단어를 그대로 씁니다!
+    String a = widget.aiResult['choice_a'] ?? 'A';
+    String b = widget.aiResult['choice_b'] ?? 'B';
 
-    // 2. AI가 내린 결론 (recommended 데이터가 없다면 advice에 적힌 핵심 문장을 가져옴)
     String? recommended = widget.aiResult['recommended'];
     String advice = widget.aiResult['advice'] ?? '루나의 분석 결과를 확인해보세요!';
 
@@ -610,7 +604,7 @@ class _ResultPageState extends State<ResultPage> {
           ),
           const SizedBox(height: 24),
 
-          // ✨ "A VS B" 텍스트 자동 분리 및 표시
+          // ✨ AI가 뽑아준 단어 (예: "여름" VS "겨울") 표시
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -619,7 +613,7 @@ class _ResultPageState extends State<ResultPage> {
                   a.trim(),
                   textAlign: TextAlign.right,
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 22, // 단어가 잘 보이도록 크기 약간 키움
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -640,7 +634,7 @@ class _ResultPageState extends State<ResultPage> {
                   b.trim(),
                   textAlign: TextAlign.left,
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 22, // 단어가 잘 보이도록 크기 약간 키움
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -650,7 +644,7 @@ class _ResultPageState extends State<ResultPage> {
 
           const SizedBox(height: 28),
 
-          // ✨ AI의 실제 선택(advice)을 보여주는 박스
+          // ✨ AI의 실제 선택(단어)과 이유(advice)
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(20),
@@ -669,12 +663,25 @@ class _ResultPageState extends State<ResultPage> {
                   ),
                 ),
                 const SizedBox(height: 12),
+
+                // 단어 하나로 딱 떨어지는 선택 결과 ("여름", "짜장" 등)
                 Text(
-                  recommended ??
-                      advice, // 권장값이 없으면 advice 전체를 띄워 자세한 이유를 보여줍니다.
+                  recommended ?? '선택 완료',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF2B2B2B),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // 그 선택을 한 구체적인 이유
+                Text(
+                  advice,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 15,
                     color: Colors.black87,
                     height: 1.6,
                   ),
@@ -735,31 +742,45 @@ class _ResultPageState extends State<ResultPage> {
   }
 
   Widget _counselCard() {
-    final emotion = widget.aiResult['emotion'] ?? '보통';
+    // ✨ 감정 대신 AI가 준 '핵심 조언'을 메인으로 사용합니다.
+    final String coreAdvice =
+        widget.aiResult['core_advice'] ??
+        widget.aiResult['advice'] ??
+        '스스로를 믿고 한 걸음 나아가보세요.';
 
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(24),
-
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
-
       child: Column(
         children: [
           const Text(
-            '현재 감정 상태',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-
-          const SizedBox(height: 20),
-
-          Text(
-            emotion,
-            style: const TextStyle(
-              fontSize: 32,
+            '💡 맞춤 해결책',
+            style: TextStyle(
+              fontSize: 22,
               fontWeight: FontWeight.bold,
               color: Color(0xFF4A6480),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            coreAdvice,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF2B2B2B),
+              height: 1.5,
             ),
           ),
         ],
